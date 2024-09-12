@@ -5,3 +5,8 @@ import test_rag
 # update_database.add_to_database()
 test_rag.run_tests()
 # query_rag("For how much money did Sunja sell her watch? Who gave Sunja that watch?")
+
+# test
+
+
+
