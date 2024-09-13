@@ -2,11 +2,11 @@
     "testCases": [
         {
             "testQuestion": "Where does Koh Hansu live?",
-            "testAnswer": "Osaka"
+            "testAnswer": "Koh Hansu lives in Osaka"
         },
         {
-            "testQuestion": "What does Sunja sell to make extra money?",
-            "testAnswer": "Kimchi"
+            "testQuestion": "What kind of business does Solomon's father own??",
+            "testAnswer": "Solomon's father runs Pachinko Parlors"
         }
     ]
 }
