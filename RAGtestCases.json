@@ -1,0 +1,16 @@
+{
+    "testCases": [
+        {
+            "testQuestion": "What is 1+1?",
+            "testAnswer": "2"
+        },
+        {
+            "testQuestion": "What is the first letter of the alphabet?",
+            "testAnswer": "a"
+        },
+        {
+            "testQuestion": "What is the 12th month of the year?",
+            "testAnswer": "December"
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "testCases": [
+        {
+            "testQuestion": "Where does Koh Hansu live?",
+            "testAnswer": "Osaka"
+        },
+        {
+            "testQuestion": "What does Sunja sell to make extra money?",
+            "testAnswer": "Kimchi"
+        }
+    ]
+}
