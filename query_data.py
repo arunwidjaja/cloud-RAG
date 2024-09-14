@@ -44,9 +44,10 @@ if __name__ == "__main__":
     main()
 
 
-def query_rag(query_text: str, mute=False):
+def query_rag(query_text: str, mute=False, plainText=False):
     """
     Set mute to True if you don't want to print the output
+    set plainText to true to return the answer without metadata
     """
     # Prepare the DB.
     embedding_function = get_embedding_function()
@@ -76,4 +77,7 @@ def query_rag(query_text: str, mute=False):
     if not mute:
         print(f"Answer:\n{response_text.content}")
         print(f"Sources:\n{"\n".join(sources)}")
-    return response_text
+    if (not plainText):
+        return response_text
+    else:
+        return response_text.content
