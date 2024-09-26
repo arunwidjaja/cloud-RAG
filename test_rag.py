@@ -1,10 +1,11 @@
-from query_data import query_rag
+# External packages
 from langchain_community.llms.ollama import Ollama
-
 from langchain_openai import ChatOpenAI
-
 import json
+
+# Modules
 from jsonMakerUtility import generate_json_from_markdown
+from query_data import query_rag
 
 EVAL_PROMPT = """
 Query: {query}

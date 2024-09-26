@@ -1,11 +1,10 @@
+# External packages
 import argparse
 # from dataclasses import dataclass
 from langchain_community.vectorstores import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-
 from get_embedding_function import get_embedding_function
-
 from dotenv import load_dotenv
 import openai
 import os

@@ -1,16 +1,13 @@
-# Simple GUI for ease of testing
+# Creates a basic GUI for ease of testing
 
-import update_database
-from query_data import query_rag
-import test_rag
-
-# GUI
+# External packages
 import tkinter as tk
 from tkinter import messagebox
 
-# update_database.reset_database()
-# test_rag.run_tests()
-# query_rag("For how much money did Sunja sell her watch? Who gave Sunja that watch?")
+# Modules
+import update_database
+from query_data import query_rag
+import test_rag
 
 
 def main():
@@ -19,7 +16,7 @@ def main():
 
 def start_GUI():
 
-    # queries RAG with user input
+    # queries RAG, prints response
     def submit_query():
         user_input = text_field.get()  # Get the input from the text field
         response = query_rag(user_input, plainText=True)
@@ -36,7 +33,7 @@ def start_GUI():
     # Upload, test, clear and reset buttons
     upload_button = tk.Button(
         root,
-        text="Upload data to Chroma DB",
+        text="Store data in Chroma DB",
         command=update_database.add_to_database)
 
     test_button = tk.Button(
@@ -51,7 +48,7 @@ def start_GUI():
 
     reset_button = tk.Button(
         root,
-        text="Reset DB (wipe DB and upload data))",
+        text="Reset DB (wipe DB and upload data)",
         command=update_database.reset_database)
 
     # Text entry field + label
