@@ -30,19 +30,6 @@ Answer the question based on the above context: {question}
 LLM_K = 5  # default k value
 
 
-def main():
-    # Create CLI.
-    parser = argparse.ArgumentParser()
-    parser.add_argument("query_text", type=str, help="The query text.")
-    args = parser.parse_args()
-    query_text = args.query_text
-    query_rag(query_text)
-
-
-if __name__ == "__main__":
-    main()
-
-
 def query_rag(query_text: str, mute=False, plainText=False):
     """
     Set mute to True if you don't want to print the output
@@ -75,8 +62,21 @@ def query_rag(query_text: str, mute=False, plainText=False):
 
     if not mute:
         print(f"Answer:\n{response_text.content}")
-        print(f"Sources:\n{"\n".join(sources)}")
+        print(f"Sources:\n{',\n'.join(sources)}")
     if (not plainText):
         return response_text
     else:
         return response_text.content
+
+
+def main():
+    # Create CLI.
+    parser = argparse.ArgumentParser()
+    parser.add_argument("query_text", type=str, help="The query text.")
+    args = parser.parse_args()
+    query_text = args.query_text
+    query_rag(query_text)
+
+
+if __name__ == "__main__":
+    main()
