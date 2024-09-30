@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.environ['OPENAI_API_KEY']
 
-def get_embedding_function(embedding = "openai"):
+
+def get_embedding_function(embedding="openai"):
     """Specify which LLM's embedding function you want."""
     match embedding:
         case "openai":
@@ -17,7 +18,7 @@ def get_embedding_function(embedding = "openai"):
         case "bedrock":
             embeddings = BedrockEmbeddings(
                 credentials_profile_name="default", region_name="us-east-1"
-            )            
+            )
         case "ollama":
-            embeddings = OllamaEmbeddings(model="nomic-embed-text")   
+            embeddings = OllamaEmbeddings(model="nomic-embed-text")
     return embeddings
