@@ -19,7 +19,7 @@ class SubmitQueryRequest(BaseModel):
 
 @app.get("/")
 def index():
-    return {"Hello": "World"}
+    return {"Arun Widjaja": "Sample Response"}
 
 
 @app.post("/submit_query")
@@ -28,6 +28,7 @@ def submit_query_endpoint(request: SubmitQueryRequest):
     return query_response
 
 
+# Main function is only for testing locally
 if __name__ == "__main__":
     port = 8000
     print(f"Running the FastAPI server on port {port}.")
