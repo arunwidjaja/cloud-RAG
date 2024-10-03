@@ -37,8 +37,13 @@ def query_rag(query_text: str, mute=False, plainText=False):
     """
     # Prepare the DB.
     embedding_function = get_embedding_function()
-    db = Chroma(persist_directory=CHROMA_PATH,
-                embedding_function=embedding_function)
+
+    try:
+        db = Chroma(persist_directory=CHROMA_PATH,
+                    embedding_function=embedding_function)
+    except Exception as e:
+        print(f"Error initializing Chroma: {str(e)}")
+        raise
 
     # Retrieve relevant documents from the DB.
     results = db.similarity_search_with_relevance_scores(query_text, k=LLM_K)
