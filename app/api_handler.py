@@ -2,6 +2,7 @@
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
+# Mangum wraps our ASGI app and allows it to communicate with AWS Lambda
 from mangum import Mangum
 # from src.rag_app.query_rag import query_rag, QueryResponse
 
