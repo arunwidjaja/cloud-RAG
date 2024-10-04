@@ -10,6 +10,9 @@ from mangum import Mangum  # AWS Lambda handler
 # Modules
 from query_data import query_rag
 
+import os
+print(os.getcwd())
+
 app = FastAPI()
 handler = Mangum(app)
 
