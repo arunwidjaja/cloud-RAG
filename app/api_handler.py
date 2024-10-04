@@ -10,7 +10,7 @@ from mangum import Mangum  # AWS Lambda handler
 
 # Modules
 from query_data import query_rag
-import app.config as config
+import config
 
 app = FastAPI()
 handler = Mangum(app)
@@ -29,6 +29,11 @@ templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 async def read_root(request: Request):
     # Render the HTML file (index.html) from the templates folder
     return templates.TemplateResponse("index.html", {"request": request})
+
+# Test GET
+# @app.get("/")
+# async def read_root():
+#     return {"message": "Hello, World!"}
 
 
 @app.post("/submit_query")
