@@ -7,16 +7,15 @@ from langchain.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
 from dotenv import load_dotenv
 import openai
-import os
+
+# Modules
+import config
 
 # Load environment variables. Assumes that project contains .env file with API keys
-load_dotenv()
-# ---- Set OpenAI API key
-# Change environment variable name from "OPENAI_API_KEY" to the name given in
-# your .env file.
-openai.api_key = os.environ['OPENAI_API_KEY']
+# load_dotenv()
+openai.api_key = config.OPENAI_API_KEY
 
-CHROMA_PATH = "chroma"
+# CHROMA_PATH = "chroma"
 PROMPT_TEMPLATE = """
 Answer the question based only on the following context:
 
@@ -39,7 +38,7 @@ def query_rag(query_text: str, mute=False, plainText=False):
     embedding_function = get_embedding_function()
 
     try:
-        db = Chroma(persist_directory=CHROMA_PATH,
+        db = Chroma(persist_directory=config.PATH_CHROMA,
                     embedding_function=embedding_function)
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")

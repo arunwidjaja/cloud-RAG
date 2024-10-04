@@ -11,30 +11,19 @@ import shutil
 import argparse
 from typing import List
 from collections import Counter
+from pathlib import Path
 
-# Local Functions
+# Modules
 from get_embedding_function import get_embedding_function
-
-# Load environment variables. Assumes that project contains .env file with API keys
-load_dotenv()
-
-# ---- Set OpenAI API key
-# Change environment variable name from "OPENAI_API_KEY" to the name given in
-# your .env file.
-
-
-CHROMA_PATH = "chroma"
-DATA_PATH_MD = "data/md"
-DATA_PATH_PDF = "data/pdf"
-MAX_BATCH_SIZE = 1000
-
-# formatting variables
-OUTPUT_SEPARATOR = "===================================="
+import config
 
 
 def add_to_database():
+    print("attempting to load docs")
     documents = load_documents("all")
+    print("attempting to split text")
     chunks = split_text(documents)
+    print("attempting to save to chroma")
     save_to_chroma(chunks)
 
 
@@ -46,10 +35,11 @@ def reset_database():
 
 def clear_database():
     print("Clearing out the DB.")
-    if os.path.exists(CHROMA_PATH):
-        # print(CHROMA_PATH)
-        shutil.rmtree(CHROMA_PATH)
-    print("The DB has been cleared.")
+    if os.path.exists(config.PATH_CHROMA):
+        shutil.rmtree(config.PATH_CHROMA)
+        print("The DB has been cleared.")
+    else:
+        print("No DB exists yet. Nothing to clear.")
 
 
 def load_documents(type="all"):
@@ -71,12 +61,14 @@ def load_documents(type="all"):
 
 
 def load_md():
-    loader = DirectoryLoader(DATA_PATH_MD, glob="*.md")
+    print(config.PATH_MD)
+    loader = DirectoryLoader(config.PATH_MD, glob="*.md")
     return loader.load()
 
 
 def load_pdf():
-    loader = PyPDFDirectoryLoader(DATA_PATH_PDF)
+    print("directory load pdf")
+    loader = PyPDFDirectoryLoader(config.PATH_PDF)
     return loader.load()
 
 
@@ -88,7 +80,7 @@ def split_text(documents: List[Document]):
         add_start_index=True,
         is_separator_regex=False
     )
-    print(f"{OUTPUT_SEPARATOR}")
+    print("===================================")
     print("Splitting documents into chunks...")
     chunks = text_splitter.split_documents(documents)
     print(f"Split {len(documents)} documents into {len(chunks)} chunks.")
@@ -97,12 +89,12 @@ def split_text(documents: List[Document]):
 
 
 def save_to_chroma(chunks: List[Document]):
-    # Load the existing database
-    # Only working with openai embedding right now
+    # NOTE: you have to convert config.PATH_CHROMA to a str first because persist_directory doesn't accept PATH objects
     db = Chroma(
-        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function(
+        persist_directory=str(config.PATH_CHROMA), embedding_function=get_embedding_function(
             "openai")
     )
+
     # Add IDs to the chunks that you're loading
     chunks_with_ids = add_chunk_ids(chunks)
     # Dictionary of file names and the number of chunks they have
@@ -143,20 +135,20 @@ def save_to_chroma(chunks: List[Document]):
         new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
 
         # Needs to be split into batches because chroma has a limit for how many chunks can be added at once.
-        for i in range(0, len(new_chunks), MAX_BATCH_SIZE):
-            new_chunks_batch = new_chunks[i: i+MAX_BATCH_SIZE]
-            new_chunk_ids_batch = new_chunk_ids[i: i+MAX_BATCH_SIZE]
+        for i in range(0, len(new_chunks), config.MAX_BATCH_SIZE):
+            new_chunks_batch = new_chunks[i: i+config.MAX_BATCH_SIZE]
+            new_chunk_ids_batch = new_chunk_ids[i: i+config.MAX_BATCH_SIZE]
             print(f"{i} of {len(new_chunks)} complete...", end="\r")
             db.add_documents(new_chunks_batch, ids=new_chunk_ids_batch)
 
-    # Print summary
+    # Print the summary
     if (new_chunks):
         print(f"{len(new_chunks)} chunks from the following documents were added:\n{
               "\n".join(added_documents)}")
     if (skipped_chunks):
         print(f"{len(skipped_chunks)} chunks from the following documents are already in the DB and were not added:\n{
               "\n".join(skipped_documents)}")
-    print(f"{OUTPUT_SEPARATOR}")
+    print("==========================")
 
 
 def add_chunk_ids(chunks):

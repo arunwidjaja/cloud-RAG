@@ -3,15 +3,14 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pathlib import Path
 from starlette.requests import Request
 from pydantic import BaseModel
 from mangum import Mangum  # AWS Lambda handler
 
 # Modules
 from query_data import query_rag
-
-import os
-print(os.getcwd())
+import config
 
 app = FastAPI()
 handler = Mangum(app)
@@ -21,8 +20,8 @@ class SubmitQueryRequest(BaseModel):
     query_text: str
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
+templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 
 
 # Display start page
