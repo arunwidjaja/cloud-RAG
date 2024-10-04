@@ -11,11 +11,8 @@ import openai
 # Modules
 import config
 
-# Load environment variables. Assumes that project contains .env file with API keys
-# load_dotenv()
 openai.api_key = config.OPENAI_API_KEY
 
-# CHROMA_PATH = "chroma"
 PROMPT_TEMPLATE = """
 Answer the question based only on the following context:
 
@@ -25,8 +22,6 @@ Answer the question based only on the following context:
 
 Answer the question based on the above context: {question}
 """
-
-LLM_K = 5  # default k value
 
 
 def query_rag(query_text: str, mute=False, plainText=False):
@@ -38,14 +33,15 @@ def query_rag(query_text: str, mute=False, plainText=False):
     embedding_function = get_embedding_function()
 
     try:
-        db = Chroma(persist_directory=config.PATH_CHROMA,
+        db = Chroma(persist_directory=str(config.PATH_CHROMA),
                     embedding_function=embedding_function)
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")
         raise
 
     # Retrieve relevant documents from the DB.
-    results = db.similarity_search_with_relevance_scores(query_text, k=LLM_K)
+    results = db.similarity_search_with_relevance_scores(
+        query_text, k=config.LLM_K)
     if len(results) == 0 or results[0][1] < 0.7:
         if not mute:
             print(f"Unable to find matching results.")

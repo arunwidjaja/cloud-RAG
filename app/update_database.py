@@ -19,11 +19,8 @@ import config
 
 
 def add_to_database():
-    print("attempting to load docs")
     documents = load_documents("all")
-    print("attempting to split text")
     chunks = split_text(documents)
-    print("attempting to save to chroma")
     save_to_chroma(chunks)
 
 
@@ -34,7 +31,6 @@ def reset_database():
 
 
 def clear_database():
-    print("Clearing out the DB.")
     if os.path.exists(config.PATH_CHROMA):
         shutil.rmtree(config.PATH_CHROMA)
         print("The DB has been cleared.")
@@ -61,13 +57,13 @@ def load_documents(type="all"):
 
 
 def load_md():
-    print(config.PATH_MD)
+    print("Loading .md documents...")
     loader = DirectoryLoader(config.PATH_MD, glob="*.md")
     return loader.load()
 
 
 def load_pdf():
-    print("directory load pdf")
+    print("Loading .pdf documents...")
     loader = PyPDFDirectoryLoader(config.PATH_PDF)
     return loader.load()
 
