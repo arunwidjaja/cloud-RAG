@@ -1,9 +1,11 @@
 # External packages
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
 from pydantic import BaseModel
-# Mangum wraps our ASGI app and allows it to communicate with AWS Lambda
-from mangum import Mangum
+from mangum import Mangum  # AWS Lambda handler
 
 # Modules
 from query_data import query_rag
@@ -16,15 +18,21 @@ class SubmitQueryRequest(BaseModel):
     query_text: str
 
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
+
+# Display start page
 @app.get("/")
-def index():
-    return {"Arun Widjaja": "Sample Response"}
+async def read_root(request: Request):
+    # Render the HTML file (index.html) from the templates folder
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.post("/submit_query")
 def submit_query_endpoint(request: SubmitQueryRequest):
-    query_response = query_rag(request.query_text)
-    return query_response
+    query_response = query_rag(request.query_text, plainText=True)
+    return {"response": query_response}
 
 
 # Main function is only for testing locally
