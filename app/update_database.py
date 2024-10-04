@@ -18,8 +18,8 @@ from get_embedding_function import get_embedding_function
 # Load environment variables. Assumes that project contains .env file with API keys
 load_dotenv()
 
-#---- Set OpenAI API key 
-# Change environment variable name from "OPENAI_API_KEY" to the name given in 
+# ---- Set OpenAI API key
+# Change environment variable name from "OPENAI_API_KEY" to the name given in
 # your .env file.
 
 
@@ -32,41 +32,27 @@ MAX_BATCH_SIZE = 1000
 OUTPUT_SEPARATOR = "===================================="
 
 
-def main():
-    # Check if the database should be cleared (using the --clear flag).
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--reset", action="store_true", help="Reset the database before populating.")
-    parser.add_argument("--clear", action="store_true", help="Clear out the database.")
-    args = parser.parse_args()
-
-    if args.clear:
-        clear_database()
-        sys.exit()  
-    if args.reset:
-        reset_database()
-        sys.exit()
-    add_to_database()
-
-if __name__ == "__main__":
-    main()
-
 def add_to_database():
     documents = load_documents("all")
     chunks = split_text(documents)
     save_to_chroma(chunks)
+
 
 def reset_database():
     print("Resetting the DB")
     clear_database()
     add_to_database()
 
+
 def clear_database():
     print("Clearing out the DB.")
     if os.path.exists(CHROMA_PATH):
+        # print(CHROMA_PATH)
         shutil.rmtree(CHROMA_PATH)
     print("The DB has been cleared.")
 
-def load_documents(type = "all"):
+
+def load_documents(type="all"):
     """
     Provide the file extension that you want to load as a string.
     Defaults to "all" for all file types in the data folder.
@@ -83,12 +69,16 @@ def load_documents(type = "all"):
             )
     return documents
 
+
 def load_md():
     loader = DirectoryLoader(DATA_PATH_MD, glob="*.md")
-    return loader.load()    
+    return loader.load()
+
+
 def load_pdf():
     loader = PyPDFDirectoryLoader(DATA_PATH_PDF)
     return loader.load()
+
 
 def split_text(documents: List[Document]):
     text_splitter = RecursiveCharacterTextSplitter(
@@ -105,15 +95,18 @@ def split_text(documents: List[Document]):
 
     return chunks
 
+
 def save_to_chroma(chunks: List[Document]):
     # Load the existing database
     # Only working with openai embedding right now
     db = Chroma(
-        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function("openai")
+        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function(
+            "openai")
     )
     # Add IDs to the chunks that you're loading
     chunks_with_ids = add_chunk_ids(chunks)
-    chunk_counts = Counter([chunk.metadata.get("source") for chunk in chunks]) # Dictionary of file names and the number of chunks they have
+    # Dictionary of file names and the number of chunks they have
+    chunk_counts = Counter([chunk.metadata.get("source") for chunk in chunks])
 
     # Get IDs of existing document chunks
     existing_items = db.get()
@@ -128,18 +121,20 @@ def save_to_chroma(chunks: List[Document]):
     last_document = ""
 
     for chunk in chunks_with_ids:
-        current_document=f"{chunk.metadata["source"]}"
-        if(last_document != current_document): # triggers when we move on to a new file (checks if file name is different)
-            print(f"Currently processing {chunk_counts[current_document]} chunks from: '{current_document}'")
+        current_document = f"{chunk.metadata["source"]}"
+        # triggers when we move on to a new file (checks if file name is different)
+        if (last_document != current_document):
+            print(f"Currently processing {
+                  chunk_counts[current_document]} chunks from: '{current_document}'")
             last_document = current_document
 
-        if(chunk.metadata["id"] not in existing_ids):
+        if (chunk.metadata["id"] not in existing_ids):
             new_chunks.append(chunk)
-            if(current_document not in added_documents):
+            if (current_document not in added_documents):
                 added_documents.append(current_document)
         else:
             skipped_chunks.append(chunk)
-            if(current_document not in skipped_documents):
+            if (current_document not in skipped_documents):
                 skipped_documents.append(current_document)
 
     # Add chunks and IDs to database
@@ -149,17 +144,20 @@ def save_to_chroma(chunks: List[Document]):
 
         # Needs to be split into batches because chroma has a limit for how many chunks can be added at once.
         for i in range(0, len(new_chunks), MAX_BATCH_SIZE):
-            new_chunks_batch = new_chunks[i : i+MAX_BATCH_SIZE]
-            new_chunk_ids_batch = new_chunk_ids[i : i+MAX_BATCH_SIZE]
-            print(f"{i} of {len(new_chunks)} complete...", end = "\r")
+            new_chunks_batch = new_chunks[i: i+MAX_BATCH_SIZE]
+            new_chunk_ids_batch = new_chunk_ids[i: i+MAX_BATCH_SIZE]
+            print(f"{i} of {len(new_chunks)} complete...", end="\r")
             db.add_documents(new_chunks_batch, ids=new_chunk_ids_batch)
 
     # Print summary
-    if(new_chunks):
-        print(f"{len(new_chunks)} chunks from the following documents were added:\n{"\n".join(added_documents)}")
-    if(skipped_chunks):
-        print(f"{len(skipped_chunks)} chunks from the following documents are already in the DB and were not added:\n{"\n".join(skipped_documents)}")
+    if (new_chunks):
+        print(f"{len(new_chunks)} chunks from the following documents were added:\n{
+              "\n".join(added_documents)}")
+    if (skipped_chunks):
+        print(f"{len(skipped_chunks)} chunks from the following documents are already in the DB and were not added:\n{
+              "\n".join(skipped_documents)}")
     print(f"{OUTPUT_SEPARATOR}")
+
 
 def add_chunk_ids(chunks):
     """
@@ -171,11 +169,12 @@ def add_chunk_ids(chunks):
     current_chunk_index = 0
 
     for chunk in chunks:
-        source = chunk.metadata.get("source") # "source" is the path of the file
-        page = chunk.metadata.get("page")  
+        # "source" is the path of the file
+        source = chunk.metadata.get("source")
+        page = chunk.metadata.get("page")
 
         # if the chunk ID is the same as the last one, increment the index
-        current_page_id=f"{source}:{page}"
+        current_page_id = f"{source}:{page}"
         if current_page_id == last_page_id:
             current_chunk_index = current_chunk_index + 1
         else:
@@ -187,3 +186,25 @@ def add_chunk_ids(chunks):
         chunk.metadata["id"] = chunk_id
         last_page_id = current_page_id
     return chunks
+
+
+def main():
+    # Check if the database should be cleared (using the --clear flag).
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--reset", action="store_true",
+                        help="Reset the database before populating.")
+    parser.add_argument("--clear", action="store_true",
+                        help="Clear out the database.")
+    args = parser.parse_args()
+
+    if args.clear:
+        clear_database()
+        sys.exit()
+    if args.reset:
+        reset_database()
+        sys.exit()
+    add_to_database()
+
+
+if __name__ == "__main__":
+    main()

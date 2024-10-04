@@ -10,16 +10,12 @@ from query_data import query_rag
 import test_rag
 
 
-def main():
-    start_GUI()
-
-
 def start_GUI():
 
     # queries RAG, prints response
     def submit_query():
         user_input = text_field.get()  # Get the input from the text field
-        response = query_rag(user_input, plainText=True)
+        response = query_rag(user_input)
         print_response(response)
 
     def print_response(response):
@@ -87,6 +83,10 @@ def start_GUI():
 
     # Run the application
     root.mainloop()
+
+
+def main():
+    start_GUI()
 
 
 if __name__ == "__main__":
