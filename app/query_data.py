@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import openai
 
 # Modules
-import config
+import app.config as config
 
 openai.api_key = config.OPENAI_API_KEY
 

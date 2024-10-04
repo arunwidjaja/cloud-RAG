@@ -6,7 +6,7 @@ import openai
 from dotenv import load_dotenv
 
 # Modules
-import config
+import app.config as config
 
 # load_dotenv()
 openai.api_key = config.OPENAI_API_KEY

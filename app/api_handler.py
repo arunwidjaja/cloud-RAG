@@ -10,7 +10,7 @@ from mangum import Mangum  # AWS Lambda handler
 
 # Modules
 from query_data import query_rag
-import config
+import app.config as config
 
 app = FastAPI()
 handler = Mangum(app)

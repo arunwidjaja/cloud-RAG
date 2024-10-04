@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Modules
 from get_embedding_function import get_embedding_function
-import config
+import app.config as config
 
 
 def add_to_database():
