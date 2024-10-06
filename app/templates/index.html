@@ -93,13 +93,17 @@ async function submitQuery() {
 
     try {
         // Send a POST request to the backend
-        const response = await fetch('/submit_query', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ query_text: userInput })
-        });
+        
+        // Test response
+        const response = JSON.stringify({reponse_text: "Test response from backend"})
+        
+        // const response = await fetch('/submit_query', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ query_text: userInput })
+        // });
 
         // Parse the JSON response
         const data = await response.json();

@@ -30,10 +30,10 @@ async def read_root(request: Request):
     # Render the HTML file (index.html) from the templates folder
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Test GET
-# @app.get("/")
+# Test submit_query
+# @app.post("/submit_query")
 # async def read_root():
-#     return {"message": "Hello, World!"}
+#     return {"Get": "Query"}
 
 
 @app.post("/submit_query")

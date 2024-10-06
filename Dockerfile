@@ -4,7 +4,7 @@ FROM public.ecr.aws/lambda/python:3.12
 ARG OPENAI_API_KEY
 ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
-WORKDIR /app
+# WORKDIR /app
 
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
 COPY app/. ${LAMBDA_TASK_ROOT}
