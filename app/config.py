@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Server
+port = 8000
+
 # API Keys
 load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key

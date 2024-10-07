@@ -83,41 +83,36 @@ document.getElementById('reset-btn').addEventListener('click', resetDB);
 
 
 async function submitQuery() {
-    const userInput = document.getElementById('query-input').value;
+    const user_Input = document.getElementById('query-input').value;
+    response_Text = "Empty Response"
 
-        // Make sure input is not empty
-    if (!userInput) {
+    // Make sure input is not empty
+    if (!user_Input) {
         alert("Please enter a query.");
         return;
     }
+    document.getElementById('response-box').innerText = "Query received. Generating response...";
 
     try {
-        // Send a POST request to the backend
-        
-        // Test response
-        const response = JSON.stringify({reponse_text: "Test response from backend"})
-        
-        // const response = await fetch('/submit_query', {
+        // // Send a POST request to the backend
+        // const response_JSON = await fetch('/submit_query', {
         //     method: 'POST',
         //     headers: {
         //         'Content-Type': 'application/json'
         //     },
-        //     body: JSON.stringify({ query_text: userInput })
+        //     body: JSON.stringify({query_text: user_Input})
         // });
+        // const response_JSON_String = await response_JSON.json();
+        // response_Text = response_JSON_String.query_Response
 
-        // Parse the JSON response
-        const data = await response.json();
-
-        // Update the response box with the received response
-        document.getElementById('response-box').innerText = data.response;
+        // Test response
+        response_Text = "User input: " + user_Input;
     } catch (error) {
         console.error('Error:', error);
-        document.getElementById('response-box').innerText = 'Error submitting query. Please try again.';
+        response_Text = 'Error submitting query. Please try again.'
     }
-
-    // Simulate an AJAX call to get the response
-    // const response = "This is a simulated response for: " + userInput;
-    document.getElementById('response-box').innerText = response;
+    // Update response box text
+    document.getElementById('response-box').innerText = response_Text;
 }
 
 function storeInDB() {

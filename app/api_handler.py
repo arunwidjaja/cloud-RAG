@@ -12,38 +12,43 @@ from mangum import Mangum  # AWS Lambda handler
 from query_data import query_rag
 import config
 
+# Initialize FastAPI handler and Mangum handler
 app = FastAPI()
 handler = Mangum(app)
 
-
-class SubmitQueryRequest(BaseModel):
-    query_text: str
-
-
+# Mount HTML/CSS
 app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 
 
-# Display start page
+class Query(BaseModel):
+    query_text: str
+
+# GETS
+
+
 @app.get("/")
 async def read_root(request: Request):
-    # Render the HTML file (index.html) from the templates folder
+    # Render the index.html from the templates folder
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Test submit_query
-# @app.post("/submit_query")
-# async def read_root():
-#     return {"Get": "Query"}
+
+# POSTS
+
+
+@app.post("/repeat_query")
+def repeat_query(request: Query):
+    query_text = request.query_text
+    return {"Query": {query_text}}
 
 
 @app.post("/submit_query")
-def submit_query_endpoint(request: SubmitQueryRequest):
+def submit_query(request: Query):
     query_response = query_rag(request.query_text, plainText=True)
-    return {"response": query_response}
+    return {"query_Response": query_response}
 
 
-# Main function is only for testing locally
+# Run main to test locally on localhost:8000
 if __name__ == "__main__":
-    port = 8000
-    print(f"Running the FastAPI server on port {port}.")
-    uvicorn.run("api_handler:app", host="0.0.0.0", port=port)
+    print(f"Running the FastAPI server on port {config.port}.")
+    uvicorn.run("api_handler:app", host="0.0.0.0", port=config.port)
