@@ -38,14 +38,14 @@ async def read_root(request: Request):
 
 @app.post("/repeat_query")
 def repeat_query(request: Query):
-    query_text = request.query_text
-    return {"Query": {query_text}}
+    query_response = request.query_text
+    return {"query_response": {query_response}}
 
 
 @app.post("/submit_query")
 def submit_query(request: Query):
     query_response = query_rag(request.query_text, plainText=True)
-    return {"query_Response": query_response}
+    return {"query_response": query_response}
 
 
 # Run main to test locally on localhost:8000
