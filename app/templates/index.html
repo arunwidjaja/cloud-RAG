@@ -57,14 +57,14 @@
 <body>
 
 <div class="container">
-    <button class="button" id="upload-btn">Store data in Chroma DB</button>
+    <!-- <button class="button" id="upload-btn">Store data in Chroma DB</button> -->
     <!-- <button class="button" id="copy-tmp">Copy Chroma DB to AWS tmp</button> -->
-    <button class="button" id="test-btn">Run test queries</button>
-    <button class="button" id="clear-btn">Wipe DB</button>
-    <button class="button" id="reset-btn">Reset DB (wipe and upload data)</button>
+    <!-- <button class="button" id="test-btn">Run test queries</button> -->
+    <!-- <button class="button" id="clear-btn">Wipe DB</button> -->
+    <!-- <button class="button" id="reset-btn">Reset DB (wipe and upload data)</button> -->
 
     <div>
-        <label for="query-input">Enter your query:</label><br>
+        <label for="query-input">Enter your query about 2022 Nonresidential Compliance Manual:</label><br>
         <input type="text" id="query-input" class="text-input" placeholder="Type your query here">
     </div>
 
@@ -78,11 +78,11 @@
 <script>
 // document.getElementById('submit-btn').addEventListener('click', repeatQuery); // Test function
 document.getElementById('submit-btn').addEventListener('click', submitQuery);
-document.getElementById('upload-btn').addEventListener('click', storeInDB);
+// document.getElementById('upload-btn').addEventListener('click', storeInDB);
 // document.getElementById('copy-tmp').addEventListener('click', copyDBToTMP);
-document.getElementById('test-btn').addEventListener('click', runTests);
-document.getElementById('clear-btn').addEventListener('click', clearDB);
-document.getElementById('reset-btn').addEventListener('click', resetDB);
+// document.getElementById('test-btn').addEventListener('click', runTests);
+// document.getElementById('clear-btn').addEventListener('click', clearDB);
+// document.getElementById('reset-btn').addEventListener('click', resetDB);
 
 window.onload = function(){
     copyDBToTMP();
