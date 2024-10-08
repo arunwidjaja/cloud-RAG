@@ -34,7 +34,7 @@ def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]
     # iterate through each context and append the text and file name to the response string
     for i in range(len(response_with_context[1])):
         context_current = response_with_context[1][i]
-        context_text = context_current[0]
+        context_text = context_current[0].replace("\n", " ")
         file_name = context_current[1].split('\\')[-1]
         context_summary = f"Source #{
             i + 1}: {file_name}\n...{context_text}...\n"
