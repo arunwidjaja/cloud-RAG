@@ -29,11 +29,12 @@ def query_rag(query_text: str, mute=False, plainText=False):
     Set mute to True if you don't want to print the output
     set plainText to true to return the answer without metadata
     """
+    response_text = "Unable to find matching results."
     # Prepare the DB.
     embedding_function = get_embedding_function()
 
     try:
-        db = Chroma(persist_directory=str(config.PATH_CHROMA),
+        db = Chroma(persist_directory=str(config.PATH_CHROMA_TMP),
                     embedding_function=embedding_function)
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")
@@ -44,8 +45,8 @@ def query_rag(query_text: str, mute=False, plainText=False):
         query_text, k=config.LLM_K)
     if len(results) == 0 or results[0][1] < 0.7:
         if not mute:
-            print(f"Unable to find matching results.")
-        return
+            print(response_text)
+        return response_text
 
     # Assemble the prompt using the relevant documents as context.
     context_text = "\n\n---\n\n".join(

@@ -1,4 +1,6 @@
 # External packages
+import os
+import shutil
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +12,7 @@ from mangum import Mangum  # AWS Lambda handler
 
 # Modules
 from query_data import query_rag
+from update_database import copy_to_tmp
 import config
 
 # Initialize FastAPI handler and Mangum handler
@@ -34,6 +37,11 @@ async def read_root(request: Request):
 
 
 # POSTS
+
+@app.post("/copy_DB_to_tmp")
+def copy_DB_to_tmp():
+    copy_status = copy_to_tmp()
+    return {"copy_status": {copy_status}}
 
 
 @app.post("/repeat_query")

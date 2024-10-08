@@ -19,6 +19,8 @@ DIR_STATIC = 'templates/static'
 # Paths
 BASE_PATH = Path(__file__).resolve().parent  # Base directory path
 PATH_CHROMA = BASE_PATH / DIR_CHROMA
+# TODO: Implement persistent storage for Chroma DB instead of copying to tmp
+PATH_CHROMA_TMP = '/tmp'
 PATH_PDF = BASE_PATH / DIR_PDF
 PATH_MD = BASE_PATH / DIR_MD
 PATH_TEMPLATES = BASE_PATH / DIR_TEMPLATES
