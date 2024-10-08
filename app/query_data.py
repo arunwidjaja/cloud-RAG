@@ -64,6 +64,7 @@ def query_rag(query_text: str, mute=False, plainText=False):
     if not mute:
         print(f"Answer:\n{response_text.content}")
         print(f"Sources:\n{',\n'.join(sources)}")
+
     if (not plainText):
         return response_text
     else:

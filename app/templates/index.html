@@ -137,7 +137,7 @@ async function submitQuery() {
             body: JSON.stringify({query_text: user_Input})
         });
         const response_JSON_String = await response_JSON.json();
-        response_Text = response_JSON_String.query_Response
+        response_Text = response_JSON_String.query_response
     } catch (error) {
         console.error('Error:', error);
         response_Text = 'Error submitting query. Please try again.'
@@ -160,12 +160,11 @@ async function copyDBToTMP() {
         },
         body: JSON.stringify({})
     });
-    alert('DB copied to /tmp')
+    document.getElementById('response-box').innerText = 'DB copied to /tmp';
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('response-box').innerText = 'Error copying DB to /tmp';
     }
-
 }
 
 function runTests() {
