@@ -27,16 +27,15 @@ templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 class Query(BaseModel):
     query_text: str
 
-# GETS
+# GET
 
 
 @app.get("/")
 async def read_root(request: Request):
-    # Render the index.html from the templates folder
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# POSTS
+# POST
 
 @app.post("/copy_DB_to_tmp")
 def copy_DB_to_tmp():
