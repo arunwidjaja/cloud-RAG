@@ -9,7 +9,7 @@ import uvicorn
 
 # Modules
 import config
-from query_data import query_rag
+from query_data import query_rag, build_response_string
 from update_database import copy_to_tmp
 
 # Initialize FastAPI handler and Mangum handler
@@ -48,8 +48,9 @@ def repeat_query(request: Query):
 
 @app.post("/submit_query")
 def submit_query(request: Query):
-    query_response = query_rag(request.query_text, plainText=True)
-    return {"query_response": query_response}
+    query_response = query_rag(request.query_text)
+    message = build_response_string(query_response)
+    return {"query_response": message}
 
 
 # Run main to test locally on localhost:8000

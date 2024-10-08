@@ -5,6 +5,7 @@ from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 import openai
+from typing import Tuple, List
 
 # Modules
 import config
@@ -23,60 +24,83 @@ Answer the question based on the above context: {question}
 """
 
 
-def query_rag(query_text: str, mute=False, plainText=False):
+def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]]]):
     """
-    Set mute to True if you don't want to print the output
-    set plainText to true to return the answer without metadata
+    Format the final text output
     """
-    response_text = "Unable to find matching results."
-    # Prepare the DB.
-    embedding_function = get_embedding_function()
+    response_string = f"{response_with_context[0]}\n"
 
+    # iterate through each context and append the text and file name to the response string
+    for i in range(len(response_with_context[1])):
+        context_current = response_with_context[1][i]
+        context_text = context_current[0]
+        file_name = context_current[1].split('\\')[-1]
+        context_summary = f"Source #{
+            i + 1}: {file_name}\n...{context_text}...\n"
+        response_string = "\n".join([response_string, context_summary])
+    return response_string
+
+
+def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
+    """
+    Returns a Tuple containing the LLM response and the relevant context.
+    The LLM response is a string.
+    The relevant context is a List of Tuple, each with the actual text and the file path.
+    """
+    model = ChatOpenAI()
+    embedding_function = get_embedding_function("openai")
+    LLM_response = "Unable to find matching results."
+    context = []
+
+    # Load the Chroma DB
+    # IMPORTANT: CHANGE config.PATH_CHROMA to config.PATH_CHROMA_TMP FOR AWS LAMBDA
     try:
-        db = Chroma(persist_directory=str(config.PATH_CHROMA_TMP),
+        db = Chroma(persist_directory=str(config.PATH_CHROMA),
                     embedding_function=embedding_function)
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")
         raise
 
-    # Retrieve relevant documents from the DB.
-    results = db.similarity_search_with_relevance_scores(
+    # Retrieve relevant docs and their context from the DB.
+    # Quit if no relevant docs found.
+    retrieved_docs = db.similarity_search_with_relevance_scores(
         query_text, k=config.LLM_K)
-    if len(results) == 0 or results[0][1] < 0.7:
-        if not mute:
-            print(response_text)
-        return response_text
+    if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
+        print(LLM_response)
+        return (LLM_response, context)
 
-    # Assemble the prompt using the relevant documents as context.
-    context_text = "\n\n---\n\n".join(
-        [doc.page_content for doc, _score in results])
+    # Scrape relevant context and source files
+    for doc in retrieved_docs:
+        context_current = (doc[0].page_content, doc[0].metadata['source'])
+        context.append(context_current)
+
+    # Assemble the prompt to include the context from the relevant docs.
+    context_text = "\n\n---\n\n".join(context_current[0]
+                                      for context_current in context)
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
-    # print(prompt)
 
-    # Prompt the LLM
-    model = ChatOpenAI()
     # model = Ollama(model="mistral")
-    response_text = model.invoke(prompt)
-    sources = ([doc.metadata.get("source", None) for doc, _score in results])
+    LLM_response = model.invoke(prompt)
 
-    if not mute:
-        print(f"Answer:\n{response_text.content}")
-        print(f"Sources:\n{',\n'.join(sources)}")
-
-    if (not plainText):
-        return response_text
-    else:
-        return response_text.content
+    # Build and print message
+    response_with_context = (LLM_response.content, context)
+    message = build_response_string(response_with_context)
+    print(message)
 
 
 def main():
     # Create CLI.
-    parser = argparse.ArgumentParser()
-    parser.add_argument("query_text", type=str, help="The query text.")
-    args = parser.parse_args()
-    query_text = args.query_text
-    query_rag(query_text)
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("query_text", type=str, help="The query text.")
+    # args = parser.parse_args()
+    # query_text = args.query_text
+    # query_rag(query_text)
+
+    # Test query
+    # Q: How much outdoor ventilation must be provided?
+    # A: Based on the given context, the total outdoor ventilation required for both the office and classroom spaces, if served by separate systems, would be 150 cfm + 750 cfm = 900 cfm.
+    query_rag("DEEZ NUTZ?!")
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ def run_tests():
 
 
 def query_and_validate(question: str, expected_response: str):
-    response_text = query_rag(question, mute=True).content
+    response_text = query_rag(question).content
     prompt = EVAL_PROMPT.format(
         query=question,
         expected_response=expected_response,

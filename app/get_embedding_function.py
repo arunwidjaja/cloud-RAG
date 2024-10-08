@@ -11,7 +11,7 @@ import config
 openai.api_key = config.OPENAI_API_KEY
 
 
-def get_embedding_function(embedding="openai"):
+def get_embedding_function(embedding: str):
     """Specify which LLM's embedding function you want."""
     match embedding:
         case "openai":
