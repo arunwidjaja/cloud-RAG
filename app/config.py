@@ -1,6 +1,7 @@
+from dotenv import load_dotenv
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+
 
 # Server
 port = 8000
@@ -27,5 +28,5 @@ PATH_TEMPLATES = BASE_PATH / DIR_TEMPLATES
 PATH_STATIC = BASE_PATH / DIR_STATIC
 
 # LLM Parameters
-MAX_BATCH_SIZE = 1000
+MAX_BATCH_SIZE = 5000
 LLM_K = 5

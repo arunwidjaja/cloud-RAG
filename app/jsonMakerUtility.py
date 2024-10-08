@@ -2,6 +2,7 @@
 import json
 import os
 
+# Utility for turning MD into JSON files for running test cases
 # Read in the .md file and process it line by line
 # Every odd line (starting at line 1) is a question
 # Every even line (starting at line 2) is the answer

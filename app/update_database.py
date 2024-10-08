@@ -1,17 +1,16 @@
-from langchain_community.document_loaders import DirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
-from langchain.document_loaders.pdf import PyPDFDirectoryLoader
-from langchain_community.vectorstores import Chroma
-
-from dotenv import load_dotenv
-import os
-import sys
-import shutil
+# External packages
 import argparse
-from typing import List
 from collections import Counter
-from pathlib import Path
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import DirectoryLoader
+from langchain.document_loaders.pdf import PyPDFDirectoryLoader
+from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+# from langchain_community.vectorstores import Chroma
+import os
+import shutil
+import sys
+from typing import List
 
 # Modules
 from get_embedding_function import get_embedding_function

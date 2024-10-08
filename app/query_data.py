@@ -1,15 +1,14 @@
 # External packages
 import argparse
-# from dataclasses import dataclass
-from langchain_community.vectorstores import Chroma
+# from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from get_embedding_function import get_embedding_function
-from dotenv import load_dotenv
 import openai
 
 # Modules
 import config
+from get_embedding_function import get_embedding_function
 
 openai.api_key = config.OPENAI_API_KEY
 

@@ -1,19 +1,16 @@
 # External packages
-import os
-import shutil
-import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pathlib import Path
-from starlette.requests import Request
-from pydantic import BaseModel
 from mangum import Mangum  # AWS Lambda handler
+from pydantic import BaseModel
+from starlette.requests import Request
+import uvicorn
 
 # Modules
+import config
 from query_data import query_rag
 from update_database import copy_to_tmp
-import config
 
 # Initialize FastAPI handler and Mangum handler
 app = FastAPI()
