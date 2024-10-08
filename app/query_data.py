@@ -24,10 +24,11 @@ Answer the question based on the above context: {question}
 """
 
 
-def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]]]):
+def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]]]) -> str:
     """
     Format the final text output
     """
+    print(type(response_with_context))
     response_string = f"{response_with_context[0]}\n"
 
     # iterate through each context and append the text and file name to the response string
@@ -55,7 +56,7 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     # Load the Chroma DB
     # IMPORTANT: CHANGE config.PATH_CHROMA to config.PATH_CHROMA_TMP FOR AWS LAMBDA
     try:
-        db = Chroma(persist_directory=str(config.PATH_CHROMA),
+        db = Chroma(persist_directory=str(config.PATH_CHROMA_TMP),
                     embedding_function=embedding_function)
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")
@@ -87,6 +88,7 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     response_with_context = (LLM_response.content, context)
     message = build_response_string(response_with_context)
     print(message)
+    return (message)
 
 
 def main():
@@ -98,9 +100,7 @@ def main():
     # query_rag(query_text)
 
     # Test query
-    # Q: How much outdoor ventilation must be provided?
-    # A: Based on the given context, the total outdoor ventilation required for both the office and classroom spaces, if served by separate systems, would be 150 cfm + 750 cfm = 900 cfm.
-    query_rag("DEEZ NUTZ?!")
+    query_rag("What is a guard station?")
 
 
 if __name__ == "__main__":

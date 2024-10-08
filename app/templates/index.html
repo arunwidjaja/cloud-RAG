@@ -122,7 +122,6 @@ async function repeatQuery(){
 
 async function submitQuery() {
     const user_Input = document.getElementById('query-input').value;
-    response_Text = ""
 
     // Make sure input is not empty
     if (!user_Input) {
@@ -130,7 +129,7 @@ async function submitQuery() {
         return;
     }
     
-    document.getElementById('response-box').innerText = "Query received. Generating response...";
+    document.getElementById('response-box').innerText = "Query received. Generating response. Please wait...";
     try {
         // Send a POST request to the backend
         const response_JSON = await fetch('/submit_query', {
@@ -144,7 +143,7 @@ async function submitQuery() {
         response_Text = response_JSON_String.query_response
     } catch (error) {
         console.error('Error:', error);
-        response_Text = 'Error submitting query. Please try again.'
+        response_Text = 'Error generating query. Please try again.'
     }
     // Update response box text
     document.getElementById('response-box').innerText = response_Text;

@@ -48,8 +48,7 @@ def repeat_query(request: Query):
 
 @app.post("/submit_query")
 def submit_query(request: Query):
-    query_response = query_rag(request.query_text)
-    message = build_response_string(query_response)
+    message = query_rag(request.query_text)
     return {"query_response": message}
 
 
