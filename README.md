@@ -2,7 +2,7 @@
 
 This is a RAG service that allows users to query a database of assorted file types via a web interface. Currently powered by OpenAI's ADA and GPT-3.5 models.
 
-# Getting Started
+## Getting Started
 
 The web UI is not currently open to the public but you can compile and run the app locally:
 
@@ -15,23 +15,15 @@ The web UI is not currently open to the public but you can compile and run the a
 <code>/app/_run_gui.py</code> Provides a GUI for running basic functions such as loading and clearing the database, as well as submitting queries.
 
 
-# Project Stack:
+## Project Stack:
 
-<ul>
+- Python
+- Langchain - LLM framework
+- Chroma - Vector DB
+- FastAPI, Docker, Amazon AWS - Deployment
+- HTML, JavaScript - Frontend
 
-  -Python
-  
-  -Langchain - LLM framework
-  
-  -Chroma - Vector DB
-  
-  -FastAPI, Docker, Amazon AWS - Deployment
-  
-  -HTML, JavaScript - Frontend
-  
-</ul>
-
-# Roadmap
+## Roadmap
 
 In development:
 - migrating to persistent storage on Amazon S3
