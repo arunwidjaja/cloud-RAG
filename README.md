@@ -4,15 +4,15 @@ This is a RAG service that allows users to query a database of assorted file typ
 
 # Getting Started
 
-The web UI is not currently open to the public but you can compile and run the app locally.
+The web UI is not currently open to the public but you can compile and run the app locally:
 
-<code>/app/config.py</code> needs to be updated with paths for storing the Chroma DB locally.
+1. Update <code>/app/config.py</code> with local Chroma DB paths.
 
-<code>/.env</code> needs to be created and updated with your OpenAI API key. They key must be named <code>OPENAI_API_KEY</code>
+2. Create <code>/.env</code> and add your <code>OPENAI_API_KEY</code> key.
 
-Input documents should be saved in <code>/app/data</code>
+3. Save input documents in <code>/app/data</code>
 
-<code>/app/_run_gui.py</code> Provides a GUI for running basic functions such as loading and clearing the database, as well as submitting queries
+<code>/app/_run_gui.py</code> Provides a GUI for running basic functions such as loading and clearing the database, as well as submitting queries.
 
 
 # Project Stack:
