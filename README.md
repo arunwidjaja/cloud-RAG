@@ -19,13 +19,13 @@ Input documents should be saved in <code>/app/data</code>
 
 <ul>
 
-  -Python - Main logic
+  -Python
   
   -Langchain - LLM framework
   
   -Chroma - Vector DB
   
-  -FastAPI, Docker, Amazon AWS - Deployment and hosting
+  -FastAPI, Docker, Amazon AWS - Deployment
   
   -HTML, JavaScript - Frontend
   
@@ -39,7 +39,7 @@ In development:
 - display database contents on web UI
 
 Possible features:
-- allowing front-end file upload
+- enabling DB operations via frontend
 - adding support for locally hosted GPU-accelerated models (Mistral, LlaMa, etc.)
 - Audio transcription
 
