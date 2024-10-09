@@ -69,8 +69,8 @@ def load_pdf():
 
 def split_text(documents: List[Document]):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=300,
-        chunk_overlap=100,
+        chunk_size=config.CHUNK_SIZE,
+        chunk_overlap=config.CHUNK_OVERLAP,
         length_function=len,
         add_start_index=True,
         is_separator_regex=False
@@ -149,7 +149,7 @@ def save_to_chroma(chunks: List[Document]):
 def add_chunk_ids(chunks):
     """
     Adds IDs to the chunks you're trying to add. Returns a list of Chunks.
-    The chunk IDs are formatted as "{source}:{page number}:{chunk index}".
+    The chunk IDs are formatted as "source:page number:chunk index".
     For example, data/testfile.pdf:5:3 would be the ID for the 3rd chunk of the 5th page of testfile.pdf
     """
     last_page_id = None

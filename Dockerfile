@@ -1,10 +1,8 @@
-# For running on AWS Lambda
+# For building and running on AWS Lambda
 FROM public.ecr.aws/lambda/python:3.12
 
 ARG OPENAI_API_KEY
 ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-
-# WORKDIR /app
 
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
 COPY app/. ${LAMBDA_TASK_ROOT}
@@ -17,7 +15,7 @@ EXPOSE 8000
 
 #################################################################################
 
-# For running locally
+# For building and running locally
 # FROM python:3.12
 
 # ARG OPENAI_API_KEY

@@ -59,8 +59,6 @@
 
 <div class="container">
     <!-- <button class="button" id="upload-btn">Store data in Chroma DB</button> -->
-    <!-- <button class="button" id="copy-tmp">Copy Chroma DB to AWS tmp</button> -->
-    <!-- <button class="button" id="test-btn">Run test queries</button> -->
     <!-- <button class="button" id="clear-btn">Wipe DB</button> -->
     <!-- <button class="button" id="reset-btn">Reset DB (wipe and upload data)</button> -->
 
@@ -72,7 +70,7 @@
     <button class="button" id="submit-btn">Submit Query</button>
 
     <div class="response-box" id="response-box">
-        [Submit query to get response]
+        What is your question?
     </div>
 </div>
 
@@ -80,7 +78,6 @@
 // document.getElementById('submit-btn').addEventListener('click', repeatQuery); // Test function
 document.getElementById('submit-btn').addEventListener('click', submitQuery);
 // document.getElementById('upload-btn').addEventListener('click', storeInDB);
-// document.getElementById('copy-tmp').addEventListener('click', copyDBToTMP);
 // document.getElementById('clear-btn').addEventListener('click', clearDB);
 // document.getElementById('reset-btn').addEventListener('click', resetDB);
 
@@ -129,7 +126,7 @@ async function submitQuery() {
         return;
     }  
     document.getElementById('response-box').innerText = "Query received. Generating response. Please wait...";
-    
+
     try {
         // Send query text to backend and retrieve formatted response
         const response_JSON = await fetch('/submit_query', {

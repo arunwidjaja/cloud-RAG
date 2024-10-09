@@ -63,7 +63,7 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     context = []
     retrieved_docs = db.similarity_search_with_relevance_scores(
         query_text, k=config.LLM_K)
-    # Return if nothing relevant found
+    # Return if nothing sufficiently relevant is found
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
         LLM_response = "Unable to find matching results."
         return (LLM_response, context)
