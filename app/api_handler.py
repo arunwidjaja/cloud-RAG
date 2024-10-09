@@ -29,6 +29,9 @@ class Query(BaseModel):
 
 @app.get("/")
 async def read_root(request: Request):
+    """
+    Load landing page
+    """
     return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -54,11 +57,14 @@ def repeat_query(request: Query):
 
 @app.post("/submit_query")
 def submit_query(request: Query):
+    """
+    Send query to LLM
+    """
     message = query_rag(request.query_text)
     return {"query_response": message}
 
 
 # Run main to test locally on localhost:8000
 if __name__ == "__main__":
-    print(f"Running the FastAPI server on port {config.port}.")
+    print(f"Running the FastAPI server locally on port {config.port}")
     uvicorn.run("api_handler:app", host="0.0.0.0", port=config.port)

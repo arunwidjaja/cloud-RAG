@@ -9,20 +9,21 @@ from typing import Tuple, List
 
 # Modules
 import config
+import prompt_templates
 from get_embedding_function import get_embedding_function
 from utils import build_response_string
 
 openai.api_key = config.OPENAI_API_KEY
 
-PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
+# PROMPT_TEMPLATE = """
+# Answer the question based only on the following context:
 
-{context}
+# {context}
 
----
+# ---
 
-Answer the question based on the above context: {question}
-"""
+# Answer the question based on the above context: {question}
+# """
 
 
 def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
@@ -35,7 +36,7 @@ def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
     # Assemble the prompt to include the context from the relevant docs.
     context_text = "\n\n---\n\n".join(context_current[0]
                                       for context_current in context)
-    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+    prompt_template = ChatPromptTemplate.from_template(prompt_template)
     prompt = prompt_template.format(context=context_text, question=query_text)
     return (prompt)
 
@@ -73,12 +74,13 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
             context_current = (doc[0].page_content, doc[0].metadata['source'])
             context.append(context_current)
 
-    # Prompt LLM w/ context
-    prompt = build_prompt(query_text, context, PROMPT_TEMPLATE)
+    # Build prompt, invoke LLM, and retrieve response
+    prompt = build_prompt(query_text, context,
+                          prompt_templates.PROMPT_TEMPLATE)
     LLM_response = model.invoke(prompt)
-
-    # Build and print message
     response_with_context = (LLM_response.content, context)
+
+    # Format and return message
     message = build_response_string(response_with_context)
     print(message)
     return (message)

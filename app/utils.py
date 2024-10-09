@@ -23,15 +23,16 @@ def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]
     The LLM response is a string.
     The relevant context is a List of Tuple, each with the context text and the file path.
     """
-    print(type(response_with_context))
     response_string = f"{response_with_context[0]}\n"
 
-    # iterate through each context and append the text and file name to the response string
+    # iterate through each context and append the actual text and the file name to the response string
     for i in range(len(response_with_context[1])):
         context_current = response_with_context[1][i]
-        context_text = context_current[0].replace("\n", " ")
+
+        context_current_text = context_current[0].replace("\n", " ")
         file_name = context_current[1].split('\\')[-1]
+
         context_summary = f"Source #{
-            i + 1}: {file_name}\n...{context_text}...\n"
+            i + 1}: {file_name}\n...{context_current_text}...\n"
         response_string = "\n".join([response_string, context_summary])
     return response_string

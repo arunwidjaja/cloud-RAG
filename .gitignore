@@ -1,5 +1,6 @@
 *.env
 *.pyc
+*.notes
 .DS_Store
 backup
 chroma
