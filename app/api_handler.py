@@ -24,7 +24,7 @@ templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 class Query(BaseModel):
     query_text: str
 
-# GET
+# GET OPERATIONS
 
 
 @app.get("/")
@@ -32,7 +32,7 @@ async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# POST
+# POST OPERATIONS
 
 @app.post("/copy_DB_to_tmp")
 def copy_DB_to_tmp():
@@ -46,7 +46,7 @@ def copy_DB_to_tmp():
 @app.post("/repeat_query")
 def repeat_query(request: Query):
     """
-    Debugging function
+    Debugging function. Repeats user's query.
     """
     query_response = request.query_text
     return {"query_response": {query_response}}

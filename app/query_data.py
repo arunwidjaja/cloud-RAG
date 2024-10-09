@@ -25,11 +25,27 @@ Answer the question based on the above context: {question}
 """
 
 
+def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
+    """
+    Builds a prompt from given query, context, and prompt template.
+    Context is a list of Tuples, each containing the context string and the source file.
+    Query is a string. Prompt Template is an f-string.
+    """
+
+    # Assemble the prompt to include the context from the relevant docs.
+    context_text = "\n\n---\n\n".join(context_current[0]
+                                      for context_current in context)
+    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+    prompt = prompt_template.format(context=context_text, question=query_text)
+    return (prompt)
+
+
 def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     """
     Query LLM, return formatted response
     TODO: Add options for different LLMs. Right now only usable with OpenAI
     """
+    # model = Ollama(model="mistral")
     model = ChatOpenAI()
     embedding_function = get_embedding_function("openai")
     LLM_response = "Unable to find matching results."
@@ -44,26 +60,21 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
         print(f"Error initializing Chroma: {str(e)}")
         raise
 
-    # Retrieve relevant docs and their context from the DB.
-    # Quit if no relevant docs found.
+    # Retrieve relevant context and their sources from the DB
     retrieved_docs = db.similarity_search_with_relevance_scores(
         query_text, k=config.LLM_K)
+    # Return if nothing relevant found
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
         print(LLM_response)
         return (LLM_response, context)
+    # Store relevant context text and associated source file names
+    else:
+        for doc in retrieved_docs:
+            context_current = (doc[0].page_content, doc[0].metadata['source'])
+            context.append(context_current)
 
-    # Scrape relevant context and source files
-    for doc in retrieved_docs:
-        context_current = (doc[0].page_content, doc[0].metadata['source'])
-        context.append(context_current)
-
-    # Assemble the prompt to include the context from the relevant docs.
-    context_text = "\n\n---\n\n".join(context_current[0]
-                                      for context_current in context)
-    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    prompt = prompt_template.format(context=context_text, question=query_text)
-
-    # model = Ollama(model="mistral")
+    # Prompt LLM w/ context
+    prompt = build_prompt(query_text, context, PROMPT_TEMPLATE)
     LLM_response = model.invoke(prompt)
 
     # Build and print message
