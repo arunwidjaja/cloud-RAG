@@ -1,0 +1,37 @@
+from langchain_chroma import Chroma
+import re
+from typing import Tuple, List
+
+
+def get_db_files(db: Chroma) -> List:
+    """
+    Gets a list of all unique source files in the Chroma DB.
+    """
+    db_files = db.get()["ids"]
+    db_files_names = []
+    for file in db_files:
+        file_trim = file.split('\\')[-1]
+        file_trim = re.sub(r':\d+:\d+$', '', file_trim)
+        if file_trim not in db_files_names:
+            db_files_names.append(file_trim)
+    return db_files_names
+
+
+def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]]]) -> str:
+    """
+    Accepts a Tuple containing the LLM response and the relevant context.
+    The LLM response is a string.
+    The relevant context is a List of Tuple, each with the context text and the file path.
+    """
+    print(type(response_with_context))
+    response_string = f"{response_with_context[0]}\n"
+
+    # iterate through each context and append the text and file name to the response string
+    for i in range(len(response_with_context[1])):
+        context_current = response_with_context[1][i]
+        context_text = context_current[0].replace("\n", " ")
+        file_name = context_current[1].split('\\')[-1]
+        context_summary = f"Source #{
+            i + 1}: {file_name}\n...{context_text}...\n"
+        response_string = "\n".join([response_string, context_summary])
+    return response_string

@@ -10,6 +10,7 @@ from typing import Tuple, List
 # Modules
 import config
 from get_embedding_function import get_embedding_function
+from utils import build_response_string
 
 openai.api_key = config.OPENAI_API_KEY
 
@@ -24,29 +25,10 @@ Answer the question based on the above context: {question}
 """
 
 
-def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]]]) -> str:
-    """
-    Format the final text output
-    """
-    print(type(response_with_context))
-    response_string = f"{response_with_context[0]}\n"
-
-    # iterate through each context and append the text and file name to the response string
-    for i in range(len(response_with_context[1])):
-        context_current = response_with_context[1][i]
-        context_text = context_current[0].replace("\n", " ")
-        file_name = context_current[1].split('\\')[-1]
-        context_summary = f"Source #{
-            i + 1}: {file_name}\n...{context_text}...\n"
-        response_string = "\n".join([response_string, context_summary])
-    return response_string
-
-
 def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     """
-    Returns a Tuple containing the LLM response and the relevant context.
-    The LLM response is a string.
-    The relevant context is a List of Tuple, each with the actual text and the file path.
+    Query LLM, return formatted response
+    TODO: Add options for different LLMs. Right now only usable with OpenAI
     """
     model = ChatOpenAI()
     embedding_function = get_embedding_function("openai")

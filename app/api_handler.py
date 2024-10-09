@@ -36,12 +36,18 @@ async def read_root(request: Request):
 
 @app.post("/copy_DB_to_tmp")
 def copy_DB_to_tmp():
+    """
+    Copy DB to AWS /tmp storage
+    """
     copy_status = copy_to_tmp()
     return {"copy_status": {copy_status}}
 
 
 @app.post("/repeat_query")
 def repeat_query(request: Query):
+    """
+    Debugging function
+    """
     query_response = request.query_text
     return {"query_response": {query_response}}
 
