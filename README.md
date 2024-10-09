@@ -1,6 +1,6 @@
 # cloud-RAG
 
-This is a RAG service that allows users to query a database of assorted file types via a web interface. Currently powered by OpenAI's ADA and GPT-3.5 models.
+This is a RAG service that allows users to query a database of assorted file types via a web interface. It's currently powered by OpenAI's ADA and GPT-3.5 models, and runs on AWS Lambda.
 
 ## Getting Started
 
@@ -27,8 +27,8 @@ The web UI is not currently open to the public but you can compile and run the a
 
 In development:
 - migrating to persistent storage on Amazon S3
-- adding CLI commands
-- display database contents on web UI
+- adding CLI
+- displaying database contents on web UI
 
 Possible features:
 - enabling DB operations via frontend
