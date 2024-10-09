@@ -49,8 +49,6 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     # model = Ollama(model="mistral")
     model = ChatOpenAI()
     embedding_function = get_embedding_function("openai")
-    LLM_response = "Unable to find matching results."
-    context = []
 
     # Load the Chroma DB
     # IMPORTANT: CHANGE config.PATH_CHROMA to config.PATH_CHROMA_TMP FOR AWS LAMBDA
@@ -62,11 +60,12 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
         raise
 
     # Retrieve relevant context and their sources from the DB
+    context = []
     retrieved_docs = db.similarity_search_with_relevance_scores(
         query_text, k=config.LLM_K)
     # Return if nothing relevant found
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
-        print(LLM_response)
+        LLM_response = "Unable to find matching results."
         return (LLM_response, context)
     # Store relevant context text and associated source file names
     else:
