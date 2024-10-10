@@ -24,6 +24,10 @@ The web UI is not currently publicly accessible but you can compile and run the 
 - Docker, Amazon AWS - Deployment
 - HTML, JavaScript - Frontend
 
+## Architecture
+
+![Flowchart](cloud-RAG/README_files/cloud-RAG_architecture.svg)
+
 ## Roadmap
 
 In development:
