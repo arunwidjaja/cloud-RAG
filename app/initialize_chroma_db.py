@@ -11,6 +11,9 @@ chroma_paths = {
     'TEMP': config.PATH_CHROMA_TEMP
 }
 
+# TODO: add function to copy from S3 to /tmp in AWS Lambdas
+# See update_database.py -> copy_to_tmp
+
 
 def initialize(env='s3', embedding_function="openai") -> Chroma:
     """
