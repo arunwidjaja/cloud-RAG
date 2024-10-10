@@ -179,9 +179,9 @@ def add_chunk_ids(chunks):
 
 def copy_to_tmp():
     try:
-        os.makedirs(config.PATH_CHROMA_TMP, exist_ok=True)
-        shutil.copytree(config.PATH_CHROMA,
-                        config.PATH_CHROMA_TMP, dirs_exist_ok=True)
+        os.makedirs(config.PATH_CHROMA_TEMP, exist_ok=True)
+        shutil.copytree(config.PATH_CHROMA_LOCAL,
+                        config.PATH_CHROMA_TEMP, dirs_exist_ok=True)
     except Exception as e:
         print(f"Error copying Chroma to /tmp: {str(e)}")
         raise
