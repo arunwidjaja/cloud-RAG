@@ -18,9 +18,10 @@ The web UI is not currently publicly accessible but you can compile and run the 
 ## Project Stack:
 
 - Python
-- Langchain - LLM framework
-- Chroma - Vector DB
-- FastAPI, Docker, Amazon AWS - Deployment
+  - Langchain - LLM framework
+  - Chroma - Vector DB
+  - FastAPI
+- Docker, Amazon AWS - Deployment
 - HTML, JavaScript - Frontend
 
 ## Roadmap
