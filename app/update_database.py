@@ -13,9 +13,10 @@ import sys
 from typing import List
 
 # Modules
-from get_embedding_function import get_embedding_function
-from initialize_chroma_db import database
+import initialize_chroma_db
 import config
+
+db = initialize_chroma_db.database
 
 
 def add_to_database():
@@ -23,16 +24,20 @@ def add_to_database():
     chunks = split_text(documents)
     save_to_chroma(chunks)
 
+# TODO: Cannot erase database while it is initialized. Find a solution.
+
 
 def reset_database():
     print("Resetting the DB")
-    clear_database()
+    erase_database()
     add_to_database()
 
+# TODO: Cannot erase database while it is initialized. Find a solution.
 
-def clear_database():
-    if os.path.exists(config.PATH_CHROMA):
-        shutil.rmtree(config.PATH_CHROMA)
+
+def erase_database():
+    if os.path.exists(initialize_chroma_db.database_path):
+        shutil.rmtree(initialize_chroma_db.database_path)
         print("The DB has been cleared.")
     else:
         print("No DB exists yet. Nothing to clear.")
@@ -85,7 +90,7 @@ def split_text(documents: List[Document]):
 
 
 def save_to_chroma(chunks: List[Document]):
-    db = database
+    db = initialize_chroma_db.database
 
     # Add IDs to the chunks that you're loading
     chunks_with_ids = add_chunk_ids(chunks)
@@ -184,21 +189,22 @@ def copy_to_tmp():
 
 
 def main():
-    # Check if the database should be cleared (using the --clear flag).
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--reset", action="store_true",
-                        help="Reset the database before populating.")
-    parser.add_argument("--clear", action="store_true",
-                        help="Clear out the database.")
-    args = parser.parse_args()
+    # # Check if the database should be cleared (using the --clear flag).
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--reset", action="store_true",
+    #                     help="Reset the database before populating.")
+    # parser.add_argument("--clear", action="store_true",
+    #                     help="Clear out the database.")
+    # args = parser.parse_args()
 
-    if args.clear:
-        clear_database()
-        sys.exit()
-    if args.reset:
-        reset_database()
-        sys.exit()
-    add_to_database()
+    # if args.clear:
+    #     clear_database()
+    #     sys.exit()
+    # if args.reset:
+    #     reset_database()
+    #     sys.exit()
+    # add_to_database()
+    return
 
 
 if __name__ == "__main__":

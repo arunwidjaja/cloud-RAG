@@ -26,10 +26,13 @@ def initialize(env='s3', embedding_function="openai") -> Chroma:
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")
         raise
-    return db
+    db_and_path = (db, chroma_path)
+    return db_and_path
 
 
-database = initialize()
+db_and_path = initialize()
+database = db_and_path[0]
+database_path = db_and_path[1]
 
 
 def main():

@@ -9,7 +9,7 @@ import uvicorn
 
 # Modules
 import config
-from query_data import query_rag, build_response_string
+from query_data import query_rag
 from update_database import copy_to_tmp
 
 # Initialize FastAPI handler and Mangum handler

@@ -10,7 +10,7 @@ from typing import Tuple, List
 # Modules
 import config
 import prompt_templates
-from initialize_chroma_db import database
+import initialize_chroma_db
 # from get_embedding_function import get_embedding_function
 from utils import build_response_string
 
@@ -49,7 +49,7 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     """
 
     model = ChatOpenAI()
-    db = database
+    db = initialize_chroma_db.database
 
     # Retrieve relevant context and their sources from the DB
     context = []
