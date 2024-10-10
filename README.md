@@ -26,7 +26,9 @@ The web UI is not currently publicly accessible but you can compile and run the 
 
 ## Architecture
 
-<img src="https://raw.githubusercontent.com/arunwidjaja/cloud-RAG/2e19a59ed5c435a8b37c6e271cf017e6dbc86c3e/README_files/cloud-RAG_architecture.svg" />
+<img src="https://raw.githubusercontent.com/arunwidjaja/cloud-RAG/cae1c72f4d84e55538559d6dfc2119297a284dc6/README_files/cloud-RAG_architecture.svg" />
+
+
 
 ## Roadmap
 
