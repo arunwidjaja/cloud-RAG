@@ -4,7 +4,7 @@ This is a RAG service that allows users to query a database of assorted file typ
 
 ## Getting Started
 
-The web UI is not currently open to the public but you can compile and run the app locally:
+The web UI is not currently publicly accessible but you can compile and run the app locally:
 
 1. Update <code>/app/config.py</code> with local Chroma DB paths.
 
@@ -30,7 +30,7 @@ In development:
 - adding CLI
 - displaying database contents on web UI
 
-Possible features:
+Requested features:
 - enabling DB operations via frontend
 - adding support for locally hosted GPU-accelerated models (Mistral, LlaMa, etc.)
 - Audio transcription
