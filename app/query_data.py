@@ -10,7 +10,8 @@ from typing import Tuple, List
 # Modules
 import config
 import prompt_templates
-from get_embedding_function import get_embedding_function
+from initialize_chroma_db import database
+# from get_embedding_function import get_embedding_function
 from utils import build_response_string
 
 openai.api_key = config.OPENAI_API_KEY
@@ -46,18 +47,9 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     Query LLM, return formatted response
     TODO: Add options for different LLMs. Right now only usable with OpenAI
     """
-    # model = Ollama(model="mistral")
-    model = ChatOpenAI()
-    embedding_function = get_embedding_function("openai")
 
-    # Load the Chroma DB
-    # IMPORTANT: CHANGE config.PATH_CHROMA to config.PATH_CHROMA_TMP FOR AWS LAMBDA
-    try:
-        db = Chroma(persist_directory=str(config.PATH_CHROMA_TMP),
-                    embedding_function=embedding_function)
-    except Exception as e:
-        print(f"Error initializing Chroma: {str(e)}")
-        raise
+    model = ChatOpenAI()
+    db = database
 
     # Retrieve relevant context and their sources from the DB
     context = []
@@ -66,18 +58,17 @@ def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     # Return if nothing sufficiently relevant is found
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
         LLM_response = "Unable to find matching results."
-        return (LLM_response, context)
+        response_with_context = (LLM_response, context)
     # Store relevant context text and associated source file names
     else:
         for doc in retrieved_docs:
             context_current = (doc[0].page_content, doc[0].metadata['source'])
             context.append(context_current)
-
-    # Build prompt, invoke LLM, and retrieve response
-    prompt = build_prompt(query_text, context,
-                          prompt_templates.PROMPT_TEMPLATE)
-    LLM_response = model.invoke(prompt)
-    response_with_context = (LLM_response.content, context)
+        # Build prompt, invoke LLM, and retrieve response
+        prompt = build_prompt(query_text, context,
+                              prompt_templates.PROMPT_TEMPLATE)
+        LLM_response = model.invoke(prompt)
+        response_with_context = (LLM_response.content, context)
 
     # Format and return message
     message = build_response_string(response_with_context)

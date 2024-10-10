@@ -2,7 +2,6 @@
 
 # External packages
 import tkinter as tk
-from tkinter import messagebox
 
 # Modules
 import update_database

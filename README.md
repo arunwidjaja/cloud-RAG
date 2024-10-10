@@ -15,7 +15,7 @@ The web UI is not currently publicly accessible but you can compile and run the 
 <code>/app/_run_gui.py</code> Provides a GUI for running basic functions such as loading and clearing the database, as well as submitting queries.
 
 
-## Project Stack:
+## Project Stack
 
 - Python
   - Langchain - LLM framework
@@ -32,8 +32,8 @@ In development:
 - displaying database contents on web UI
 
 Requested features:
-- enabling DB operations via frontend
-- adding support for locally hosted GPU-accelerated models (Mistral, LlaMa, etc.)
-- Audio transcription
+- enabling file upload via frontend
+- adding support for local GPU-accelerated models (Mistral, LlaMa, etc.)
+- audio transcription
 
 

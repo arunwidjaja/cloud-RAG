@@ -14,7 +14,6 @@ openai.api_key = config.OPENAI_API_KEY
 def get_embedding_function(embedding: str):
     """
     Specify which LLM's embedding function you want.
-    TODO: Implement Ollama and Bedrock Embeddings.
     """
     match embedding:
         case "openai":

@@ -14,6 +14,7 @@ from typing import List
 
 # Modules
 from get_embedding_function import get_embedding_function
+from initialize_chroma_db import database
 import config
 
 
@@ -84,11 +85,7 @@ def split_text(documents: List[Document]):
 
 
 def save_to_chroma(chunks: List[Document]):
-    # NOTE: you have to convert config.PATH_CHROMA to a str first because persist_directory doesn't accept PATH objects
-    db = Chroma(
-        persist_directory=str(config.PATH_CHROMA), embedding_function=get_embedding_function(
-            "openai")
-    )
+    db = database
 
     # Add IDs to the chunks that you're loading
     chunks_with_ids = add_chunk_ids(chunks)

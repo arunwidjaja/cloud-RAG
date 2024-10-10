@@ -11,6 +11,7 @@ load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
 
 # Directories
+# These are not Paths. These are the names of the subdirectories which will be appended to the base path.
 DIR_CHROMA = 'chroma'
 DIR_MD = 'data/md'
 DIR_PDF = 'data/pdf'
@@ -19,9 +20,9 @@ DIR_STATIC = 'templates/static'
 
 # Paths
 BASE_PATH = Path(__file__).resolve().parent  # Base directory path
-PATH_CHROMA = BASE_PATH / DIR_CHROMA
-# TODO: Implement persistent storage for Chroma DB instead of copying to tmp
-PATH_CHROMA_TMP = '/tmp'
+PATH_CHROMA_LOCAL = BASE_PATH / DIR_CHROMA
+PATH_CHROMA_TEMP = '/tmp'
+PATH_CHROMA_S3 = 'chroma'
 PATH_PDF = BASE_PATH / DIR_PDF
 PATH_MD = BASE_PATH / DIR_MD
 PATH_TEMPLATES = BASE_PATH / DIR_TEMPLATES
