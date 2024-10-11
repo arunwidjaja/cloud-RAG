@@ -5,3 +5,5 @@
 backup
 chroma
 scratch.py
+data/
+LLM sample texts/
