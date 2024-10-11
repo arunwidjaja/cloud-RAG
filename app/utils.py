@@ -1,4 +1,5 @@
 from langchain_chroma import Chroma
+import initialize_chroma_db
 import re
 from typing import Tuple, List
 
@@ -10,8 +11,8 @@ def get_db_files(db: Chroma) -> List:
     db_files = db.get()["ids"]
     db_files_names = []
     for file in db_files:
-        file_trim = file.split('\\')[-1]
-        file_trim = re.sub(r':\d+:\d+$', '', file_trim)
+        file_trim = file.split('\\')[-1]  # gets file name
+        file_trim = re.sub(r':\d+:\d+$', '', file_trim)  # trims off tags
         if file_trim not in db_files_names:
             db_files_names.append(file_trim)
     return db_files_names
@@ -36,3 +37,12 @@ def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]
             i + 1}: {file_name}\n...{context_current_text}...\n"
         response_string = "\n".join([response_string, context_summary])
     return response_string
+
+
+def main():
+    print("Files currently in DB: ")
+    print(get_db_files(initialize_chroma_db.initialize('local')))
+
+
+if __name__ == "__main__":
+    main()

@@ -42,14 +42,13 @@ def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
     return (prompt)
 
 
-def query_rag(query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
+def query_rag(db: Chroma, query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     """
     Query LLM, return formatted response
     TODO: Add options for different LLMs. Right now only usable with OpenAI
     """
 
     model = ChatOpenAI()
-    db = initialize_chroma_db.database
 
     # Retrieve relevant context and their sources from the DB
     context = []

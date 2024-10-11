@@ -7,41 +7,31 @@ from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 # from langchain_community.vectorstores import Chroma
-import os
-import shutil
-import sys
 from typing import List
 
 # Modules
 import initialize_chroma_db
+import utils
 import config
 
-db = initialize_chroma_db.database
-
-
-def add_to_database():
-    documents = load_documents("all")
-    chunks = split_text(documents)
-    save_to_chroma(chunks)
 
 # TODO: Cannot erase database while it is initialized. Find a solution.
 
 
-def reset_database():
-    print("Resetting the DB")
-    erase_database()
-    add_to_database()
+# def reset_database():
+#     print("Resetting the DB")
+#     erase_database()
+#     add_to_database()
 
 # TODO: Cannot erase database while it is initialized. Find a solution.
 
 
-def erase_database():
-    if os.path.exists(initialize_chroma_db.database_path):
-        shutil.rmtree(initialize_chroma_db.database_path)
-        print("The DB has been cleared.")
-    else:
-        print("No DB exists yet. Nothing to clear.")
-
+# def erase_database():
+#     if os.path.exists(initialize_chroma_db.database_path):
+#         shutil.rmtree(initialize_chroma_db.database_path)
+#         print("The DB has been cleared.")
+#     else:
+#         print("No DB exists yet. Nothing to clear.")
 
 def load_documents(type="all"):
     """
@@ -89,9 +79,44 @@ def split_text(documents: List[Document]):
     return chunks
 
 
-def save_to_chroma(chunks: List[Document]):
-    db = initialize_chroma_db.database
+def add_chunk_ids(chunks):
+    """
+    Adds IDs to the chunks you're trying to add. Returns a list of Chunks.
+    The chunk IDs are formatted as "source:page number:chunk index".
+    For example, data/testfile.pdf:5:3 would be the ID for the 3rd chunk of the 5th page of testfile.pdf
+    """
+    last_page_id = None
+    current_chunk_index = 0
 
+    for chunk in chunks:
+        # "source" is the path of the file
+        source = chunk.metadata.get("source")
+        page = chunk.metadata.get("page")
+
+        # if the chunk ID is the same as the last one, increment the index
+        current_page_id = f"{source}:{page}"
+        if current_page_id == last_page_id:
+            current_chunk_index = current_chunk_index + 1
+        else:
+            current_chunk_index = 0
+
+        if page is None:
+            page = 0
+        # create the chunk id
+        # the chunk id is formatted as "{source}:{page number}:{chunk index}"
+        chunk_id = f"{source}:{page}:{current_chunk_index}"
+        chunk.metadata["id"] = chunk_id
+        last_page_id = current_page_id
+    return chunks
+
+
+def add_to_database(db: Chroma):
+    documents = load_documents("all")
+    chunks = split_text(documents)
+    save_to_chroma(db, chunks)
+
+
+def save_to_chroma(db: Chroma, chunks: List[Document]):
     # Add IDs to the chunks that you're loading
     chunks_with_ids = add_chunk_ids(chunks)
     # Dictionary of file names and the number of chunks they have
@@ -148,46 +173,6 @@ def save_to_chroma(chunks: List[Document]):
     print("==========================")
 
 
-def add_chunk_ids(chunks):
-    """
-    Adds IDs to the chunks you're trying to add. Returns a list of Chunks.
-    The chunk IDs are formatted as "source:page number:chunk index".
-    For example, data/testfile.pdf:5:3 would be the ID for the 3rd chunk of the 5th page of testfile.pdf
-    """
-    last_page_id = None
-    current_chunk_index = 0
-
-    for chunk in chunks:
-        # "source" is the path of the file
-        source = chunk.metadata.get("source")
-        page = chunk.metadata.get("page")
-
-        # if the chunk ID is the same as the last one, increment the index
-        current_page_id = f"{source}:{page}"
-        if current_page_id == last_page_id:
-            current_chunk_index = current_chunk_index + 1
-        else:
-            current_chunk_index = 0
-
-        # create the chunk id
-        # the chunk id is formatted as "{source}:{page number}:{chunk index}"
-        chunk_id = f"{source}:{page}:{current_chunk_index}"
-        chunk.metadata["id"] = chunk_id
-        last_page_id = current_page_id
-    return chunks
-
-
-def copy_to_tmp():
-    try:
-        os.makedirs(config.PATH_CHROMA_TEMP, exist_ok=True)
-        shutil.copytree(config.PATH_CHROMA_LOCAL,
-                        config.PATH_CHROMA_TEMP, dirs_exist_ok=True)
-    except Exception as e:
-        print(f"Error copying Chroma to /tmp: {str(e)}")
-        raise
-    return True
-
-
 def main():
     # # Check if the database should be cleared (using the --clear flag).
     # parser = argparse.ArgumentParser()
@@ -204,6 +189,13 @@ def main():
     #     reset_database()
     #     sys.exit()
     # add_to_database()
+
+    # Default main function: add to database.
+    # print("Running update_database.py main function...")
+    # db = initialize_chroma_db.initialize()
+    # add_to_database(db)
+    # print(utils.get_db_files(db))
+
     return
 
 

@@ -5,25 +5,35 @@ import config
 import os
 
 
+def download_s3_folder(bucket_name, s3_folder, local_dir):
+    try:
+        s3 = boto3.client('s3')
+        paginator = s3.get_paginator('list_objects_v2')
+        pages = paginator.paginate(Bucket=bucket_name, Prefix=s3_folder)
+        for page in pages:
+            if 'Contents' in page:
+                for obj in page['Contents']:
+                    s3_key = obj['Key']
+                    local_file_path = os.path.join(
+                        local_dir, os.path.relpath(s3_key, s3_folder))
+
+                    # Create directories if they don't exist
+                    os.makedirs(os.path.dirname(
+                        local_file_path), exist_ok=True)
+
+                    # Download the file
+                    print(f'Downloading {s3_key} to {local_file_path}')
+                    s3.download_file(bucket_name, s3_key, local_file_path)
+    except Exception as e:
+        print(f"Error downloading from S3: {str(e)}")
+        raise
+    return True
+
+
 def main():
-    # Initialize the S3 client
-    s3 = boto3.client('s3')
-
-    # Download from S3
-    # parameters are S3 bucket name, S3 file key, and full destination path
-    # you MUST include the name of the destination file, not just the path to it
-    # example: 'path/to/your-file.pdf', NOT 'path/to'
-
-    download_location_file = 'C:/Users/Arun Widjaja/Downloads/chroma.sqlite3'
-    test_file_key = 'chroma/chroma.sqlite3'
-    s3.download_file(config.PATH_BASE_BUCKET,
-                     test_file_key, download_location_file)
-    print(f"File downloaded successfully")
-
-    s3 = boto3.client('s3')
-    response = s3.get_object(Bucket=config.PATH_BASE_BUCKET, Key=test_file_key)
-
-    # Access items in S3
+    # replace local_dir with tmp/chroma
+    local_dir = 'C:/Users/Arun Widjaja/Downloads/chroma'  # Local folder to save
+    download_s3_folder(config.NAME_BUCKET, 'chroma/', local_dir)
 
 
 if __name__ == "__main__":
