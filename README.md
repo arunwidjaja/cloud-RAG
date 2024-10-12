@@ -33,12 +33,12 @@ The web UI is not currently publicly accessible but you can compile and run the 
 ## Roadmap
 
 In development:
-- migrating to persistent storage on Amazon S3
-- adding CLI
-- displaying database contents on web UI
+- migration to S3
+- displaying database contents UI
+- enabling file operations via UI
 
 Requested features:
-- enabling file upload via frontend
+- add CLI
 - adding support for local GPU-accelerated models (Mistral, LlaMa, etc.)
 - audio transcription
 
