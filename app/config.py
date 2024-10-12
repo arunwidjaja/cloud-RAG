@@ -17,9 +17,8 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
 # example: .../app
 CURRENT_PATH = str(Path(__file__).resolve().parent)
 PATH_CHROMA_LOCAL = CURRENT_PATH + '\\chroma'
-PATH_PDF = CURRENT_PATH + '\\data\\pdf'
-PATH_MD = CURRENT_PATH + '\\data\\md'
-PATH_TEMPLATES = CURRENT_PATH + 'templates'
+PATH_DOCUMENTS = CURRENT_PATH + '\\data'
+PATH_TEMPLATES = CURRENT_PATH + '\\templates'
 PATH_STATIC = CURRENT_PATH + '\\templates\\static'
 
 
@@ -27,7 +26,7 @@ PATH_STATIC = CURRENT_PATH + '\\templates\\static'
 
 BUCKET_NAME = "chroma--use1-az4--x-s3"
 # currenlty using temporary storage for working with the database
-PATH_CHROMA_LAMBDA = '\\tmp\\chroma'
+PATH_CHROMA_LAMBDA = '/tmp/chroma'
 
 # LLM Parameters
 MAX_BATCH_SIZE = 5000

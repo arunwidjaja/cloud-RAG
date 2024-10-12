@@ -1,28 +1,50 @@
 # External packages
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from mangum import Mangum  # AWS Lambda handler
 from pydantic import BaseModel
 from starlette.requests import Request
 import uvicorn
+from langchain_chroma import Chroma
+from contextlib import asynccontextmanager
+from fastapi.responses import JSONResponse
 
 # Modules
 import config
+import utils
 from query_data import query_rag
-from update_database import copy_to_tmp
+import initialize_chroma_db
+import update_database
 
-# Initialize FastAPI handler and Mangum handler
-app = FastAPI()
+
+database = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("FastAPI starting...")
+    try:
+        global database
+        database = initialize_chroma_db.initialize('local')
+        print("DB initialized")
+    except Exception as e:
+        print(f"FastAPI startup error: {e}")
+        raise
+    yield
+
+app = FastAPI(lifespan=lifespan)
 handler = Mangum(app)
-
-# Mount HTML/CSS
-app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
-templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 
 
 class Query(BaseModel):
     query_text: str
+
+
+# Mount HTML/CSS
+# app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
+templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
+
 
 # GET OPERATIONS
 
@@ -30,41 +52,37 @@ class Query(BaseModel):
 @app.get("/")
 async def read_root(request: Request):
     """
-    Load landing page
+    Loads the landing page
     """
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# POST OPERATIONS
-
-@app.post("/copy_DB_to_tmp")
-def copy_DB_to_tmp():
+@app.get("/db_file_list")
+async def get_db_file_list():
     """
-    Copy DB to AWS /tmp storage
+    Gets a list of source files in the database
     """
-    copy_status = copy_to_tmp()
-    return {"copy_status": {copy_status}}
+    file_list = utils.get_db_files(database)
+    return JSONResponse(content=file_list)
 
 
-@app.post("/repeat_query")
-def repeat_query(request: Query):
-    """
-    Debugging function. Repeats user's query.
-    """
-    query_response = request.query_text
-    return {"query_response": {query_response}}
+@app.get('/refresh_database')
+async def refresh_database():
+    update_database.add_to_database(database)
+    return JSONResponse(content="Database updated")
 
 
 @app.post("/submit_query")
-def submit_query(request: Query):
+async def submit_query(request: Query):
     """
     Send query to LLM
     """
-    message = query_rag(request.query_text)
+    message = query_rag(database, request.query_text)
     return {"query_response": message}
 
 
 # Run main to test locally on localhost:8000
+# Don't forget to change the initialization function param to "local" from "lambda"
 if __name__ == "__main__":
     print(f"Running the FastAPI server locally on port {config.port}")
     uvicorn.run("api_handler:app", host="0.0.0.0", port=config.port)

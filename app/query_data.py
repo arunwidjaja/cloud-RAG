@@ -12,7 +12,7 @@ import config
 import prompt_templates
 import initialize_chroma_db
 # from get_embedding_function import get_embedding_function
-from utils import build_response_string
+import utils
 
 openai.api_key = config.OPENAI_API_KEY
 
@@ -49,7 +49,9 @@ def query_rag(db: Chroma, query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     """
 
     model = ChatOpenAI()
-
+    print(config.PATH_CHROMA_LOCAL)
+    print("documents in DB: ")
+    print(utils.get_db_files(db))
     # Retrieve relevant context and their sources from the DB
     context = []
     retrieved_docs = db.similarity_search_with_relevance_scores(
@@ -70,7 +72,7 @@ def query_rag(db: Chroma, query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
         response_with_context = (LLM_response.content, context)
 
     # Format and return message
-    message = build_response_string(response_with_context)
+    message = utils.build_response_string(response_with_context)
     print(message)
     return (message)
 

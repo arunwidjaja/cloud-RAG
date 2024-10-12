@@ -15,7 +15,7 @@ def get_db_files(db: Chroma) -> List:
         file_trim = re.sub(r':\d+:\d+$', '', file_trim)  # trims off tags
         if file_trim not in db_files_names:
             db_files_names.append(file_trim)
-    return db_files_names
+    return sorted(db_files_names)
 
 
 def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]]]) -> str:

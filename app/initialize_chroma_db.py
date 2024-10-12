@@ -54,23 +54,24 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
     env can be 'local', or 'lambda' depending on if you're running app locally or on AWS
     """
     chroma_path = chroma_paths[env.upper()]
+    embed_function = get_embedding_function(embedding_function)
 
     # Downloads DB to local /tmp folder first if running on AWS
     match(env.upper()):
         case 'LAMBDA':
             print("Initializing Chroma DB in AWS Lambda")
             try:
-                download_s3_folder(config.BUCKET_NAME, 'chroma', chroma_path)
+                download_s3_folder(config.BUCKET_NAME, 'chroma/', chroma_path)
             except Exception as e:
                 print(f"Error downloading the Chroma DB from S3: {str(e)}")
                 raise
         case 'LOCAL':
             print("Initializing Chroma DB in local environment")
 
-    embedding_function = get_embedding_function("openai")
     try:
+        print(f"chroma path is: {chroma_path}")
         db = Chroma(persist_directory=str(chroma_path),
-                    embedding_function=embedding_function)
+                    embedding_function=embed_function)
         print("Initalized Chroma DB")
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")

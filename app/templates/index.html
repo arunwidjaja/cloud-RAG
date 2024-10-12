@@ -3,23 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenAI RAG</title>
+    <title>cloud RAG</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
             margin: 0;
         }
 
         .container {
             text-align: center;
-            width: 80%;
-            max-width: 800px;
+            width: 50%; /* Default width */
+            padding: 20px;
+            box-sizing: border-box; /* Include padding in width */
+            overflow: hidden; /* Prevents content overflow */
+            position: relative; /* Positioning context for resize handle */
+        }
+
+        .resize-handle {
+            width: 5px; /* Width of the resize handle */
+            background-color: #ccc; /* Color of the handle */
+            cursor: ew-resize; /* Cursor indicates resizing */
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%; /* Full height of the container */
         }
 
         .button {
@@ -39,32 +49,48 @@
 
         .text-input {
             padding: 10px;
-            width: 70%;
+            width: 85%; /* Adjusted for consistency with container */
             font-size: 16px;
             margin-bottom: 10px;
+            overflow: auto; /* Allows scroll bars in textarea */
+            resize: none; /* Disable default textarea resize */
         }
 
         .response-box {
             border: 2px solid #ccc;
             padding: 15px;
-            width: 100%;
+            width: calc(100% - 40px);
             min-height: 100px;
             background-color: white;
-            margin-top: 20px;
+            margin-top: 20px 20px 0;
             text-align: left;
+            overflow: auto; /* Allow scrolling if content exceeds */
+        }
+
+        .file-list {
+            width: 50%; /* Occupies the right half of the screen */
+            padding: 20px;
+            overflow-y: auto; /* Enables vertical scrolling */
+            background-color: #fff; /* Optional: background color */
+            border-left: 2px solid #ccc; /* Optional: border for separation */
+            max-height: 100vh; /* Ensures it fits within the viewport */
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        ul {
+            list-style-type: none; /* Remove bullet points */
+            padding: 0; /* Remove default padding */
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- <button class="button" id="upload-btn">Store data in Chroma DB</button> -->
-    <!-- <button class="button" id="clear-btn">Wipe DB</button> -->
-    <!-- <button class="button" id="reset-btn">Reset DB (wipe and upload data)</button> -->
+<div class="container" id="resizable-container">
+    <button class="button" id="refresh-btn">Refresh DB</button>
 
     <div>
-        <label for="query-input">Enter your query about 2022 Nonresidential Compliance Manual:</label><br>
-        <textarea id="query-input" class="text-input" placeholder="Type your query here" rows="1" style="width: 85%; overflow: hidden; resize: none;"></textarea>
+        <label for="query-input">Enter your query:</label><br>
+        <textarea id="query-input" class="text-input" placeholder="Type your query here" rows="1" style="overflow: hidden; resize: none;"></textarea>
     </div>
 
     <button class="button" id="submit-btn">Submit Query</button>
@@ -72,50 +98,22 @@
     <div class="response-box" id="response-box">
         What is your question?
     </div>
+
+    <div class="resize-handle" id="resize-handle"></div>
 </div>
 
+<div class="file-list" id="file-list">
+    <h3>Files in Database</h3>
+    <ul id="file-list-ul">
+        <li>Searching for files. Please wait...</li>
+    </ul>
+</div>
+
+
 <script>
-// document.getElementById('submit-btn').addEventListener('click', repeatQuery); // Test function
 document.getElementById('submit-btn').addEventListener('click', submitQuery);
-// document.getElementById('upload-btn').addEventListener('click', storeInDB);
-// document.getElementById('clear-btn').addEventListener('click', clearDB);
-// document.getElementById('reset-btn').addEventListener('click', resetDB);
-
-window.onload = function(){
-    copyDBToTMP();
-}
-
-// Test function just to see if the POST API works. Does not access Chroma DB.
-async function repeatQuery(){
-    const user_input = document.getElementById('query-input').value;
-    response_Text = ""
-
-    // Make sure input is not empty
-    if (!user_input) {
-        alert("Please enter a query.");
-        return;
-    }
-
-    try {
-        // Call POST request repeat_query, which should just return the user's own query
-        const response_JSON = await fetch('repeat_query',{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({query_text:user_input})
-        });
-        const response_JSON_string = await response_JSON.json();
-        response_Text = response_JSON_string.query_response
-    }
-    catch {
-        console.error('Error:', error);
-        response_Text = 'Error repeating query. Please try again.'        
-    }
-    // Update response box text
-    document.getElementById('response-box').innerText = response_Text;
-}
-
+document.getElementById('refresh-btn').addEventListener('click', refreshDB);
+window.onload = populateFileList;
 
 async function submitQuery() {
     const user_Input = document.getElementById('query-input').value;
@@ -146,38 +144,81 @@ async function submitQuery() {
     document.getElementById('response-box').innerText = response_Text;
 }
 
-function storeInDB() {
-    // Simulate storing data in DB
-    alert("Storing data in Chroma DB...");
-}
-
-async function copyDBToTMP() {
-    document.getElementById('response-box').innerText = 'Loading temporary DB, please wait...';
+async function refreshDB(){
     try {
-        const response_JSON = await fetch('/copy_DB_to_tmp', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-    });
-    document.getElementById('response-box').innerText = 'Temporary DB is now loaded (copied to /tmp)';
+        const response = await fetch('/refresh_database'); // Adjust this URL if necessary
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        else
+            alert("Database has been refreshed")
+            populateFileList()
     } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('response-box').innerText = 'Error copying DB to /tmp';
+        console.error('Error refreshing database:', error);
+        return [];
     }
 }
 
-function clearDB() {
-    // Simulate clearing DB
-    alert("Database wiped.");
+async function fetchFiles() {
+    try {
+        const response = await fetch('/db_file_list'); // Adjust this URL if necessary
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const files = await response.json();
+        return files;
+    } catch (error) {
+        console.error('Error fetching files:', error);
+        return [];
+    }
 }
 
-function resetDB() {
-    // Simulate resetting DB
-    alert("Database reset and data re-uploaded.");
+// UI stuff
+// Updating the UI with a list of files from the DB
+
+async function populateFileList() {
+    const fileListElement = document.getElementById('file-list-ul');
+    const files = await fetchFiles();
+
+    // Clear existing list items
+    fileListElement.innerHTML = '';
+
+    // Create and append list items
+    files.forEach(file => {
+        const listItem = document.createElement('li');
+        listItem.textContent = file; // Set the text of the list item
+        fileListElement.appendChild(listItem); // Append the list item to the file list
+    });
+    if(files.length === 0){
+        const noFilesItem = document.createElement('li');
+        noFilesItem.textContent = 'No Files Found'; // Set the message for no files
+        fileListElement.appendChild(noFilesItem); // Append the no files item to the file list
+    }
 }
 
+// Making the screen divider resizable
+const container = document.getElementById('resizable-container');
+    const resizeHandle = document.getElementById('resize-handle');
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Prevent text selection
+
+        const startX = e.clientX;
+        const startWidth = container.offsetWidth;
+
+        const onMouseMove = (e) => {
+            const newWidth = startWidth + (e.clientX - startX);
+            container.style.width = `${newWidth}px`;
+        };
+
+        const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
 </script>
 
 </body>

@@ -10,7 +10,7 @@ The web UI is not currently publicly accessible but you can compile and run the 
 
 2. Create <code>/.env</code> and add your <code>OPENAI_API_KEY</code> key.
 
-3. Save input documents in <code>/app/data</code>
+3. Save input documents in <code>/app/data</code>. They should be in folders that are the same name as the file extension, such as <code>/app/data/pdf</code>.
 
 <code>/app/_run_gui.py</code> Provides a GUI for running basic functions such as loading and clearing the database, as well as submitting queries.
 

@@ -2,12 +2,13 @@
 import argparse
 from collections import Counter
 from langchain_chroma import Chroma
-from langchain_community.document_loaders import DirectoryLoader
-from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-# from langchain_community.vectorstores import Chroma
 from typing import List
+
+# Document Loaders
+from langchain_community.document_loaders import DirectoryLoader
+from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 
 # Modules
 import initialize_chroma_db
@@ -33,34 +34,27 @@ import config
 #     else:
 #         print("No DB exists yet. Nothing to clear.")
 
-def load_documents(type="all"):
-    """
-    Provide the file extension that you want to load as a string.
-    Defaults to "all" for all file types in the data folder.
-    """
-    match type:
-        case "md":
-            documents = load_md()
-        case "pdf":
-            documents = load_pdf()
-        case "all":
-            documents = (
-                load_md()
-                + load_pdf()
-            )
-    return documents
+def load_documents():
+    # Do not include .pdf in the patterns list. PDF has a dedicated loader.
+    patterns = ['*.txt', '*.csv', '*.md']
+    documents = []
 
+    for pattern in patterns:
+        print(f"Loading {pattern} documents...")
+        loader = DirectoryLoader(
+            config.PATH_DOCUMENTS, glob=pattern, show_progress=True, use_multithreading=True)
+        documents.extend(loader.load())
 
-def load_md():
-    print("Loading .md documents...")
-    loader = DirectoryLoader(config.PATH_MD, glob="*.md")
-    return loader.load()
+    # print("Loading .epub documents")
+    # epub_loader = UnstructuredEPubLoader(config.PATH_DOCUMENTS)
+    # documents.extend(epub_loader.load())
 
-
-def load_pdf():
     print("Loading .pdf documents...")
-    loader = PyPDFDirectoryLoader(config.PATH_PDF)
-    return loader.load()
+    pdf_loader = PyPDFDirectoryLoader(
+        config.PATH_DOCUMENTS)
+    documents.extend(pdf_loader.load())
+
+    return documents
 
 
 def split_text(documents: List[Document]):
@@ -111,7 +105,7 @@ def add_chunk_ids(chunks):
 
 
 def add_to_database(db: Chroma):
-    documents = load_documents("all")
+    documents = load_documents()
     chunks = split_text(documents)
     save_to_chroma(db, chunks)
 
