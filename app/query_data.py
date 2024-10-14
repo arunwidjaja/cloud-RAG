@@ -17,16 +17,6 @@ import utils
 
 openai.api_key = config.OPENAI_API_KEY
 
-# PROMPT_TEMPLATE = """
-# Answer the question based only on the following context:
-
-# {context}
-
-# ---
-
-# Answer the question based on the above context: {question}
-# """
-
 
 class ResponseContext(List[Tuple[str, str]]):
     """
