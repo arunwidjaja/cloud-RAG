@@ -2,6 +2,7 @@ from langchain_chroma import Chroma
 import initialize_chroma_db
 import re
 from typing import Tuple, List
+from query_data import ResponseContext
 
 
 def get_db_files(db: Chroma) -> List:
@@ -18,17 +19,17 @@ def get_db_files(db: Chroma) -> List:
     return sorted(db_files_names)
 
 
-def build_response_string(response_with_context: Tuple[str, List[Tuple[str, any]]]) -> str:
+def build_response_string(response: str, context: ResponseContext) -> str:
     """
     Accepts a Tuple containing the LLM response and the relevant context.
     The LLM response is a string.
     The relevant context is a List of Tuple, each with the context text and the file path.
     """
-    response_string = f"{response_with_context[0]}\n"
+    response_string = f"{response}\n"
 
     # iterate through each context and append the actual text and the file name to the response string
-    for i in range(len(response_with_context[1])):
-        context_current = response_with_context[1][i]
+    for i in range(len(context)):
+        context_current = context[i]
 
         context_current_text = context_current[0].replace("\n", " ")
         file_name = context_current[1].split('\\')[-1]

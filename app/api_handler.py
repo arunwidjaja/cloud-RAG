@@ -66,8 +66,11 @@ async def get_db_file_list():
     return JSONResponse(content=file_list)
 
 
-@app.get('/refresh_database')
+@app.put('/refresh_database')
 async def refresh_database():
+    """
+    Updates the database with all the documents uploaded on the backend
+    """
     update_database.add_to_database(database)
     return JSONResponse(content="Database updated")
 
@@ -75,14 +78,14 @@ async def refresh_database():
 @app.post("/submit_query")
 async def submit_query(request: Query):
     """
-    Send query to LLM
+    Send query to LLM and retrieve the response
     """
     message = query_rag(database, request.query_text)
     return {"query_response": message}
 
 
 # Run main to test locally on localhost:8000
-# Don't forget to change the initialization function param to "local" from "lambda"
+# Don't forget to set initialize_chroma_db.initialize() to 'local', not 'lambda'
 if __name__ == "__main__":
     print(f"Running the FastAPI server locally on port {config.port}")
     uvicorn.run("api_handler:app", host="0.0.0.0", port=config.port)

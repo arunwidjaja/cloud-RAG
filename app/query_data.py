@@ -1,4 +1,5 @@
 # External packages
+from typing import List, Tuple
 import argparse
 # from langchain_community.vectorstores import Chroma
 from langchain_chroma import Chroma
@@ -27,6 +28,19 @@ openai.api_key = config.OPENAI_API_KEY
 # """
 
 
+class ResponseContext(List[Tuple[str, str]]):
+    """
+    List of Tuples. Tuple[0] is the context (str), Tuple[1] is the file that it came from (str).
+    """
+
+    def __init__(self):
+        super().__init__()  # Call the constructor of the parent class (list)
+
+    def add(self, context: str, source: str):
+        # Append the tuple (first, second) to the list
+        self.append((context, source))
+
+
 def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
     """
     Builds a prompt from given query, context, and prompt template.
@@ -42,9 +56,9 @@ def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
     return (prompt)
 
 
-def query_rag(db: Chroma, query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
+def query_rag(db: Chroma, query_text: str) -> str:
     """
-    Query LLM, return formatted response
+    Query LLM, return response and context
     TODO: Add options for different LLMs. Right now only usable with OpenAI
     """
 
@@ -52,27 +66,25 @@ def query_rag(db: Chroma, query_text: str) -> Tuple[str, List[Tuple[str, any]]]:
     print(config.PATH_CHROMA_LOCAL)
     print("documents in DB: ")
     print(utils.get_db_files(db))
-    # Retrieve relevant context and their sources from the DB
-    context = []
+
+    # Search DB for relevant context
+    context = ResponseContext()
     retrieved_docs = db.similarity_search_with_relevance_scores(
         query_text, k=config.LLM_K)
-    # Return if nothing sufficiently relevant is found
+
+    # Query LLM with context and get response
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
         LLM_response = "Unable to find matching results."
-        response_with_context = (LLM_response, context)
-    # Store relevant context text and associated source file names
     else:
         for doc in retrieved_docs:
-            context_current = (doc[0].page_content, doc[0].metadata['source'])
-            context.append(context_current)
+            context.add(doc[0].page_content, doc[0].metadata['source'])
         # Build prompt, invoke LLM, and retrieve response
         prompt = build_prompt(query_text, context,
                               prompt_templates.PROMPT_TEMPLATE)
         LLM_response = model.invoke(prompt)
-        response_with_context = (LLM_response.content, context)
 
-    # Format and return message
-    message = utils.build_response_string(response_with_context)
+    # Build output message
+    message = utils.build_response_string(LLM_response, context)
     print(message)
     return (message)
 
