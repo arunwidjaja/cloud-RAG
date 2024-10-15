@@ -46,9 +46,12 @@ class DeleteRequest(BaseModel):
     deletion_list: List
 
 
-# Mount HTML/CSS
-# app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
+# Mount static files (JS, CSS)
+app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
+
+
+app.mount
 
 
 # GET OPERATIONS
