@@ -14,14 +14,17 @@ chroma_paths = {
     "LAMBDA": config.PATH_CHROMA_LAMBDA
 }
 
+# TODO: Works when called locally after AWS credentials are configured through terminal, but not when called from Lambda function.
+# TODO: Credential issue? Fix through AWS dashboard or change function to accept AWS credentials?
+
 
 def download_s3_folder(bucket_name, s3_folder, local_dir):
     """
-    Downloads the contents of the [s3_folder] in [bucket_name] to [local_dir].
+    Downloads the contents of [s3_folder] in [bucket_name] to [local_dir].
     local_dir will be created if it does not exist.
     """
     try:
-        # initialize connection with s3 bucket
+        # initialize connection with bucket, get list of files in folder
         s3 = boto3.client('s3')
         paginator = s3.get_paginator('list_objects_v2')
         pages = paginator.paginate(Bucket=bucket_name, Prefix=s3_folder)
@@ -29,6 +32,8 @@ def download_s3_folder(bucket_name, s3_folder, local_dir):
         # create local directory if it doesn't exist
         if not os.path.exists(local_dir):
             os.makedirs(local_dir)
+
+        # Iterate through files in folder and download them
         for page in pages:
             if 'Contents' in page:
                 for obj in page['Contents']:

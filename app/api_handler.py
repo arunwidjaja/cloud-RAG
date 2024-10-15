@@ -1,5 +1,5 @@
 # External packages
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from mangum import Mangum  # AWS Lambda handler
@@ -9,6 +9,7 @@ import uvicorn
 from langchain_chroma import Chroma
 from contextlib import asynccontextmanager
 from fastapi.responses import JSONResponse
+from typing import List
 
 # Modules
 import config
@@ -41,6 +42,10 @@ class Query(BaseModel):
     query_text: str
 
 
+class DeleteRequest(BaseModel):
+    deletion_list: List
+
+
 # Mount HTML/CSS
 # app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
@@ -62,17 +67,19 @@ async def get_db_file_list():
     """
     Gets a list of source files in the database
     """
-    file_list = utils.get_db_files(database)
+    file_list = utils.get_db_file_names(database)
     return JSONResponse(content=file_list)
 
 
-@app.put('/refresh_database')
+@app.get("/refresh_database")
 async def refresh_database():
     """
     Updates the database with all the documents uploaded on the backend
     """
     update_database.add_to_database(database)
     return JSONResponse(content="Database updated")
+
+# POST OPERATIONS
 
 
 @app.post("/submit_query")
@@ -82,6 +89,22 @@ async def submit_query(request: Query):
     """
     message = query_rag(database, request.query_text)
     return {"query_response": message}
+
+# DELETE OPERATIONS
+
+
+@app.delete("/delete_files")
+async def delete_files(delete_request: DeleteRequest):
+    """
+    Delete the list of files from the Chroma DB
+    """
+    files_to_delete = delete_request.deletion_list
+    try:
+        deletion_message = 'The following files have been deleted:\n'
+        deleted_files = utils.delete_db_files(database, files_to_delete)
+        return {"deletion_message": f"{deletion_message}{'\n'.join(deleted_files)}"}
+    except Exception as e:
+        raise e
 
 
 # Run main to test locally on localhost:8000

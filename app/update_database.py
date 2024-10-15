@@ -105,12 +105,14 @@ def add_chunk_ids(chunks):
 
 
 def add_to_database(db: Chroma):
+    print("Loading documents...")
     documents = load_documents()
     chunks = split_text(documents)
     save_to_chroma(db, chunks)
 
 
 def save_to_chroma(db: Chroma, chunks: List[Document]):
+    print("Saving chunks to Chroma DB...")
     # Add IDs to the chunks that you're loading
     chunks_with_ids = add_chunk_ids(chunks)
     # Dictionary of file names and the number of chunks they have

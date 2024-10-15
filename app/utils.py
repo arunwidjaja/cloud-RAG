@@ -1,22 +1,63 @@
+import chromadb
+import chromadb.cli
 from langchain_chroma import Chroma
 import initialize_chroma_db
 import re
 from typing import Tuple, List
+
+import config
 from query_data import ResponseContext
 
 
-def get_db_files(db: Chroma) -> List:
+def get_db_file_names(db: Chroma, file_name_only=False) -> List:
     """
     Gets a list of all unique source files in the Chroma DB.
     """
-    db_files = db.get()["ids"]
-    db_files_names = []
-    for file in db_files:
-        file_trim = file.split('\\')[-1]  # gets file name
-        file_trim = re.sub(r':\d+:\d+$', '', file_trim)  # trims off tags
-        if file_trim not in db_files_names:
-            db_files_names.append(file_trim)
-    return sorted(db_files_names)
+    collection = db._collection
+    results = collection.get(include=["metadatas"])
+
+    # Extract unique source files
+    file_set = set()
+    for metadata in results['metadatas']:
+        if 'source' in metadata:
+            file_set.add(metadata['source'])
+    file_list = sorted(list(file_set))
+
+    # Extract file name if file_name_only is True
+    if (file_name_only):
+        for i, file in enumerate(file_list):
+            file_trim = file.split('\\')[-1]  # gets file name
+            file_trim = re.sub(r':\d+:\d+$', '', file_trim)  # trims off tags
+            file_name_only[i] = file_trim
+
+    # Print the unique source files
+    print("Source files:")
+    for file in file_list:
+        print(file)
+    return file_list
+
+
+def delete_db_files(db: Chroma, file_list: List) -> List:
+    # TODO: Obtain all IDs corresponding to the files given in file_list
+    # Pass those IDs to delete function
+
+    collection = db._collection
+    for file in file_list:
+        file_metadata = collection.get(
+            where={"source": file},
+            include=["metadatas", "documents"]
+        )
+        ids_to_delete = file_metadata['ids']
+
+        # Delete job needs to be split into batches
+        # Chroma allows a maximum number of embeddings to be modified at once
+        if ids_to_delete:
+            for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
+                deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
+                collection.delete(deletion_batch)
+        else:
+            print("No documents found from the specified source.")
+    return file_list
 
 
 def build_response_string(response: str, context: ResponseContext) -> str:
@@ -42,7 +83,7 @@ def build_response_string(response: str, context: ResponseContext) -> str:
 
 def main():
     print("Files currently in DB: ")
-    print(get_db_files(initialize_chroma_db.initialize('local')))
+    print(get_db_file_names(initialize_chroma_db.initialize('local')))
 
 
 if __name__ == "__main__":

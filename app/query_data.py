@@ -11,7 +11,6 @@ from typing import Tuple, List
 # Modules
 import config
 import prompt_templates
-import initialize_chroma_db
 # from get_embedding_function import get_embedding_function
 import utils
 
