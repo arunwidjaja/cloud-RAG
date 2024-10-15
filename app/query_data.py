@@ -51,7 +51,7 @@ def query_rag(db: Chroma, query_text: str) -> str:
     Query LLM, return response and context
     TODO: Add options for different LLMs. Right now only usable with OpenAI
     """
-
+    print(f"query_rag has been called with the query: {query_text}")
     model = ChatOpenAI()
     print(config.PATH_CHROMA_LOCAL)
     print("documents in DB: ")

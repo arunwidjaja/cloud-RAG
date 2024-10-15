@@ -1,9 +1,8 @@
-import chromadb
-import chromadb.cli
 from langchain_chroma import Chroma
-import initialize_chroma_db
 import re
-from typing import Tuple, List
+import os
+import shutil
+from typing import List
 
 import config
 from query_data import ResponseContext
@@ -81,9 +80,29 @@ def build_response_string(response: str, context: ResponseContext) -> str:
     return response_string
 
 
+def mirror_directory(src_path: str, dest_path: str):
+    """
+    Deletes dest_path. Copies src_path to dest_path. Only works if they are on the same machine.
+    """
+    # Source path (the chroma folder in your machine or docker container image)
+    src_path = config.PATH_CHROMA_LOCAL
+
+    # Destination path where chroma should be copied
+    dest_path = config.PATH_CHROMA_TEMP
+
+    # Check if the chroma folder exists in the destination directory
+    if os.path.exists(dest_path):
+        # Delete the existing chroma folder in the destination
+        shutil.rmtree(dest_path)
+        print(f"Deleted existing folder: {dest_path}")
+
+    # Copy the chroma folder from source to destination
+    shutil.copytree(src_path, dest_path)
+    print(f"Copied {src_path} to {dest_path}")
+
+
 def main():
-    print("Files currently in DB: ")
-    print(get_db_file_names(initialize_chroma_db.initialize('local')))
+    print("running utils.py")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from get_embedding_function import get_embedding_function
 import os
 import shutil
 import boto3
+import utils
 
 
 # Modules
@@ -74,20 +75,14 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
         case 'TEMP':
             print("Initializing a temporary Chroma DB")
             try:
-                os.makedirs(config.PATH_CHROMA_TEMP, exist_ok=True)
-                for item in os.listdir(config.PATH_CHROMA_LOCAL):
-                    source_item = os.path.join(config.PATH_CHROMA_LOCAL, item)
-                    if os.path.isdir(item):
-                        shutil.copytree(
-                            source_item, config.PATH_CHROMA_TEMP, dirs_exist_ok=True)
-                    else:
-                        shutil.copy2(source_item, config.PATH_CHROMA_TEMP)
+                utils.mirror_directory(
+                    config.PATH_CHROMA_LOCAL, chroma_path)
             except Exception as e:
                 print(
                     f"Error copying the Chroma DB to the temporary folder: {str(e)}")
                 raise
         case 'LOCAL':
-            print("Initializing Chroma DB in local environment")
+            print("Initializing Chroma DB in local environment. If you are storing the DB in AWS Lambda or S3, you should not see this message.")
 
     try:
         print(f"chroma path is: {chroma_path}")

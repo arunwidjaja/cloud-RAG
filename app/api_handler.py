@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     print("FastAPI starting...")
     try:
         global database
-        database = initialize_chroma_db.initialize('local')
+        database = initialize_chroma_db.initialize('temp')
         print("DB initialized")
     except Exception as e:
         print(f"FastAPI startup error: {e}")
@@ -47,7 +47,9 @@ class DeleteRequest(BaseModel):
 
 
 # Mount static files (JS, CSS)
+print("mounting static files")
 app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
+print("setting html file")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 
 
@@ -87,6 +89,7 @@ async def submit_query(request: Query):
     """
     Send query to LLM and retrieve the response
     """
+    print("submit_query endpoint has been called")
     message = query_rag(database, request.query_text)
     return {"query_response": message}
 
@@ -110,5 +113,5 @@ async def delete_files(delete_request: DeleteRequest):
 # Run main to test locally on localhost:8000
 # Don't forget to set initialize_chroma_db.initialize() to 'local', not 'lambda'
 if __name__ == "__main__":
-    print(f"Running the FastAPI server locally on port {config.port}")
-    uvicorn.run("api_handler:app", host="0.0.0.0", port=config.port)
+    print(f"Running the FastAPI server locally on port {config.PORT}")
+    uvicorn.run("api_handler:app", host=config.HOST, port=config.PORT)
