@@ -34,8 +34,6 @@ The web UI is not currently publicly accessible but you can compile and run the 
 
 In development:
 - migration to S3
-- displaying database contents UI
-- enabling file operations via UI
 
 Requested features:
 - add CLI
