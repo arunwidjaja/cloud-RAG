@@ -5,6 +5,8 @@ from langchain_chroma import Chroma
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
+import os
+import shutil
 
 # Document Loaders
 from langchain_community.document_loaders import DirectoryLoader
@@ -15,46 +17,43 @@ import initialize_chroma_db
 import utils
 import config
 
+# TODO: Add check for existing documents, and skip those.
 
-# TODO: Cannot erase database while it is initialized. Find a solution.
-
-
-# def reset_database():
-#     print("Resetting the DB")
-#     erase_database()
-#     add_to_database()
-
-# TODO: Cannot erase database while it is initialized. Find a solution.
-
-
-# def erase_database():
-#     if os.path.exists(initialize_chroma_db.database_path):
-#         shutil.rmtree(initialize_chroma_db.database_path)
-#         print("The DB has been cleared.")
-#     else:
-#         print("No DB exists yet. Nothing to clear.")
 
 def load_documents():
-    # Do not include .pdf in the patterns list. PDF has a dedicated loader.
-    patterns = ['*.txt', '*.csv', '*.md']
+    """
+    Loads documents from the data folder
+    """
     documents = []
 
+    # text, csv, and md
+    patterns = ['*.txt', '*.csv', '*.md']
     for pattern in patterns:
         print(f"Loading {pattern} documents...")
         loader = DirectoryLoader(
             config.PATH_DOCUMENTS, glob=pattern, show_progress=True, use_multithreading=True)
         documents.extend(loader.load())
 
-    # print("Loading .epub documents")
-    # epub_loader = UnstructuredEPubLoader(config.PATH_DOCUMENTS)
-    # documents.extend(epub_loader.load())
-
+    # pdf
     print("Loading .pdf documents...")
     pdf_loader = PyPDFDirectoryLoader(
         config.PATH_DOCUMENTS)
     documents.extend(pdf_loader.load())
 
     return documents
+
+
+def archive_documents(documents: List):
+    """
+    Moves documents to the archive folder so they won't get added to the DB again
+    """
+    for document in documents:
+        source = document.metadata['source']
+        print(source)
+        destination_path = config.PATH_DOCUMENTS_ARCHIVE
+        print(destination_path)
+        shutil.move(source, destination_path)
+    return
 
 
 def split_text(documents: List[Document]):
@@ -105,10 +104,14 @@ def add_chunk_ids(chunks):
 
 
 def add_to_database(db: Chroma):
+    """
+    Loads docs, adds them to DB, and archives them
+    """
     print("Loading documents...")
     documents = load_documents()
     chunks = split_text(documents)
     save_to_chroma(db, chunks)
+    archive_documents(documents)
 
 
 def save_to_chroma(db: Chroma, chunks: List[Document]):
@@ -196,4 +199,6 @@ def main():
 
 
 if __name__ == "__main__":
+    db = initialize_chroma_db.initialize(env='local')
+    add_to_database(db)
     main()

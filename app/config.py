@@ -18,6 +18,7 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
 CURRENT_PATH = str(Path(__file__).resolve().parent)
 PATH_CHROMA_LOCAL = CURRENT_PATH + '\\chroma'
 PATH_DOCUMENTS = CURRENT_PATH + '\\data'
+PATH_DOCUMENTS_ARCHIVE = CURRENT_PATH + '\\data_archive'
 PATH_TEMPLATES = CURRENT_PATH + '\\templates'
 PATH_STATIC = CURRENT_PATH + '\\templates\\static'
 

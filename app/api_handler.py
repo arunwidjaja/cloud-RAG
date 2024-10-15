@@ -51,9 +51,6 @@ app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 
 
-app.mount
-
-
 # GET OPERATIONS
 
 
@@ -74,8 +71,8 @@ async def get_db_file_list():
     return JSONResponse(content=file_list)
 
 
-@app.get("/refresh_database")
-async def refresh_database():
+@app.get("/push_files_to_database")
+async def push_files_to_database():
     """
     Updates the database with all the documents uploaded on the backend
     """

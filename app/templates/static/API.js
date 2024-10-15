@@ -1,6 +1,6 @@
 // Event listeners
 document.getElementById('submit-btn').addEventListener('click', submitQuery);
-document.getElementById('refresh-btn').addEventListener('click', refreshDB);
+document.getElementById('push-to-DB-btn').addEventListener('click', pushToDB);
 document.getElementById('delete-btn').addEventListener('click', deleteFiles);
 window.onload = populateFileList;
 
@@ -33,14 +33,14 @@ async function submitQuery() {
     document.getElementById('response-box').innerText = response_Text;
 }
 
-async function refreshDB(){
+async function pushToDB(){
     try {
-        const response = await fetch('/refresh_database'); // Adjust this URL if necessary
+        const response = await fetch('/push_files_to_database'); // Adjust this URL if necessary
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         else
-            alert("Database has been refreshed")
+            alert("Files have been pushed to the DB")
             populateFileList()
     } catch (error) {
         console.error('Error refreshing database:', error);

@@ -11,7 +11,7 @@ from typing import Tuple, List
 # Modules
 import config
 import prompt_templates
-# from get_embedding_function import get_embedding_function
+import initialize_chroma_db
 import utils
 
 openai.api_key = config.OPENAI_API_KEY
@@ -54,7 +54,7 @@ def query_rag(db: Chroma, query_text: str) -> str:
     model = ChatOpenAI()
     print(config.PATH_CHROMA_LOCAL)
     print("documents in DB: ")
-    print(utils.get_db_files(db))
+    print(utils.get_db_file_names(db))
 
     # Search DB for relevant context
     context = ResponseContext()
@@ -73,7 +73,7 @@ def query_rag(db: Chroma, query_text: str) -> str:
         LLM_response = model.invoke(prompt)
 
     # Build output message
-    message = utils.build_response_string(LLM_response, context)
+    message = utils.build_response_string(LLM_response.content, context)
     print(message)
     return (message)
 
@@ -87,7 +87,8 @@ def main():
     # query_rag(query_text)
 
     # Test query
-    query_rag("What is a guard station?")
+    db = initialize_chroma_db.initialize('local')
+    query_rag(db, "What is Theo Faber's Job?")
 
 
 if __name__ == "__main__":
