@@ -19,7 +19,8 @@ openai.api_key = config.OPENAI_API_KEY
 
 class ResponseContext(List[Tuple[str, str]]):
     """
-    List of Tuples. Tuple[0] is the context (str), Tuple[1] is the file that it came from (str).
+    List of Tuples. Tuples are a pair of values.
+    First value is the context text, second value is the file it came from.
     """
 
     def __init__(self):
@@ -79,13 +80,6 @@ def query_rag(db: Chroma, query_text: str) -> str:
 
 
 def main():
-    # Create CLI.
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("query_text", type=str, help="The query text.")
-    # args = parser.parse_args()
-    # query_text = args.query_text
-    # query_rag(query_text)
-
     # Test query
     db = initialize_chroma_db.initialize('local')
     query_rag(db, "What is Theo Faber's Job?")

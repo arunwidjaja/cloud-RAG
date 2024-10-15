@@ -2,7 +2,7 @@
 from langchain_chroma import Chroma
 from get_embedding_function import get_embedding_function
 import os
-# import shutil
+import shutil
 import boto3
 
 
@@ -11,7 +11,8 @@ import config
 
 chroma_paths = {
     "LOCAL": config.PATH_CHROMA_LOCAL,
-    "LAMBDA": config.PATH_CHROMA_LAMBDA
+    "LAMBDA": config.PATH_CHROMA_LAMBDA,
+    "TEMP": config.PATH_CHROMA_TEMP
 }
 
 # TODO: Works when called locally after AWS credentials are configured through terminal, but not when called from Lambda function.
@@ -61,7 +62,7 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
     chroma_path = chroma_paths[env.upper()]
     embed_function = get_embedding_function(embedding_function)
 
-    # Downloads DB to local /tmp folder first if running on AWS
+    # Downloads/Copies DB to the lambda /tmp folder first if running on AWS
     match(env.upper()):
         case 'LAMBDA':
             print("Initializing Chroma DB in AWS Lambda")
@@ -69,6 +70,21 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
                 download_s3_folder(config.BUCKET_NAME, 'chroma/', chroma_path)
             except Exception as e:
                 print(f"Error downloading the Chroma DB from S3: {str(e)}")
+                raise
+        case 'TEMP':
+            print("Initializing a temporary Chroma DB")
+            try:
+                os.makedirs(config.PATH_CHROMA_TEMP, exist_ok=True)
+                for item in os.listdir(config.PATH_CHROMA_LOCAL):
+                    source_item = os.path.join(config.PATH_CHROMA_LOCAL, item)
+                    if os.path.isdir(item):
+                        shutil.copytree(
+                            source_item, config.PATH_CHROMA_TEMP, dirs_exist_ok=True)
+                    else:
+                        shutil.copy2(source_item, config.PATH_CHROMA_TEMP)
+            except Exception as e:
+                print(
+                    f"Error copying the Chroma DB to the temporary folder: {str(e)}")
                 raise
         case 'LOCAL':
             print("Initializing Chroma DB in local environment")

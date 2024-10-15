@@ -173,32 +173,10 @@ def save_to_chroma(db: Chroma, chunks: List[Document]):
 
 
 def main():
-    # # Check if the database should be cleared (using the --clear flag).
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--reset", action="store_true",
-    #                     help="Reset the database before populating.")
-    # parser.add_argument("--clear", action="store_true",
-    #                     help="Clear out the database.")
-    # args = parser.parse_args()
-
-    # if args.clear:
-    #     clear_database()
-    #     sys.exit()
-    # if args.reset:
-    #     reset_database()
-    #     sys.exit()
-    # add_to_database()
-
-    # Default main function: add to database.
-    # print("Running update_database.py main function...")
-    # db = initialize_chroma_db.initialize()
-    # add_to_database(db)
-    # print(utils.get_db_files(db))
-
+    db = initialize_chroma_db.initialize(env='local')
+    add_to_database(db)
     return
 
 
 if __name__ == "__main__":
-    db = initialize_chroma_db.initialize(env='local')
-    add_to_database(db)
     main()

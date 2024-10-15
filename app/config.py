@@ -26,8 +26,9 @@ PATH_STATIC = CURRENT_PATH + '\\templates\\static'
 # AWS Paths
 
 BUCKET_NAME = "chroma--use1-az4--x-s3"
-# currenlty using temporary storage for working with the database
+# currently using temporary storage for working with the database
 PATH_CHROMA_LAMBDA = '/tmp/chroma'
+PATH_CHROMA_TEMP = '/tmp/chroma'
 
 # LLM Parameters
 MAX_BATCH_SIZE = 5000
