@@ -100,12 +100,15 @@ def mirror_directory(src_path: str, dest_path: str):
     # Check if the chroma folder exists in the destination directory
     if os.path.exists(dest_path):
         # Delete the existing chroma folder in the destination
+        print(f"Deleting existing folder: {dest_path}")
         shutil.rmtree(dest_path)
-        print(f"Deleted existing folder: {dest_path}")
 
     # Copy the chroma folder from source to destination
-    shutil.copytree(src_path, dest_path)
-    print(f"Copied {src_path} to {dest_path}")
+    if os.path.exists(src_path):
+        print(f"Copying {src_path} to {dest_path}")
+        shutil.copytree(src_path, dest_path)
+    else:
+        print("Source folder path does not exist. Nothing to mirror.")
 
 
 def get_folder_size(path: str, print_all=False):

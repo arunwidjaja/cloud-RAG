@@ -22,7 +22,7 @@ PATH_DOCUMENTS_ARCHIVE = CURRENT_PATH / Path('data_archive')
 PATH_TEMPLATES = CURRENT_PATH / Path('templates')
 PATH_STATIC = CURRENT_PATH / Path('templates/static')
 BUCKET_NAME = "chroma--use1-az4--x-s3"
-PATH_CHROMA_LAMBDA = Path('var/task/tmp/chroma')
+PATH_CHROMA_LAMBDA = Path('/tmp/chroma')
 PATH_CHROMA_TEMP = PATH_CHROMA_LAMBDA
 
 SEC_DESC_2 = """

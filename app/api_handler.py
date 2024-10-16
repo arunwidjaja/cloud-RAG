@@ -70,8 +70,11 @@ async def get_db_file_list():
     """
     Gets a list of source files in the database
     """
-    file_list = utils.get_db_file_names(database)
-    return JSONResponse(content=file_list)
+    try:
+        file_list = utils.get_db_file_names(database)
+        return JSONResponse(content=file_list)
+    except Exception as e:
+        raise Exception(f"Exception occured when getting file list: {e}")
 
 
 @app.get("/push_files_to_database")
@@ -79,8 +82,11 @@ async def push_files_to_database():
     """
     Updates the database with all the documents uploaded on the backend
     """
-    update_database.add_to_database(database)
-    return JSONResponse(content="Database updated")
+    try:
+        update_database.add_to_database(database)
+        return JSONResponse(content="Database updated")
+    except Exception as e:
+        raise Exception(f"Exception occured when pushing files: {e}")
 
 # POST OPERATIONS
 

@@ -24,15 +24,20 @@ def load_documents():
     """
     Loads documents from the data folder
     """
+    print(f"Searching for documents to load from {config.PATH_DOCUMENTS}")
+
     documents = []
 
     # text, csv, and md
     patterns = ['*.txt', '*.csv', '*.md']
     for pattern in patterns:
         print(f"Loading {pattern} documents...")
-        loader = DirectoryLoader(
-            config.PATH_DOCUMENTS, glob=pattern)
-        documents.extend(loader.load())
+        try:
+            loader = DirectoryLoader(
+                config.PATH_DOCUMENTS, glob=pattern)
+            documents.extend(loader.load())
+        except Exception as e:
+            raise Exception(f"Exception occured when pushing files: {e}")
 
     # pdf
     print("Loading .pdf documents...")
