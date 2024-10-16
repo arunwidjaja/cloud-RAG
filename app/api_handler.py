@@ -1,12 +1,11 @@
 # External packages
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from mangum import Mangum  # AWS Lambda handler
 from pydantic import BaseModel
 from starlette.requests import Request
 import uvicorn
-from langchain_chroma import Chroma
 from contextlib import asynccontextmanager
 from fastapi.responses import JSONResponse
 from typing import List

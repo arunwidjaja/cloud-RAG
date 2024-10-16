@@ -9,7 +9,7 @@ import os
 import shutil
 
 # Document Loaders
-from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.document_loaders import PyPDFDirectoryLoader
 
 # Modules
@@ -24,28 +24,24 @@ def load_documents():
     """
     Loads documents from the data folder
     """
-    print(f"Searching for documents to load from {config.PATH_DOCUMENTS}")
 
-    documents = []
+    # txt
+    try:
+        print(f"Searching for .txt files to load from {
+              config.PATH_DOCUMENTS}...")
+        loader = TextLoader(config.PATH_DOCUMENTS)
 
-    # text, csv, and md
-    patterns = ['*.txt', '*.csv', '*.md']
-    for pattern in patterns:
-        print(f"Loading {pattern} documents...")
-        try:
-            loader = DirectoryLoader(
-                config.PATH_DOCUMENTS, glob=pattern)
-            documents.extend(loader.load())
-        except Exception as e:
-            raise Exception(f"Exception occured when pushing files: {e}")
+        print(f"Loading .txt files...")
+        # documents.extend(loader.load())
+    except Exception as e:
+        raise Exception(f"Exception occured when pushing files: {e}")
 
     # pdf
-    print("Loading .pdf documents...")
-    pdf_loader = PyPDFDirectoryLoader(
-        config.PATH_DOCUMENTS)
-    documents.extend(pdf_loader.load())
+    # print("Loading .pdf documents...")
+    # pdf_loader = PyPDFDirectoryLoader(config.PATH_DOCUMENTS)
+    # documents.extend(pdf_loader.load())
 
-    return documents
+    return loader.load()
 
 
 def archive_documents(documents: List):
