@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
     print("FastAPI starting...")
     try:
         global database
-        database = initialize_chroma_db.initialize('local')
+        database = initialize_chroma_db.initialize('temp')
         print("DB initialized")
     except Exception as e:
         print(f"FastAPI startup error: {e}")

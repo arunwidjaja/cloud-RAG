@@ -116,7 +116,7 @@ def add_to_database(db: Chroma):
     documents = load_documents()
     chunks = split_text(documents)
     save_to_chroma(db, chunks)
-    archive_documents(documents)
+    # archive_documents(documents)
 
     db_size = utils.get_folder_size(db._persist_directory)
     print(f"Size of DB after adding files: {db_size}")
