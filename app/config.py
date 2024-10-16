@@ -26,8 +26,9 @@ PATH_CHROMA_LAMBDA = Path('var/task/tmp/chroma')
 PATH_CHROMA_TEMP = PATH_CHROMA_LAMBDA
 
 SEC_DESC_2 = """
-LLM Constants: Values for tweaking LLM behavior
+LLM and Vector Database Constants
 """
+DEFAULT_COLLECTION_NAME = "defaultCollection"
 MAX_BATCH_SIZE = 5000
 LLM_K = 5
 RELEVANCE_THRESHOLD = 0.7

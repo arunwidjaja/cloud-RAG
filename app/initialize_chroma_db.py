@@ -66,14 +66,14 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
     # Downloads/Copies DB to the lambda /tmp folder first if running on AWS
     match(env.upper()):
         case 'LAMBDA':
-            print("Initializing Chroma DB in AWS Lambda")
+            print("Starting download from AWS S3.")
             try:
                 download_s3_folder(config.BUCKET_NAME, 'chroma/', chroma_path)
             except Exception as e:
                 print(f"Error downloading the Chroma DB from S3: {str(e)}")
                 raise
         case 'TEMP':
-            print("Initializing a temporary Chroma DB")
+            print("Starting copy to AWS Lambda temporary folder.")
             try:
                 utils.mirror_directory(
                     config.PATH_CHROMA_LOCAL, chroma_path)
@@ -82,13 +82,11 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
                     f"Error copying the Chroma DB to the temporary folder: {str(e)}")
                 raise
         case 'LOCAL':
-            print("Initializing Chroma DB in local environment. If you are storing the DB in AWS Lambda or S3, you should not see this message.")
-
+            print("Chroma DB is saved locally.")
     try:
-        print(f"chroma path is: {chroma_path}")
+        print(f"Initializing Chroma DB at: {chroma_path}")
         db = Chroma(persist_directory=str(chroma_path),
                     embedding_function=embed_function)
-        print("Initalized Chroma DB")
     except Exception as e:
         print(f"Error initializing Chroma: {str(e)}")
         raise

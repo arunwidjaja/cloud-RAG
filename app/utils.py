@@ -15,7 +15,7 @@ def get_db_file_names(db: Chroma, file_name_only=False) -> List:
     collection = db._collection
     results = collection.get(include=["metadatas"])
 
-    # Extract unique source files
+    # Extract unique source file names
     file_set = set()
     for metadata in results['metadatas']:
         if 'source' in metadata:
@@ -28,17 +28,12 @@ def get_db_file_names(db: Chroma, file_name_only=False) -> List:
             file_trim = file.split('\\')[-1]  # gets file name
             file_trim = re.sub(r':\d+:\d+$', '', file_trim)  # trims off tags
             file_name_only[i] = file_trim
-
-    # Print the unique source files
-    print("Source files:")
-    for file in file_list:
-        print(file)
     return file_list
 
 
 def delete_db_files(db: Chroma, file_list: List) -> List:
-    # TODO: Obtain all IDs corresponding to the files given in file_list
-    # Pass those IDs to delete function
+    db_size = get_folder_size(db._persist_directory)
+    print(f"Size of DB before deleting files: {db_size}")
 
     collection = db._collection
     for file in file_list:
@@ -54,9 +49,21 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
             for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
                 deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
                 collection.delete(deletion_batch)
+            db_size = get_folder_size(db._persist_directory)
+            print(f"Size of DB after deleting files: {db_size}")
         else:
             print("No documents found from the specified source.")
     return file_list
+
+
+# def delete_all_db_files(db: Chroma) -> List:
+#     db_size = get_folder_size(db._collection._persist_directory)
+#     print(f"Size of DB before deleting all files: {db_size}")
+
+#     collection = db._collection
+
+#     db_size = get_folder_size(db._collection._persist_directory)
+#     print(f"Size of DB after deleting all files: {db_size}")
 
 
 def build_response_string(response: str, context: ResponseContext) -> str:
@@ -99,6 +106,30 @@ def mirror_directory(src_path: str, dest_path: str):
     # Copy the chroma folder from source to destination
     shutil.copytree(src_path, dest_path)
     print(f"Copied {src_path} to {dest_path}")
+
+
+def get_folder_size(path: str, print_all=False):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                size_current = os.path.getsize(fp)
+                total_size += size_current
+                if print_all:
+                    print(f"Size of {fp}: {size_current}")
+    return total_size
+
+
+def writeIDs(db: Chroma, file_name):
+    """
+    Writes all IDs of the database to file
+    """
+    metadata = db._collection.get()
+    ids = "\n".join(metadata["ids"])
+    with open(file_name, 'w') as file:
+        file.write(ids)
 
 
 def main():

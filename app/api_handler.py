@@ -24,10 +24,13 @@ database = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """
+    Starting point for the app. Runs on startup.
+    """
     print("FastAPI starting...")
     try:
         global database
-        database = initialize_chroma_db.initialize('temp')
+        database = initialize_chroma_db.initialize('local')
         print("DB initialized")
     except Exception as e:
         print(f"FastAPI startup error: {e}")
@@ -47,9 +50,7 @@ class DeleteRequest(BaseModel):
 
 
 # Mount static files (JS, CSS)
-print("mounting static files")
 app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
-print("setting html file")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 
 

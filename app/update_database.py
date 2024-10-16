@@ -10,7 +10,7 @@ import shutil
 
 # Document Loaders
 from langchain_community.document_loaders import DirectoryLoader
-from langchain.document_loaders.pdf import PyPDFDirectoryLoader
+from langchain.document_loaders import PyPDFDirectoryLoader
 
 # Modules
 import initialize_chroma_db
@@ -31,7 +31,7 @@ def load_documents():
     for pattern in patterns:
         print(f"Loading {pattern} documents...")
         loader = DirectoryLoader(
-            config.PATH_DOCUMENTS, glob=pattern, show_progress=True, use_multithreading=True)
+            config.PATH_DOCUMENTS, glob=pattern)
         documents.extend(loader.load())
 
     # pdf
@@ -49,9 +49,8 @@ def archive_documents(documents: List):
     """
     for document in documents:
         source = document.metadata['source']
-        print(source)
+        print(f"Archiving: {source}")
         destination_path = config.PATH_DOCUMENTS_ARCHIVE
-        print(destination_path)
         shutil.move(source, destination_path)
     return
 
@@ -64,8 +63,6 @@ def split_text(documents: List[Document]):
         add_start_index=True,
         is_separator_regex=False
     )
-    print("===================================")
-    print("Splitting documents into chunks...")
     chunks = text_splitter.split_documents(documents)
     print(f"Split {len(documents)} documents into {len(chunks)} chunks.")
 
@@ -107,11 +104,17 @@ def add_to_database(db: Chroma):
     """
     Loads docs, adds them to DB, and archives them
     """
-    print("Loading documents...")
+    print(f"Adding documents from: {config.PATH_DOCUMENTS}")
+    db_size = utils.get_folder_size(db._persist_directory)
+    print(f"Size of DB before adding files: {db_size}")
+
     documents = load_documents()
     chunks = split_text(documents)
     save_to_chroma(db, chunks)
     archive_documents(documents)
+
+    db_size = utils.get_folder_size(db._persist_directory)
+    print(f"Size of DB after adding files: {db_size}")
 
 
 def save_to_chroma(db: Chroma, chunks: List[Document]):
