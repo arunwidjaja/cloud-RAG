@@ -12,7 +12,7 @@ import config
 
 chroma_paths = {
     "LOCAL": config.PATH_CHROMA_LOCAL,
-    "LAMBDA": config.PATH_CHROMA_LAMBDA,
+    "S3": config.PATH_CHROMA_LAMBDA,
     "TEMP": config.PATH_CHROMA_TEMP
 }
 
@@ -58,14 +58,14 @@ def download_s3_folder(bucket_name, s3_folder, local_dir):
 
 def initialize(env='local', embedding_function='openai') -> Chroma:
     """
-    env can be 'local', or 'lambda' depending on if you're running app locally or on AWS
+    env can be 'local', 'lambda', or 'temp' depending on where the DB is stored
     """
     chroma_path = chroma_paths[env.upper()]
     embed_function = get_embedding_function(embedding_function)
 
     # Downloads/Copies DB to the lambda /tmp folder first if running on AWS
     match(env.upper()):
-        case 'LAMBDA':
+        case 'S3':
             print("Starting download from AWS S3.")
             try:
                 download_s3_folder(config.BUCKET_NAME, 'chroma/', chroma_path)

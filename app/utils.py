@@ -10,7 +10,7 @@ from query_data import ResponseContext
 
 def get_db_file_names(db: Chroma, file_name_only=False) -> List:
     """
-    Gets a list of all unique source files in the Chroma DB.
+    Gets a list of all unique source files in the given DB.
     """
     collection = db._collection
     results = collection.get(include=["metadatas"])
@@ -22,16 +22,20 @@ def get_db_file_names(db: Chroma, file_name_only=False) -> List:
             file_set.add(metadata['source'])
     file_list = sorted(list(file_set))
 
-    # Extract file name if file_name_only is True
+    # Extracts file names (without path) if file_name_only is True
     if (file_name_only):
         for i, file in enumerate(file_list):
             file_trim = file.split('\\')[-1]  # gets file name
             file_trim = re.sub(r':\d+:\d+$', '', file_trim)  # trims off tags
             file_name_only[i] = file_trim
+
     return file_list
 
 
 def delete_db_files(db: Chroma, file_list: List) -> List:
+    """
+    Deletes all chunks associated with the given files from the DB.
+    """
     db_size = get_folder_size(db._persist_directory)
     print(f"Size of DB before deleting files: {db_size}")
 
@@ -54,16 +58,6 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
         else:
             print("No documents found from the specified source.")
     return file_list
-
-
-# def delete_all_db_files(db: Chroma) -> List:
-#     db_size = get_folder_size(db._collection._persist_directory)
-#     print(f"Size of DB before deleting all files: {db_size}")
-
-#     collection = db._collection
-
-#     db_size = get_folder_size(db._collection._persist_directory)
-#     print(f"Size of DB after deleting all files: {db_size}")
 
 
 def build_response_string(response: str, context: ResponseContext) -> str:
@@ -91,27 +85,24 @@ def mirror_directory(src_path: str, dest_path: str):
     """
     Deletes dest_path. Copies src_path to dest_path. Only works if they are on the same machine.
     """
-    # Source path (the chroma folder in your machine or docker container image)
     src_path = config.PATH_CHROMA_LOCAL
-
-    # Destination path where chroma should be copied
     dest_path = config.PATH_CHROMA_TEMP
 
-    # Check if the chroma folder exists in the destination directory
+    # Delete the dest_path
     if os.path.exists(dest_path):
-        # Delete the existing chroma folder in the destination
         print(f"Deleting existing folder: {dest_path}")
         shutil.rmtree(dest_path)
-
-    # Copy the chroma folder from source to destination
+    # Copies src_path
     if os.path.exists(src_path):
         print(f"Copying {src_path} to {dest_path}")
         shutil.copytree(src_path, dest_path)
-    else:
-        print("Source folder path does not exist. Nothing to mirror.")
 
 
 def get_folder_size(path: str, print_all=False):
+    """
+    Gets size of given folder.
+    If print_all is True, prints sizes of all files
+    """
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(path):
         for f in filenames:
@@ -127,7 +118,7 @@ def get_folder_size(path: str, print_all=False):
 
 def writeIDs(db: Chroma, file_name):
     """
-    Writes all IDs of the database to file
+    Writes all IDs of the database to file_name
     """
     metadata = db._collection.get()
     ids = "\n".join(metadata["ids"])

@@ -26,10 +26,17 @@ async def lifespan(app: FastAPI):
     """
     Starting point for the app. Runs on startup.
     """
-    print("FastAPI starting...")
+    print("FastAPI is starting.")
+    print(f"The current path is: {config.CURRENT_PATH}")
+
+    if 'var' in str(config.CURRENT_PATH):
+        env = 'temp'
+    else:
+        env = 'local'
+
     try:
         global database
-        database = initialize_chroma_db.initialize('temp')
+        database = initialize_chroma_db.initialize(env)
         print("DB initialized")
     except Exception as e:
         print(f"FastAPI startup error: {e}")

@@ -25,38 +25,28 @@ def load_documents():
     Loads documents from the data folder
     """
 
-    # txt
+    documents_path = config.PATH_DOCUMENTS
+    documents = []
     try:
-        print(f"Searching for .txt files to load from {
-              config.PATH_DOCUMENTS}...")
-        loader = TextLoader(config.PATH_DOCUMENTS)
+        print(f"Searching for files to load from {documents_path}")
 
-        print(f"Loading .txt files...")
-        # documents.extend(loader.load())
+        for file_path in documents_path.iterdir():
+            print(f"Found file: {file_path.name}")
+            if (file_path.suffix in '.txt.md'):
+                document = TextLoader(file_path, autodetect_encoding=True)
+                documents.extend(document.load())
+            else:
+                print("Invalid format. Skipping this file.")
     except Exception as e:
-        raise Exception(f"Exception occured when pushing files: {e}")
+        raise Exception(f"Exception occured when loading files.")
 
-    # pdf
-    # print("Loading .pdf documents...")
-    # pdf_loader = PyPDFDirectoryLoader(config.PATH_DOCUMENTS)
-    # documents.extend(pdf_loader.load())
-
-    return loader.load()
-
-
-def archive_documents(documents: List):
-    """
-    Moves documents to the archive folder so they won't get added to the DB again
-    """
-    for document in documents:
-        source = document.metadata['source']
-        print(f"Archiving: {source}")
-        destination_path = config.PATH_DOCUMENTS_ARCHIVE
-        shutil.move(source, destination_path)
-    return
+    return documents
 
 
 def split_text(documents: List[Document]):
+    """
+    Splits Documents into chunks
+    """
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=config.CHUNK_SIZE,
         chunk_overlap=config.CHUNK_OVERLAP,
@@ -103,24 +93,17 @@ def add_chunk_ids(chunks):
 
 def add_to_database(db: Chroma):
     """
-    Loads docs, adds them to DB, and archives them
+    Loads docs, adds them to DB
     """
     print(f"Adding documents from: {config.PATH_DOCUMENTS}")
-    db_size = utils.get_folder_size(db._persist_directory)
-    print(f"Size of DB before adding files: {db_size}")
 
     documents = load_documents()
     chunks = split_text(documents)
     save_to_chroma(db, chunks)
-    # archive_documents(documents)
-
-    db_size = utils.get_folder_size(db._persist_directory)
-    print(f"Size of DB after adding files: {db_size}")
 
 
 def save_to_chroma(db: Chroma, chunks: List[Document]):
     print("Saving chunks to Chroma DB...")
-    # Add IDs to the chunks that you're loading
     chunks_with_ids = add_chunk_ids(chunks)
     # Dictionary of file names and the number of chunks they have
     chunk_counts = Counter([chunk.metadata.get("source") for chunk in chunks])
