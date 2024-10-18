@@ -22,7 +22,7 @@ def initialize(embedding_function='openai') -> Chroma:
     chroma_path = utils.get_env_paths()['DB']
 
     # Initializes the chroma folder in temporary storage if running on AWS Lambda
-    if 'var' in chroma_path:
+    if 'var' in str(chroma_path):
         print("Starting copy to AWS Lambda temporary folder.")
         try:
             utils.mirror_directory(

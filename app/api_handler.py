@@ -77,18 +77,16 @@ async def get_db_file_list():
         raise Exception(f"Exception occured when getting file list: {e}")
 
 
-@app.get("/db_uploads_queue")
-async def get_db_docs_queue():
+@app.get("/db_uploads_list")
+async def get_db_uploads_list():
     """
     Gets a list of the documents waiting to be pushed to the database
     """
     try:
-        file_list = utils.get_pending_file_names()
+        file_list = utils.get_uploads_list()
         return JSONResponse(content=file_list)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")
-
-    return
 
 
 @app.get("/push_files_to_database")
@@ -150,6 +148,20 @@ async def delete_files(delete_request: DeleteRequest):
         deletion_message = 'The following files have been deleted:\n'
         deleted_files = update_database.delete_db_files(
             database, files_to_delete)
+        return {"deletion_message": f"{deletion_message}{'\n'.join(deleted_files)}"}
+    except Exception as e:
+        raise e
+
+
+@app.delete("/delete_uploads")
+async def delete_uploads(delete_request: DeleteRequest):
+    """
+    Delete the list of files from the Chroma DB
+    """
+    files_to_delete = delete_request.deletion_list
+    try:
+        deletion_message = 'The following uploads have been removed:\n'
+        deleted_files = update_database.clear_uploads()
         return {"deletion_message": f"{deletion_message}{'\n'.join(deleted_files)}"}
     except Exception as e:
         raise e

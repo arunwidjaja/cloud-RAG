@@ -29,21 +29,13 @@ def get_env_paths() -> dict[str, Path]:
     }
 
     if 'var' in str(config.CURRENT_PATH):
-        dynamic_env_values['DB'] = document_paths['TEMP']
-        dynamic_env_values['DOCS'] = chroma_paths['TEMP']
+        dynamic_env_values['DB'] = chroma_paths['TEMP']
+        dynamic_env_values['DOCS'] = document_paths['TEMP']
     else:
-        dynamic_env_values['DB'] = document_paths['LOCAL']
-        dynamic_env_values['DOCS'] = chroma_paths['LOCAL']
+        dynamic_env_values['DB'] = chroma_paths['LOCAL']
+        dynamic_env_values['DOCS'] = document_paths['LOCAL']
 
     return dynamic_env_values
-
-
-def get_pending_file_names() -> List:
-    """
-    Gets a list of the uploaded files.
-    """
-    pending_files_path = get_env_paths()['DOCS']
-    return [f for f in pending_files_path.iterdir() if f.is_file()]
 
 
 def get_db_file_names(db: Chroma, file_name_only=False) -> List:
@@ -68,6 +60,18 @@ def get_db_file_names(db: Chroma, file_name_only=False) -> List:
             file_name_only[i] = file_trim
 
     return file_list
+
+
+def get_uploads_list() -> List:
+    """
+    Gets a list of the uploaded files.
+    """
+    pending_files_path = get_env_paths()['DOCS']
+    uploads_list = []
+    for f in pending_files_path.iterdir():
+        if f.is_file():
+            uploads_list.append(str(f))
+    return uploads_list
 
 
 def get_folder_size(path: str, print_all=False):
