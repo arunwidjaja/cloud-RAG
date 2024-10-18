@@ -148,7 +148,6 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
     """
     db_size = utils.get_folder_size(db._persist_directory)
     print(f"Size of DB before deleting files: {db_size}")
-
     collection = db._collection
     for file in file_list:
         file_metadata = collection.get(
@@ -170,22 +169,24 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
     return file_list
 
 
-def clear_documents():
+def clear_uploads():
     """
     Clears out documents from the data folder, not from the DB.
     """
+    file_list = []
     for filename in os.listdir(document_path):
         file_path = os.path.join(document_path, filename)
         try:
             # Check if it's a file and remove it
             if os.path.isfile(file_path) or os.path.islink(file_path):
                 os.remove(file_path)
+                file_list.append(str(filename))
             # Check if it's a directory and remove it along with its contents
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
             print(f'Failed to delete {file_path}. Reason: {e}')
-    return
+    return file_list
 
 
 def push_to_database(db: Chroma):
@@ -200,7 +201,7 @@ def push_to_database(db: Chroma):
     save_to_chroma(db, chunks)
 
     print("Documents have been pushed to the DB. Clearing them from the queue now...")
-    clear_documents()
+    clear_uploads()
 
 
 def main():

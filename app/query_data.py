@@ -71,10 +71,10 @@ def query_rag(db: Chroma, query_text: str) -> str:
         # Build prompt, invoke LLM, and retrieve response
         prompt = build_prompt(query_text, context,
                               prompt_templates.PROMPT_TEMPLATE)
-        LLM_response = model.invoke(prompt)
+        LLM_response = model.invoke(prompt).content
 
     # Build output message
-    message = utils.build_response_string(LLM_response.content, context)
+    message = utils.build_response_string(LLM_response, context)
     print(message)
     return (message)
 
