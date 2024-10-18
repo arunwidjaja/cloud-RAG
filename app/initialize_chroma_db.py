@@ -15,6 +15,41 @@ import config
 # TODO: Credential issue? Fix through AWS dashboard or change function to accept AWS credentials?
 
 
+def initialize(embedding_function='openai') -> Chroma:
+    embed_function = get_embedding_function(embedding_function)
+
+    # detects the current environment and sets the persist directory
+    chroma_path = utils.get_env_paths()['DB']
+
+    # Initializes the chroma folder in temporary storage if running on AWS Lambda
+    if 'var' in chroma_path:
+        print("Starting copy to AWS Lambda temporary folder.")
+        try:
+            utils.mirror_directory(
+                config.PATH_CHROMA_LOCAL, chroma_path)
+        except Exception as e:
+            print(
+                f"Error copying the Chroma DB to the temporary folder: {str(e)}")
+            raise
+        # Need to figure out a way to trigger the following code when migrating to S3
+        # print("Starting download from AWS S3.")
+        # try:
+        #     download_s3_folder(config.BUCKET_NAME, 'chroma/', chroma_path)
+        # except Exception as e:
+        #     print(f"Error downloading the Chroma DB from S3: {str(e)}")
+        #     raise
+
+    # Initializes the DB
+    try:
+        print(f"Initializing Chroma DB at: {chroma_path}")
+        db = Chroma(persist_directory=str(chroma_path),
+                    embedding_function=embed_function)
+    except Exception as e:
+        print(f"Error initializing Chroma: {str(e)}")
+        raise
+    return db
+
+
 def download_s3_folder(bucket_name, s3_folder, local_dir):
     """
     Downloads the contents of [s3_folder] in [bucket_name] to [local_dir].
@@ -49,53 +84,6 @@ def download_s3_folder(bucket_name, s3_folder, local_dir):
         print(f"Error downloading from S3: {str(e)}")
         raise
     return True
-
-
-def initialize(embedding_function='openai') -> Chroma:
-    embed_function = get_embedding_function(embedding_function)
-
-    # Sets the persist directory based on where the app is currently running
-    chroma_paths = {
-        "LOCAL": config.PATH_CHROMA_LOCAL,
-        "S3": config.PATH_CHROMA_S3,
-        "TEMP": config.PATH_CHROMA_TEMP
-    }
-    if 'var' in str(config.CURRENT_PATH):
-        env = 'TEMP'
-        chroma_path = chroma_paths[env]
-    else:
-        env = 'LOCAL'
-        chroma_path = chroma_paths[env]
-
-    match(env):
-        # If DB on S3, downloads it to the temp folder first
-        case 'S3':
-            print("Starting download from AWS S3.")
-            try:
-                download_s3_folder(config.BUCKET_NAME, 'chroma/', chroma_path)
-            except Exception as e:
-                print(f"Error downloading the Chroma DB from S3: {str(e)}")
-                raise
-        # If DB on Lambda, copies/creates it on the temp folder first
-        case 'TEMP':
-            print("Starting copy to AWS Lambda temporary folder.")
-            try:
-                utils.mirror_directory(
-                    config.PATH_CHROMA_LOCAL, chroma_path)
-            except Exception as e:
-                print(
-                    f"Error copying the Chroma DB to the temporary folder: {str(e)}")
-                raise
-        case 'LOCAL':
-            print("Chroma DB is saved locally.")
-    try:
-        print(f"Initializing Chroma DB at: {chroma_path}")
-        db = Chroma(persist_directory=str(chroma_path),
-                    embedding_function=embed_function)
-    except Exception as e:
-        print(f"Error initializing Chroma: {str(e)}")
-        raise
-    return db
 
 
 def main():

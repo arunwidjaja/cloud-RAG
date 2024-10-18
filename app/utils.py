@@ -2,10 +2,48 @@ from langchain_chroma import Chroma
 import re
 import os
 import shutil
+from pathlib import Path
 from typing import List
 
+# Modules
 import config
 from query_data import ResponseContext
+
+# TODO: Implement the condition for S3
+
+
+def get_env_paths() -> dict[str, Path]:
+    """
+    Sets environment-sensitive paths/values and returns them in a dictionary.
+    """
+    keys = ['DB', 'DOCS']
+    dynamic_env_values = dict.fromkeys(keys, None)
+
+    document_paths = {
+        "LOCAL": config.PATH_DOCUMENTS_LOCAL,
+        "TEMP": config.PATH_DOCUMENTS_TEMP
+    }
+    chroma_paths = {
+        "LOCAL": config.PATH_CHROMA_LOCAL,
+        "TEMP": config.PATH_CHROMA_TEMP
+    }
+
+    if 'var' in str(config.CURRENT_PATH):
+        dynamic_env_values['DB'] = document_paths['TEMP']
+        dynamic_env_values['DOCS'] = chroma_paths['TEMP']
+    else:
+        dynamic_env_values['DB'] = document_paths['LOCAL']
+        dynamic_env_values['DOCS'] = chroma_paths['LOCAL']
+
+    return dynamic_env_values
+
+
+def get_pending_file_names() -> List:
+    """
+    Gets a list of the uploaded files.
+    """
+    pending_files_path = get_env_paths()['DOCS']
+    return [f for f in pending_files_path.iterdir() if f.is_file()]
 
 
 def get_db_file_names(db: Chroma, file_name_only=False) -> List:

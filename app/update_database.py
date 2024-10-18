@@ -15,18 +15,7 @@ from langchain_community.document_loaders import TextLoader
 import utils
 import config
 
-
-# Sets save directory based on the current path
-# Sets the persist directory based on where the app is currently running
-document_paths = {
-    "LOCAL": config.PATH_DOCUMENTS_LOCAL,
-    "S3": config.PATH_DOCUMENTS_S3,
-    "TEMP": config.PATH_DOCUMENTS_TEMP
-}
-if 'var' in str(config.CURRENT_PATH):
-    document_path = document_paths['TEMP']
-else:
-    document_path = document_paths['LOCAL']
+document_path = utils.get_env_paths()['DOCS']
 
 
 def load_documents():

@@ -22,8 +22,6 @@ import update_database
 
 
 database = None
-db_env = None
-uploads_path = None
 
 
 @asynccontextmanager
@@ -34,7 +32,6 @@ async def lifespan(app: FastAPI):
     global database
     try:
         database = initialize_chroma_db.initialize()
-        print("DB initialized")
     except Exception as e:
         print(f"FastAPI startup error: {e}")
         raise
@@ -80,6 +77,20 @@ async def get_db_file_list():
         raise Exception(f"Exception occured when getting file list: {e}")
 
 
+@app.get("/db_uploads_queue")
+async def get_db_docs_queue():
+    """
+    Gets a list of the documents waiting to be pushed to the database
+    """
+    try:
+        file_list = utils.get_pending_file_names()
+        return JSONResponse(content=file_list)
+    except Exception as e:
+        raise Exception(f"Exception occured when getting file list: {e}")
+
+    return
+
+
 @app.get("/push_files_to_database")
 async def push_files_to_database():
     """
@@ -110,17 +121,7 @@ async def submit_query(request: Query):
 async def upload_documents(files: List[UploadFile] = File(...)):
     saved_files = []
 
-    # Sets the persist directory based on where the app is currently running
-    document_paths = {
-        "LOCAL": config.PATH_DOCUMENTS_LOCAL,
-        "S3": config.PATH_DOCUMENTS_S3,
-        "TEMP": config.PATH_DOCUMENTS_TEMP
-    }
-    if 'var' in str(config.CURRENT_PATH):
-        document_path = document_paths['TEMP']
-    else:
-        document_path = document_paths['LOCAL']
-
+    document_path = utils.get_env_paths()['DOCS']
     for file in files:
         save_location = os.path.join(document_path, file.filename)
 
