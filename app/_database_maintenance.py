@@ -3,6 +3,7 @@ import config
 import shutil
 import utils
 import chromadb
+import os
 
 
 def resetDB(db_path=config.PATH_CHROMA_LOCAL):
@@ -21,10 +22,11 @@ def getDBSize(db_path=config.PATH_CHROMA_LOCAL):
 
 def purgeDB(db_path=config.PATH_CHROMA_LOCAL):
     """
-    Deletes the entire chroma folder. Cannot be used while DB has been initialized.
+    Deletes the entire chroma folder
     """
-    print("Purging the Chroma DB at: ")
-    shutil.rmtree(db_path)
+    if os.path.exists(config.PATH_CHROMA_LOCAL):
+        print("Purging the Chroma DB at: ")
+        shutil.rmtree(db_path)
 
 # PS Commands
 # chroma utils vacuum --path "C:/Users/Arun Widjaja/Documents/_PERSONAL_DOCUMENTS/Programs - Python/openAIRAG/app/chroma"
@@ -33,7 +35,6 @@ def purgeDB(db_path=config.PATH_CHROMA_LOCAL):
 def main():
     print("Starting Maintenance Tasks")
     print("==========================")
-
     # resetDB()
     # getDBSize()
     purgeDB()

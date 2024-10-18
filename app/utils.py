@@ -32,32 +32,22 @@ def get_db_file_names(db: Chroma, file_name_only=False) -> List:
     return file_list
 
 
-def delete_db_files(db: Chroma, file_list: List) -> List:
+def get_folder_size(path: str, print_all=False):
     """
-    Deletes all chunks associated with the given files from the DB.
+    Gets size of given folder.
+    If print_all is True, prints sizes of all files
     """
-    db_size = get_folder_size(db._persist_directory)
-    print(f"Size of DB before deleting files: {db_size}")
-
-    collection = db._collection
-    for file in file_list:
-        file_metadata = collection.get(
-            where={"source": file},
-            include=["metadatas", "documents"]
-        )
-        ids_to_delete = file_metadata['ids']
-
-        # Delete job needs to be split into batches
-        # Chroma allows a maximum number of embeddings to be modified at once
-        if ids_to_delete:
-            for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
-                deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
-                collection.delete(deletion_batch)
-            db_size = get_folder_size(db._persist_directory)
-            print(f"Size of DB after deleting files: {db_size}")
-        else:
-            print("No documents found from the specified source.")
-    return file_list
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                size_current = os.path.getsize(fp)
+                total_size += size_current
+                if print_all:
+                    print(f"Size of {fp}: {size_current}")
+    return total_size
 
 
 def build_response_string(response: str, context: ResponseContext) -> str:
@@ -96,24 +86,6 @@ def mirror_directory(src_path: str, dest_path: str):
     if os.path.exists(src_path):
         print(f"Copying {src_path} to {dest_path}")
         shutil.copytree(src_path, dest_path)
-
-
-def get_folder_size(path: str, print_all=False):
-    """
-    Gets size of given folder.
-    If print_all is True, prints sizes of all files
-    """
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            # skip if it is symbolic link
-            if not os.path.islink(fp):
-                size_current = os.path.getsize(fp)
-                total_size += size_current
-                if print_all:
-                    print(f"Size of {fp}: {size_current}")
-    return total_size
 
 
 def writeIDs(db: Chroma, file_name):

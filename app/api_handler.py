@@ -1,14 +1,17 @@
 # External packages
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, HTTPException, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from mangum import Mangum  # AWS Lambda handler
+from fastapi.responses import JSONResponse
+from mangum import Mangum
 from pydantic import BaseModel
 from starlette.requests import Request
 import uvicorn
 from contextlib import asynccontextmanager
-from fastapi.responses import JSONResponse
+
 from typing import List
+import os
+import shutil
 
 # Modules
 import config
@@ -19,6 +22,8 @@ import update_database
 
 
 database = None
+db_env = None
+uploads_path = None
 
 
 @asynccontextmanager
@@ -26,17 +31,9 @@ async def lifespan(app: FastAPI):
     """
     Starting point for the app. Runs on startup.
     """
-    print("FastAPI is starting.")
-    print(f"The current path is: {config.CURRENT_PATH}")
-
-    if 'var' in str(config.CURRENT_PATH):
-        env = 'temp'
-    else:
-        env = 'local'
-
+    global database
     try:
-        global database
-        database = initialize_chroma_db.initialize(env)
+        database = initialize_chroma_db.initialize()
         print("DB initialized")
     except Exception as e:
         print(f"FastAPI startup error: {e}")
@@ -89,7 +86,7 @@ async def push_files_to_database():
     Updates the database with all the documents uploaded on the backend
     """
     try:
-        update_database.add_to_database(database)
+        update_database.push_to_database(database)
         return JSONResponse(content="Database updated")
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
@@ -106,6 +103,39 @@ async def submit_query(request: Query):
     message = query_rag(database, request.query_text)
     return {"query_response": message}
 
+# TODO: Implement
+
+
+@app.post("/upload_documents")
+async def upload_documents(files: List[UploadFile] = File(...)):
+    saved_files = []
+
+    # Sets the persist directory based on where the app is currently running
+    document_paths = {
+        "LOCAL": config.PATH_DOCUMENTS_LOCAL,
+        "S3": config.PATH_DOCUMENTS_S3,
+        "TEMP": config.PATH_DOCUMENTS_TEMP
+    }
+    if 'var' in str(config.CURRENT_PATH):
+        document_path = document_paths['TEMP']
+    else:
+        document_path = document_paths['LOCAL']
+
+    for file in files:
+        save_location = os.path.join(document_path, file.filename)
+
+        try:
+            # Save the file to the specified directory
+            with open(save_location, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+
+            saved_files.append(save_location)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to upload {
+                                file.filename}: {str(e)}")
+
+    return JSONResponse(content={"message": "Files uploaded successfully", "files": saved_files})
+
 # DELETE OPERATIONS
 
 
@@ -117,7 +147,8 @@ async def delete_files(delete_request: DeleteRequest):
     files_to_delete = delete_request.deletion_list
     try:
         deletion_message = 'The following files have been deleted:\n'
-        deleted_files = utils.delete_db_files(database, files_to_delete)
+        deleted_files = update_database.delete_db_files(
+            database, files_to_delete)
         return {"deletion_message": f"{deletion_message}{'\n'.join(deleted_files)}"}
     except Exception as e:
         raise e

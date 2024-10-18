@@ -10,27 +10,32 @@ import shutil
 
 # Document Loaders
 from langchain_community.document_loaders import TextLoader
-from langchain.document_loaders import PyPDFDirectoryLoader
 
 # Modules
-import initialize_chroma_db
 import utils
 import config
 
-# TODO: Add check for existing documents, and skip those.
+
+# Sets save directory based on the current path
+# Sets the persist directory based on where the app is currently running
+document_paths = {
+    "LOCAL": config.PATH_DOCUMENTS_LOCAL,
+    "S3": config.PATH_DOCUMENTS_S3,
+    "TEMP": config.PATH_DOCUMENTS_TEMP
+}
+if 'var' in str(config.CURRENT_PATH):
+    document_path = document_paths['TEMP']
+else:
+    document_path = document_paths['LOCAL']
 
 
 def load_documents():
     """
     Loads documents from the data folder
     """
-
-    documents_path = config.PATH_DOCUMENTS
     documents = []
     try:
-        print(f"Searching for files to load from {documents_path}")
-
-        for file_path in documents_path.iterdir():
+        for file_path in document_path.iterdir():
             print(f"Found file: {file_path.name}")
             if (file_path.suffix in '.txt.md'):
                 document = TextLoader(file_path, autodetect_encoding=True)
@@ -91,17 +96,6 @@ def add_chunk_ids(chunks):
     return chunks
 
 
-def add_to_database(db: Chroma):
-    """
-    Loads docs, adds them to DB
-    """
-    print(f"Adding documents from: {config.PATH_DOCUMENTS}")
-
-    documents = load_documents()
-    chunks = split_text(documents)
-    save_to_chroma(db, chunks)
-
-
 def save_to_chroma(db: Chroma, chunks: List[Document]):
     print("Saving chunks to Chroma DB...")
     chunks_with_ids = add_chunk_ids(chunks)
@@ -159,9 +153,68 @@ def save_to_chroma(db: Chroma, chunks: List[Document]):
     print("==========================")
 
 
+def delete_db_files(db: Chroma, file_list: List) -> List:
+    """
+    Deletes all chunks associated with the given files from the DB.
+    """
+    db_size = utils.get_folder_size(db._persist_directory)
+    print(f"Size of DB before deleting files: {db_size}")
+
+    collection = db._collection
+    for file in file_list:
+        file_metadata = collection.get(
+            where={"source": file},
+            include=["metadatas", "documents"]
+        )
+        ids_to_delete = file_metadata['ids']
+
+        # Delete job needs to be split into batches
+        # Chroma allows a maximum number of embeddings to be modified at once
+        if ids_to_delete:
+            for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
+                deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
+                collection.delete(deletion_batch)
+            db_size = utils.get_folder_size(db._persist_directory)
+            print(f"Size of DB after deleting files: {db_size}")
+        else:
+            print("No documents found from the specified source.")
+    return file_list
+
+
+def clear_documents():
+    """
+    Clears out documents from the data folder, not from the DB.
+    """
+    for filename in os.listdir(document_path):
+        file_path = os.path.join(document_path, filename)
+        try:
+            # Check if it's a file and remove it
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.remove(file_path)
+            # Check if it's a directory and remove it along with its contents
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')
+    return
+
+
+def push_to_database(db: Chroma):
+    """
+    Loads docs, adds them to DB
+    """
+    print(f"Parsing documents from: {document_path}")
+    documents = load_documents()
+    chunks = split_text(documents)
+
+    print("Vectorizing documents and saving them to the DB...")
+    save_to_chroma(db, chunks)
+
+    print("Documents have been pushed to the DB. Clearing them from the queue now...")
+    clear_documents()
+
+
 def main():
-    db = initialize_chroma_db.initialize(env='local')
-    add_to_database(db)
     return
 
 

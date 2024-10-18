@@ -39,7 +39,7 @@ def start_GUI():
     upload_button = tk.Button(
         root,
         text="Update Chroma DB",
-        command=lambda: update_database.add_to_database(db))
+        command=lambda: update_database.push_to_database(db))
     # Document list
     document_list_label = tk.Label(
         root,

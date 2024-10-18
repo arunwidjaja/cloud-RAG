@@ -1,8 +1,44 @@
 // Event listeners
-document.getElementById('submit-btn').addEventListener('click', submitQuery);
-document.getElementById('push-to-DB-btn').addEventListener('click', pushToDB);
-document.getElementById('delete-btn').addEventListener('click', deleteFiles);
+const submitBtn = document.getElementById('submit-btn')
+const pushToDBBtn = document.getElementById('push-to-DB-btn')
+const deleteBtn = document.getElementById('delete-btn')
+const uploadBTN = document.getElementById('upload-btn')
+const fileInput = document.getElementById('fileInput')
+
+submitBtn.addEventListener('click', submitQuery);
+pushToDBBtn.addEventListener('click', pushToDB);
+deleteBtn.addEventListener('click', deleteFiles);
+uploadBTN.addEventListener('click', function(){
+    fileInput.click();
+});
+
 window.onload = populateFileList;
+
+// TODO: Update backend
+fileInput.addEventListener('change', function(event){
+    const files = event.target.files;  // Get all selected files
+    if (files.length > 0) {
+        const formData = new FormData();
+
+        // Append each file to the FormData object
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);  // The 'files' field should match the backend parameter
+        }
+
+        // Send files to FastAPI backend
+        fetch('/upload_documents', {  // Replace with your actual FastAPI endpoint
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Files uploaded successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error uploading files:', error);
+        });
+    }
+});
 
 async function submitQuery() {
     const user_Input = document.getElementById('query-input').value;

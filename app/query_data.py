@@ -80,9 +80,7 @@ def query_rag(db: Chroma, query_text: str) -> str:
 
 
 def main():
-    # Test query
-    db = initialize_chroma_db.initialize('local')
-    query_rag(db, "What is Theo Faber's Job?")
+    return
 
 
 if __name__ == "__main__":

@@ -10,11 +10,6 @@ import utils
 # Modules
 import config
 
-chroma_paths = {
-    "LOCAL": config.PATH_CHROMA_LOCAL,
-    "S3": config.PATH_CHROMA_LAMBDA,
-    "TEMP": config.PATH_CHROMA_TEMP
-}
 
 # TODO: Works when called locally after AWS credentials are configured through terminal, but not when called from Lambda function.
 # TODO: Credential issue? Fix through AWS dashboard or change function to accept AWS credentials?
@@ -56,15 +51,24 @@ def download_s3_folder(bucket_name, s3_folder, local_dir):
     return True
 
 
-def initialize(env='local', embedding_function='openai') -> Chroma:
-    """
-    env can be 'local', 'lambda', or 'temp' depending on where the DB is stored
-    """
-    chroma_path = chroma_paths[env.upper()]
+def initialize(embedding_function='openai') -> Chroma:
     embed_function = get_embedding_function(embedding_function)
 
-    # Downloads/Copies DB to the lambda /tmp folder first if running on AWS
-    match(env.upper()):
+    # Sets the persist directory based on where the app is currently running
+    chroma_paths = {
+        "LOCAL": config.PATH_CHROMA_LOCAL,
+        "S3": config.PATH_CHROMA_S3,
+        "TEMP": config.PATH_CHROMA_TEMP
+    }
+    if 'var' in str(config.CURRENT_PATH):
+        env = 'TEMP'
+        chroma_path = chroma_paths[env]
+    else:
+        env = 'LOCAL'
+        chroma_path = chroma_paths[env]
+
+    match(env):
+        # If DB on S3, downloads it to the temp folder first
         case 'S3':
             print("Starting download from AWS S3.")
             try:
@@ -72,6 +76,7 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
             except Exception as e:
                 print(f"Error downloading the Chroma DB from S3: {str(e)}")
                 raise
+        # If DB on Lambda, copies/creates it on the temp folder first
         case 'TEMP':
             print("Starting copy to AWS Lambda temporary folder.")
             try:
@@ -94,8 +99,7 @@ def initialize(env='local', embedding_function='openai') -> Chroma:
 
 
 def main():
-    print("Running initialize_chroma_db.py main function...")
-    initialize("local", "openai")
+    return
 
 
 if __name__ == "__main__":
