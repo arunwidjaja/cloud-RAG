@@ -251,30 +251,3 @@ function toggleFileSelection(li) {
         selectedFiles = selectedFiles.filter(file => file !== fileName); // Remove file from selectedFiles
     }
 }
-
-
-
-// UI Tweaking
-// Making the screen divider resizable
-const container = document.getElementById('resizable-container');
-    const resizeHandle = document.getElementById('resize-handle');
-
-    resizeHandle.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // Prevent text selection
-
-        const startX = e.clientX;
-        const startWidth = container.offsetWidth;
-
-        const onMouseMove = (e) => {
-            const newWidth = startWidth + (e.clientX - startX);
-            container.style.width = `${newWidth}px`;
-        };
-
-        const onMouseUp = () => {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        };
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-    });
