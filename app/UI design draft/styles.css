@@ -1,0 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+.banner {
+    background-color: rgba(97, 197, 255, 0.7); /* Green with 70% opacity */
+    color: rgb(0, 0, 0); /* White text color */
+    font-size: large;
+    text-align: center; /* Centered text */
+    padding: 15px; /* Padding for spacing */
+    position: fixed; /* Fixed positioning */
+    top: 0; /* Stick to the top */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width */
+    z-index: 1000; /* Higher z-index to sit above other elements */
+    backdrop-filter: blur(5px); /* Optional: adds a blur effect behind the banner */
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100vh;  /* Full height of the viewport */
+    width: 100vw;    /* Full width of the viewport */
+}
+
+.element1, .element2, .element3 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: white;
+    font-weight: bold;
+}
+
+.element1 {
+    flex: 0 0 20%;
+    display: flex;        /* Use flexbox for layout */
+    flex-direction: column; /* Stack items vertically */
+    border: 1px solid #ccc; /* Optional: add a border for visibility */
+    background-color: rgb(75, 172, 139);
+    padding: 10px;
+}
+
+.element2 {
+    flex: 1;         /* Takes up the remaining space */
+    background-color: #2ecc71;  /* Green */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Make sure the container takes full height */
+    margin: 0;
+    padding: 10px;
+}
+
+.element3 {
+    flex: 0 0 30%;   /* Takes up 40% of the width */
+    background-color: #f37c6f;  /* Red */
+    text-align: center;
+    padding: 10px;
+}
+
+textarea {
+    background-color: burlywood;
+    color: black;
+    width: 100%; /* Full width of the parent container */
+    height: auto;
+    padding: 10px;
+    border-radius: 10px; /* Rounded corners */
+    border: 1px solid #ccc;
+    resize: none; /* Disable manual resizing */
+    overflow: hidden; /* No scrollbars initially */
+    margin: 20px; /* Apply margins */
+    line-height: 1.5; /* Adjust the line height */
+    max-height: calc(1.5em * 5 + 20px); /* 1.5em per line, max 5 lines + padding */
+    box-sizing: border-box; /* Include padding and border in the width */
+}
+
+
+/* The output text container */
+.output {
+    margin-top: 20px;
+    width: 100%;
+    background-color: gray;
+    color: white;
+    overflow: auto; /* Enable scrollbars if text overflows */
+    padding: 10px;
+    flex-grow: 1; /* Take up remaining height */
+    box-sizing: border-box; /* Ensures padding is included in width/height */
+    text-align: left;
+}
+
+
+  
+  .output-text {
+    width: 100%; /* Fills the full width of the parent container */
+    overflow-y: auto; /* Adds vertical scroll bar if the content is too long */
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #f1f1f100; /* Optional: background color */
+  }
+
+  .element3 {
+    display: flex;             /* Enables flexbox layout */
+    flex-direction: column;   /* Aligns items vertically */
+    align-items: center;      /* Centers items horizontally */
+    justify-content: center;   /* Centers items vertically */
+    height: 100vh;           /* Sets height to fill the viewport (optional) */
+}
+
+.scrollable-text {
+
+    overflow: auto;      /* Enable scrolling */
+    border: 1px solid #ccc; /* Add a border for visibility */
+    padding: 10px;       /* Add some padding */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    flex: 1;
+    text-align: left;
+}
+
+.button-container {
+    display: flex;          /* Use flexbox for horizontal alignment */
+    gap: 10px;             /* Space between buttons */
+}
+
+.btn {
+    padding: 10px 15px;    /* Padding for buttons */
+    font-size: 16px;       /* Font size for buttons */
+    cursor: pointer;        /* Pointer cursor on hover */
+}
+
+.btn {
+    padding: 10px 15px;   /* Padding for buttons */
+    font-size: 16px;      /* Font size for buttons */
+    cursor: pointer;       /* Pointer cursor on hover */
+}
