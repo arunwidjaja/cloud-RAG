@@ -35,7 +35,7 @@ PATH_DOCUMENTS_S3 = PATH_DOCUMENTS_TEMP
 
 
 PATH_TEMPLATES = CURRENT_PATH / Path('templates')
-PATH_STATIC = PATH_TEMPLATES / Path('static')
+PATH_STATIC = CURRENT_PATH / Path('static')
 
 BUCKET_NAME = "chroma--use1-az4--x-s3"
 
