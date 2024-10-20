@@ -9,9 +9,9 @@ html, body {
 }
 
 .banner {
-    background-color: rgba(97, 197, 255, 0.7); /* Green with 70% opacity */
+    background-color: rgba(97, 197, 255, 0.30); /* Green with 70% opacity */
     color: rgb(0, 0, 0); /* White text color */
-    font-size: large;
+    font-size: x-large;
     text-align: center; /* Centered text */
     padding: 15px; /* Padding for spacing */
     position: fixed; /* Fixed positioning */
@@ -19,7 +19,7 @@ html, body {
     left: 0; /* Align to the left */
     width: 100%; /* Full width */
     z-index: 1000; /* Higher z-index to sit above other elements */
-    backdrop-filter: blur(5px); /* Optional: adds a blur effect behind the banner */
+    backdrop-filter: blur(10px); /* Optional: adds a blur effect behind the banner */
 }
 
 body {
