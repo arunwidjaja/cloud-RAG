@@ -47,7 +47,7 @@ async function pushToDB(){
             throw new Error('Network response was not ok');
         }
         else
-            alert("Files have been pushed to the DB")
+            writeToLog("Pushed files to DB.")
             populateFileList()
             populateUploadList()
     } catch (error) {
@@ -126,7 +126,7 @@ async function deleteFiles () {
         selectedFiles = [];
         populateFileList();
         const deletion_message = await response_JSON.json();
-        alert(deletion_message.deletion_message)
+        writeToLog(deletion_message.deletion_message)
     } catch (error) {
         console.error('Error deleting files:', error)
     }
@@ -148,7 +148,7 @@ async function deleteUploads () {
         selectedUploads = [];
         populateUploadList();
         const deletion_message = await response_JSON.json();
-        alert(deletion_message.deletion_message)
+        writeToLog(deletion_message.deletion_message)
     } catch (error) {
         console.error('Error deleting files:', error)
     }
