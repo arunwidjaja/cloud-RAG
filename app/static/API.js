@@ -1,49 +1,31 @@
-// Event listeners
-const uploadBTN = document.getElementById('upload-btn')
-const pushToDBBtn = document.getElementById('push-to-DB-btn')
-const submitBtn = document.getElementById('submit-btn')
-const deleteBtn = document.getElementById('delete-btn')
-const deleteUploadsBtn = document.getElementById('delete-uploads-btn')
-const fileInput = document.getElementById('fileInput') // Hidden element
-
+fileInput.addEventListener('change', get_uploads_from_user);
+pushToDBBtn.addEventListener('click', pushToDB);
+deleteBtn.addEventListener('click', deleteFiles);
+deleteUploadsBtn.addEventListener('click', deleteUploads);
 uploadBTN.addEventListener('click', function(){
     fileInput.click();
 });
-fileInput.addEventListener('change', get_uploads_from_user);
-pushToDBBtn.addEventListener('click', pushToDB);
-submitBtn.addEventListener('click', submitQuery);
-deleteBtn.addEventListener('click', deleteFiles);
-deleteUploadsBtn.addEventListener('click', deleteUploads);
+userInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        if (!event.shiftKey) {
+            event.preventDefault(); // Prevents adding a new line
+            var query = userInput.value;
+            submitQuery(query);
+            userInput.value=''
+        }
+    }
+});
 
-
-// Updates UI with file lists on startup
-window.onload = function() {
-    populateFileList();
-    populateUploadList();
-}
-
-// Array to keep track of selected files
-let selectedFiles = [];
-let selectedUploads = [];
-
-// 
-// User-Triggered functions
-// 
-
-// Launches file upload window
+// Upload files
 async function get_uploads_from_user(event) {
     const files = event.target.files;  // Get all selected files
     if (files.length > 0) {
         const formData = new FormData();
-
-        // Append each file to the FormData object
         for (let i = 0; i < files.length; i++) {
-            formData.append('files', files[i]);  // The 'files' field should match the backend parameter
+            formData.append('files', files[i]);
         }
-
-        // Send files to FastAPI backend
         try {
-            const response = await fetch('/upload_documents', {  // Replace with your actual FastAPI endpoint
+            const response = await fetch('/upload_documents', {
                 method: 'POST',
                 body: formData
             });
@@ -57,11 +39,10 @@ async function get_uploads_from_user(event) {
     populateUploadList();
 }
 
-// Processes the uploaded files and adds them to the DB
-// This function will take a while
+// Push uploads to DB
 async function pushToDB(){
     try {
-        const response = await fetch('/push_files_to_database'); // Adjust this URL if necessary
+        const response = await fetch('/push_files_to_database');
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -75,19 +56,14 @@ async function pushToDB(){
     }
 }
 
-// Captures user query and queries LLM
-async function submitQuery() {
-    const user_Input = document.getElementById('query-input').value;
-
-    // Make sure input is not empty
+// Queries LLM
+async function submitQuery(query) {
+    const user_Input = query;
     if (!user_Input) {
         alert("Please enter a query.");
         return;
-    }  
-    document.getElementById('response-box').innerText = "Query received. Generating response. Please wait...";
-
+    }
     try {
-        // Send query text to backend and retrieve formatted response
         const response_JSON = await fetch('/submit_query', {
             method: 'POST',
             headers: {
@@ -101,10 +77,10 @@ async function submitQuery() {
         console.error('Error:', error);
         response_Text = 'Error generating response. Please try again.'
     }
-    // Update response box
-    document.getElementById('response-box').innerText = response_Text;
+    conversation.innerText = response_Text;
 }
 
+// Get list of files in DB
 async function fetchFiles() {
     try {
         const response = await fetch('/db_file_list');
@@ -119,6 +95,7 @@ async function fetchFiles() {
     }
 }
 
+// Get list of uploads
 async function fetchUploads() {
     try {
         const response = await fetch('/db_uploads_list');
@@ -133,7 +110,7 @@ async function fetchUploads() {
     }
 }
 
-// Deletes vectorized files from the DB
+// Deletes files from DB
 async function deleteFiles () {
     const file_list = {
         deletion_list: selectedFiles
@@ -155,7 +132,7 @@ async function deleteFiles () {
     }
 }
 
-// Clears out the uploaded files (not files that are in the DB)
+// Clears out uploads (not DB files)
 async function deleteUploads () {
     const file_list = {
         deletion_list: selectedUploads
@@ -178,24 +155,11 @@ async function deleteUploads () {
 }
 
 
-//
-// Background and Utility Processes
-//
-
-// Extracts just the file name from the path
-function getFileNameOnly(file_path) {
-    return file_name = file_path.split(/\\|\//).pop();
-}
-
-// Refreshes the DB files window
-async function populateFileList() {
-    const fileListElement = document.getElementById('file-list-ul');
+// Refreshes the DB files list
+async function populateFileList() {   
     const files = await fetchFiles();
+    databaseList.innerHTML = '';
 
-    // Clear existing list items
-    fileListElement.innerHTML = '';
-
-    // Create and append list items
     files.forEach(file => {
         const listItem = document.createElement('li');
         listItem.textContent = getFileNameOnly(file); // Set the text of the list item
@@ -203,24 +167,20 @@ async function populateFileList() {
         listItem.classList.add('file-item'); // Add a class for styling
         listItem.style.cursor = 'pointer'; // Change cursor to pointer
         listItem.onclick = () => toggleFileSelection(listItem); // Add click event
-        fileListElement.appendChild(listItem); // Append the list item to the file list
+        databaseList.appendChild(listItem); // Append the list item to the file list
     });
     if(files.length === 0){
         const noFilesItem = document.createElement('li');
-        noFilesItem.textContent = 'No Files Found'; // Set the message for no files
-        fileListElement.appendChild(noFilesItem); // Append the no files item to the file list
+        noFilesItem.textContent = 'Database is empty'; // Set the message for no files
+        databaseList.appendChild(noFilesItem); // Append the no files item to the file list
     }
 }
 
-// Refreshes the uploads window
+// Refreshes the uploads list
 async function populateUploadList() {
-    const fileListElement = document.getElementById('uploads-list-ul');
     const files = await fetchUploads();
+    uploadsList.innerHTML = '';
 
-    // Clear existing list items
-    fileListElement.innerHTML = '';
-
-    // Create and append list items
     files.forEach(file => {
         const listItem = document.createElement('li');
         listItem.textContent = getFileNameOnly(file); // Set the text of the list item
@@ -228,26 +188,11 @@ async function populateUploadList() {
         listItem.classList.add('file-item'); // Add a class for styling
         listItem.style.cursor = 'pointer'; // Change cursor to pointer
         listItem.onclick = () => toggleFileSelection(listItem); // Add click event
-        fileListElement.appendChild(listItem); // Append the list item to the file list
+        uploadsList.appendChild(listItem); // Append the list item to the file list
     });
     if(files.length === 0){
         const noFilesItem = document.createElement('li');
-        noFilesItem.textContent = 'No Files Found'; // Set the message for no files
-        fileListElement.appendChild(noFilesItem); // Append the no files item to the file list
-    }
-}
-
-// Changes list items' appearance and stores them in data when they are selected by the user
-function toggleFileSelection(li) {
-    li.classList.toggle('selected'); // Toggle selected class
-    const fileName = li.dataset.path;
-
-    // Toggle bold text for selected files
-    if (li.classList.contains('selected')) {
-        li.style.fontWeight = 'bold'; // Make text bold when selected
-        selectedFiles.push(fileName); // Add file to selectedFiles
-    } else {
-        li.style.fontWeight = 'normal'; // Revert text to normal when not selected
-        selectedFiles = selectedFiles.filter(file => file !== fileName); // Remove file from selectedFiles
+        noFilesItem.textContent = 'No have files have been uploaded.'; // Set the message for no files
+        uploadsList.appendChild(noFilesItem); // Append the no files item to the file list
     }
 }

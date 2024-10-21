@@ -1,0 +1,220 @@
+:root {
+    --layer1-color: #000000; /* Define a primary color */
+    --darkgray: #1D1D1D; /* Define a secondary color */
+    --darkgold: #856107;
+    --darkergold: #503B06;
+    --darkred: #8C0002;
+    --darkgreen: #0b4400;
+    --standard-padding: 10px;
+    --small-padding: 5px;
+    --standard-margin: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    color: var(--darkgold);
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Lucida Sans';
+}
+
+.banner {
+    background-color: rgba(97, 197, 255, 0.25); /* Green with 70% opacity */
+    color: rgb(0, 0, 0); /* White text color */
+    font-size: x-large;
+    text-align: center; /* Centered text */
+    padding: 10px; /* Padding for spacing */
+    position: fixed; /* Fixed positioning */
+    top: 0; /* Stick to the top */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width */
+    z-index: 1000; /* Higher z-index to sit above other elements */
+    backdrop-filter: blur(5px); /* Optional: adds a blur effect behind the banner */
+}
+
+
+/* Layer 0 */
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+/* Layer 1 */
+.L1 {
+    background-color: black;
+    border: 1px solid var(--darkgold);
+    display: flex;
+    flex-direction: column;
+    color: white;
+    height: 100%;
+    padding: var(--standard-padding);
+    box-sizing: border-box;
+}
+#L1S1 {
+    flex: 0 0 20%;
+}
+#L1S2 {
+    flex: 1;
+}
+#L1S3 {
+    flex: 0 0 30%;
+}
+
+/* Layer 2, Left Bar */
+
+#title {
+    padding: var(--small-padding);
+    background-color: var(--darkgray);
+    border: 1px solid var(--darkgold);
+    font-size: xx-large;
+}
+#version {
+    padding: var(--small-padding);
+    background-color: var(--darkgray);
+    border: 1px solid var(--darkgold);
+}
+#links{
+    padding: var(--small-padding);
+    background-color: var(--darkgray);
+    border: 1px solid var(--darkgold);
+}
+#auth {
+    padding: var(--small-padding);
+    background-color: var(--darkgray);
+    border: 1px solid var(--darkgold);
+    flex: 0 0 25%;
+}
+#log {
+    padding: var(--small-padding);
+    background-color: black;
+    border: 1px solid var(--darkgold);
+    flex: 1;
+}
+
+
+/* Layer 2, Middle Bar */
+.output {
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--standard-padding);
+
+    overflow: auto; /* Enable scrollbars if text overflows */
+    flex-grow: 1; /* Take up remaining height */
+    text-align: left;
+
+    font-size: large;
+    background-color: black;
+    color: var(--darkgold);
+}
+
+#userinput {
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--standard-padding);
+    margin-top: var(--standard-margin);
+    font-size: large;
+
+    resize: none;
+    overflow: hidden;
+    max-height: calc(1.5em * 8 + 20px); /* 1.5em per line, max 5 lines + padding */
+
+    background-color: var(--darkergold);
+    color: white;
+}
+
+/* Layer 3, Right Bar */
+
+#uploadssection{
+    box-sizing: border-box;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--small-padding);
+}
+
+#uploadstitle{
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--small-padding);
+
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background-color: var(--darkgold);
+    color: black;
+}
+
+.filelist{
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--standard-padding);
+    flex: 1;
+    overflow: auto;
+
+    background-color: var(--darkgray);
+    color: var(--darkgold);
+}
+
+.uploadsbuttons {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+}
+
+
+#databasesection{
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--small-padding);
+}
+#databasetitle{
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--small-padding);
+
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background-color: var(--darkgold);
+    color: black
+}
+
+#pushbtn{
+    padding: 10px 15px;    /* Padding for buttons */
+    font-size: 16px;       /* Font size for buttons */
+    cursor: pointer;        /* Pointer cursor on hover */
+    color: white;
+    background-color: var(--darkgreen);
+}
+
+.uploadsbuttons {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;          /* Use flexbox for horizontal alignment */
+}
+.databasebuttons {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;          /* Use flexbox for horizontal alignment */
+}
+.btn {
+    padding: 10px 15px;    /* Padding for buttons */
+    font-size: 16px;       /* Font size for buttons */
+    cursor: pointer;        /* Pointer cursor on hover */
+    background-color: var(--darkgray);
+    flex: 1;
+}
+
+#deletedbbutton{
+    flex: 1;
+    background-color: var(--darkred);
+    color: white;
+}
