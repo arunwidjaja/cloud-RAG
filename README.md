@@ -30,6 +30,8 @@ The web UI is not currently publicly accessible but you can compile and run the 
 
 2024.10.21 - v0.1
 
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.1.PNG?raw=true" />
+
 v0.1 is the first prototype with all of the basic functionality implemented locally. Database operations can be executed via the frontend UI: uploading files, viewing DB contents/uploads, querying the DB, deleting selected files from the DB, as well as logging DB actions.
 
 Deployment on AWS Lambda has been a learning experience, and working around its read-only nature has revealed nuances in code that I would have otherwise overlooked. Opening a connection to a Chroma database, for instance, requires a writable file system, as there is no way to open a read-only connection. This prevenets Lambda from being used for database storage unless the data is copied to the writable /tmp folder first.
