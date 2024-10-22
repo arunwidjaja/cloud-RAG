@@ -20,13 +20,15 @@ def initialize(embedding_function='openai') -> Chroma:
 
     # detects the current environment and sets the persist directory
     chroma_path = utils.get_env_paths()['DB']
+    data_path = utils.get_env_paths()['DOCS']
 
-    # Initializes the chroma folder in temporary storage if running on AWS Lambda
-    if 'var' in str(chroma_path):
-        print("Starting copy to AWS Lambda temporary folder.")
+    # Initializes the chroma folder and data folder in temporary storage if running on AWS Lambda
+    if 'tmp' in str(chroma_path):
         try:
-            utils.mirror_directory(
+            utils.copy_directory(
                 config.PATH_CHROMA_LOCAL, chroma_path)
+            utils.copy_directory(
+                config.PATH_DOCUMENTS_LOCAL, data_path)
         except Exception as e:
             print(
                 f"Error copying the Chroma DB to the temporary folder: {str(e)}")

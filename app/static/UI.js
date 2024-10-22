@@ -56,13 +56,3 @@ function toggleFileSelection(li) {
 function writeToLog(message) {
     log.innerHTML = log.innerHTML + message + '<br>';
 }
-
-
-
-const listItem = document.createElement('li');
-listItem.textContent = getFileNameOnly(file); // Set the text of the list item
-listItem.dataset.path = file;
-listItem.classList.add('file-item'); // Add a class for styling
-listItem.style.cursor = 'pointer'; // Change cursor to pointer
-listItem.onclick = () => toggleFileSelection(listItem); // Add click event
-databaseList.appendChild(listItem); // Append the list item to the file list

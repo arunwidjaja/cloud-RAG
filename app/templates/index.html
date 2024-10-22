@@ -13,8 +13,10 @@
     <!-- <div class="banner">
         Cloud RAG UI - Draft Only. Do Not Use.
     </div> -->
+    <!-- Hidden element - file open window -->
     <input type="file" id="fileInput" style="display: none;" multiple />
     <div class="container">
+        <!-- Left Pane -->
         <div class="L1" id="L1S1">
             <div id="title">
                 Cloud RAG
@@ -26,11 +28,13 @@
             <div id="auth">Auth/Overview Section</div>
             <div id="log"></div>
         </div>
+        <!-- Middle Pane -->
         <div class="L1" id="L1S2">
             <div id="conversation" class="output">                         
             </div>
             <textarea id="userinput" oninput="autoExpand(this)"></textarea>
         </div>
+        <!-- Right Pane -->
         <div class="L1" id="L1S3">
             <div id="uploadssection">
                 <div id="uploadstitle">
@@ -62,7 +66,7 @@
             </div>
         </div>
     </div>
-    <script src="/static/UI.JS"></script>
+    <script src="/static/UI.js"></script>
     <script src="/static/API.js"></script>
 </body>
 </html>

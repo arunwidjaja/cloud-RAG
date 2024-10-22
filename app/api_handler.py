@@ -29,6 +29,7 @@ async def lifespan(app: FastAPI):
     """
     Starting point for the app. Runs on startup.
     """
+    print("FastAPI lifespan is starting")
     global database
     try:
         database = initialize_chroma_db.initialize()
@@ -70,6 +71,7 @@ async def get_db_file_list():
     """
     Gets a list of source files in the database
     """
+    print(f"API CALL: get_db_file_list")
     try:
         file_list = utils.get_db_file_names(database)
         return JSONResponse(content=file_list)
@@ -82,6 +84,7 @@ async def get_db_uploads_list():
     """
     Gets a list of the documents waiting to be pushed to the database
     """
+    print("API CALL: get_uploads_list")
     try:
         file_list = utils.get_uploads_list()
         return JSONResponse(content=file_list)
@@ -94,9 +97,11 @@ async def push_files_to_database():
     """
     Updates the database with all the documents uploaded on the backend
     """
+    print("API CALL: push_files_to_database")
     try:
-        update_database.push_to_database(database)
-        return JSONResponse(content="Database updated")
+        pushed_files = update_database.push_to_database(database)
+        return pushed_files
+        # return JSONResponse(content="Database updated")
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
 
@@ -108,7 +113,7 @@ async def submit_query(request: Query):
     """
     Send query to LLM and retrieve the response
     """
-    print("submit_query endpoint has been called")
+    print("API CALL: submit_query")
     message = query_rag(database, request.query_text)
     return {"query_response": message}
 
@@ -117,18 +122,20 @@ async def submit_query(request: Query):
 
 @app.post("/upload_documents")
 async def upload_documents(files: List[UploadFile] = File(...)):
+    print(f"API CALL: upload_documents")
     saved_files = []
+    uploads_path = utils.get_env_paths()['DOCS']
 
-    document_path = utils.get_env_paths()['DOCS']
+    print(f"Files received: {files}")
     for file in files:
-        save_location = os.path.join(document_path, file.filename)
+        file_path = os.path.join(uploads_path, file.filename)
 
         try:
             # Save the file to the specified directory
-            with open(save_location, "wb") as buffer:
+            print(f"Copying {file} to {file_path}")
+            with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
-
-            saved_files.append(save_location)
+            saved_files.append(file_path)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload {
                                 file.filename}: {str(e)}")

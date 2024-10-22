@@ -1,3 +1,7 @@
+# This file is for development use only.
+# Don't use any of these functions in production code.
+# Don't import this file into any modules
+
 import chromadb.config
 import config
 import shutil
@@ -22,11 +26,16 @@ def getDBSize(db_path=config.PATH_CHROMA_LOCAL):
 
 def purgeDB(db_path=config.PATH_CHROMA_LOCAL):
     """
-    Deletes the entire chroma folder
+    Deletes the chroma folder's contents
     """
-    if os.path.exists(config.PATH_CHROMA_LOCAL):
-        print("Purging the Chroma DB at: ")
-        shutil.rmtree(db_path)
+    print(f"Purging the Chroma DB at: {db_path}")
+    for item in os.listdir(db_path):
+        item_path = os.path.join(db_path, item)
+        # Remove files and directories
+        if os.path.isfile(item_path):
+            os.remove(item_path)
+        elif os.path.isdir(item_path):
+            shutil.rmtree(item_path)
 
 # PS Commands
 # chroma utils vacuum --path "C:/Users/Arun Widjaja/Documents/_PERSONAL_DOCUMENTS/Programs - Python/openAIRAG/app/chroma"

@@ -48,12 +48,13 @@ async function pushToDB(){
         }
         else
             writeToLog("Pushed files to DB.")
-            populateFileList()
-            populateUploadList()
     } catch (error) {
         console.error('Error refreshing database:', error);
         return [];
     }
+    populateUploadList()
+    populateFileList()
+    
 }
 
 // Queries LLM
@@ -98,6 +99,7 @@ async function fetchFiles() {
 // Get list of uploads
 async function fetchUploads() {
     try {
+        console.log("Fetching uploads...")
         const response = await fetch('/db_uploads_list');
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -192,7 +194,7 @@ async function populateUploadList() {
     });
     if(files.length === 0){
         const noFilesItem = document.createElement('li');
-        noFilesItem.textContent = 'No have files have been uploaded.'; // Set the message for no files
+        noFilesItem.textContent = 'No files have been uploaded.'; // Set the message for no files
         uploadsList.appendChild(noFilesItem); // Append the no files item to the file list
     }
 }

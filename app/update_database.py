@@ -23,6 +23,8 @@ def load_documents():
     Loads documents from the data folder
     """
     documents = []
+
+    print(f"Searching for documents in: {document_path}")
     try:
         for file_path in document_path.iterdir():
             print(f"Found file: {file_path.name}")
@@ -48,6 +50,7 @@ def split_text(documents: List[Document]):
         add_start_index=True,
         is_separator_regex=False
     )
+    print(f"Splitting documents...")
     chunks = text_splitter.split_documents(documents)
     print(f"Split {len(documents)} documents into {len(chunks)} chunks.")
 
@@ -174,6 +177,7 @@ def clear_uploads():
     Clears out documents from the data folder, not from the DB.
     """
     file_list = []
+    print(f"Clearing the uploads from {document_path}")
     for filename in os.listdir(document_path):
         file_path = os.path.join(document_path, filename)
         try:
@@ -193,15 +197,11 @@ def push_to_database(db: Chroma):
     """
     Loads docs, adds them to DB
     """
-    print(f"Parsing documents from: {document_path}")
     documents = load_documents()
     chunks = split_text(documents)
-
-    print("Vectorizing documents and saving them to the DB...")
     save_to_chroma(db, chunks)
-
-    print("Documents have been pushed to the DB. Clearing them from the queue now...")
     clear_uploads()
+    return documents
 
 
 def main():

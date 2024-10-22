@@ -67,8 +67,10 @@ def get_uploads_list() -> List:
     Gets a list of the uploaded files.
     """
     pending_files_path = get_env_paths()['DOCS']
+    print(f"Reading uploads from: {pending_files_path}")
     uploads_list = []
     for f in pending_files_path.iterdir():
+        print(f"Found upload: {f}")
         if f.is_file():
             uploads_list.append(str(f))
     return uploads_list
@@ -115,19 +117,26 @@ def build_response_string(response: str, context: ResponseContext) -> str:
 
 def mirror_directory(src_path: str, dest_path: str):
     """
-    Deletes dest_path. Copies src_path to dest_path. Only works if they are on the same machine.
+    Deletes dest_path. Copies src_path to dest_path.
     """
-    src_path = config.PATH_CHROMA_LOCAL
-    dest_path = config.PATH_CHROMA_TEMP
-
-    # Delete the dest_path
     if os.path.exists(dest_path):
-        print(f"Deleting existing folder: {dest_path}")
+        print(f"Deleting existing destination folder: {dest_path}")
         shutil.rmtree(dest_path)
-    # Copies src_path
-    if os.path.exists(src_path):
-        print(f"Copying {src_path} to {dest_path}")
-        shutil.copytree(src_path, dest_path)
+
+    print(f"Copying {src_path} to {dest_path}")
+    os.makedirs(dest_path)
+    shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
+
+
+def copy_directory(src_path: str, dest_path: str):
+    """
+    Copies src_path to dest_path.
+    """
+    if not os.path.exists(dest_path):
+        print(f"{dest_path} doesn't exist. Creating it now...")
+        os.makedirs(dest_path)
+    print(f"Copying {src_path} to {dest_path}")
+    shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
 
 
 def writeIDs(db: Chroma, file_name):
