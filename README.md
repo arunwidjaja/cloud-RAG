@@ -18,7 +18,7 @@ The web UI is not currently publicly accessible but you can compile and run the 
   - Chroma - Vector DB
   - FastAPI
 - Docker, Amazon AWS - Deployment
-- HTML, JavaScript - Frontend
+- HTML, CSS, JavaScript - Frontend
 
 ## Architecture
 
