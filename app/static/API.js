@@ -70,7 +70,8 @@ function appendConversation(content, type) {
             contentDiv.className = "conversation_output";
             break;
     }
-    contentDiv.textContent = content;
+    // contentDiv.textContent = content;
+    contentDiv.innerHTML = content.replace(/\n/g, '<br>'); //replace newlines with line breaks
     const conversationDiv = document.getElementById("conversation");
     conversationDiv.appendChild(contentDiv);
 }
