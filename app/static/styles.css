@@ -5,9 +5,13 @@
     --darkergold: #503B06;
     --darkred: #8C0002;
     --darkgreen: #0b4400;
+
     --standard-padding: 10px;
     --small-padding: 5px;
+
     --standard-margin: 20px;
+    --small-margin: 10px;
+    --smallest-margin: 5px;
 }
 
 * {
@@ -57,12 +61,14 @@ html, body {
 }
 #L1S1 {
     flex: 0 0 20%;
+    max-width: 20%;
 }
 #L1S2 {
     flex: 1;
 }
 #L1S3 {
     flex: 0 0 30%;
+    max-width: 30%;
 }
 
 /* Layer 2, Left Bar */
@@ -93,6 +99,8 @@ html, body {
     padding: var(--small-padding);
     background-color: black;
     border: 1px solid var(--darkgold);
+    overflow: auto;
+    white-space: nowrap;
     flex: 1;
 }
 
@@ -103,14 +111,38 @@ html, body {
     width: 100%;
     padding: var(--standard-padding);
 
-    overflow: auto; /* Enable scrollbars if text overflows */
+    display: flex;
+    flex-direction: column;
+
+    overflow: auto;
     flex-grow: 1; /* Take up remaining height */
     text-align: left;
 
     font-size: large;
     background-color: black;
     color: var(--darkgold);
+
+    overflow-y: auto;
 }
+
+.conversation_output {
+    width: 80%;
+    margin: var(--smallest-margin);
+    padding: var(--standard-padding);
+    border-radius: var(--standard-padding);
+    background-color: var(--darkgray);
+    color: var(--darkgold);
+}
+.conversation_input {
+    align-self: flex-end; /* Aligns bubble to the right */
+    width: 80%;
+    margin: var(--smallest-margin);
+    padding: var(--standard-padding);
+    border-radius: var(--standard-padding);
+    background-color: var(--darkgold);
+    color: black;
+}
+
 
 #userinput {
     box-sizing: border-box;
@@ -123,8 +155,10 @@ html, body {
     overflow: hidden;
     max-height: calc(1.5em * 8 + 20px); /* 1.5em per line, max 5 lines + padding */
 
-    background-color: var(--darkergold);
-    color: white;
+    border-radius: var(--standard-padding);
+
+    background-color: var(--darkgold);
+    color: black;
 }
 
 /* Layer 3, Right Bar */
@@ -154,6 +188,7 @@ html, body {
     width: 100%;
     padding: var(--standard-padding);
     flex: 1;
+    white-space: nowrap;
     overflow: auto;
 
     background-color: var(--darkgray);

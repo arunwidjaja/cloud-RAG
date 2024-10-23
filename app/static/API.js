@@ -5,16 +5,19 @@ deleteUploadsBtn.addEventListener('click', deleteUploads);
 uploadBTN.addEventListener('click', function(){
     fileInput.click();
 });
-userInput.addEventListener('keydown', function(event) {
+userInput.addEventListener('keydown', captureInput);
+
+function captureInput(event) {
     if (event.key === 'Enter') {
         if (!event.shiftKey) {
             event.preventDefault(); // Prevents adding a new line
             var query = userInput.value;
+            appendConversation(query, "input");
             submitQuery(query);
             userInput.value=''
         }
     }
-});
+}
 
 // Upload files
 async function get_uploads_from_user(event) {
@@ -57,6 +60,21 @@ async function pushToDB(){
     
 }
 
+function appendConversation(content, type) {
+    const contentDiv = document.createElement("div");
+    switch(type.toUpperCase()) {
+        case "INPUT":
+            contentDiv.className = "conversation_input";
+            break;
+        case "OUTPUT":
+            contentDiv.className = "conversation_output";
+            break;
+    }
+    contentDiv.textContent = content;
+    const conversationDiv = document.getElementById("conversation");
+    conversationDiv.appendChild(contentDiv);
+}
+
 // Queries LLM
 async function submitQuery(query) {
     const user_Input = query;
@@ -74,11 +92,13 @@ async function submitQuery(query) {
         });
         const response_JSON_String = await response_JSON.json();
         response_Text = response_JSON_String.query_response
+        appendConversation(response_Text, "output")
     } catch (error) {
         console.error('Error:', error);
-        response_Text = 'Error generating response. Please try again.'
+        response_Text = 'There was an error generating a response. Please try again.'
+        writeToLog(response_Text)
+        appendConversation(response_Text,"output")
     }
-    conversation.innerText = response_Text;
 }
 
 // Get list of files in DB

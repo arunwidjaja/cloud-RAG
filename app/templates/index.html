@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud RAG</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <!-- <link rel="stylesheet" href="../static/styles.css"> -->
     <link rel="icon" href="/static/favicon.ico">
 
 </head>
@@ -26,11 +27,12 @@
                 <a href=https://github.com/arunwidjaja/cloud-RAG>github</a>
             </div>
             <div id="auth">Auth/Overview Section</div>
-            <div id="log"></div>
+            <div id="log">
+            </div>
         </div>
         <!-- Middle Pane -->
         <div class="L1" id="L1S2">
-            <div id="conversation" class="output">                         
+            <div id="conversation" class="output">
             </div>
             <textarea id="userinput" oninput="autoExpand(this)"></textarea>
         </div>
@@ -45,7 +47,7 @@
                         <li>Searching for files. Please wait...</li>
                     </ul>
                 </div>
-                <button id="pushbtn">Push Files to DB</button>
+                <button id="pushbtn">Push Uploads to DB</button>
                 <div class="uploadsbuttons">
                     <button id='upload-btn' class="btn">Upload Files</button>
                     <button id='deleteuploadsbtn'class="btn">Clear Uploads</button>
@@ -57,7 +59,7 @@
                 </div>
                 <div class="filelist" id="databaselist">
                     <ul id="file-list-ul">
-                        <li>Searching for files. Please wait...</li>
+                        <li>Searching for files in the DB. Please wait...</li>
                     </ul>
                 </div>
                 <div class="databasebuttons">
@@ -68,5 +70,7 @@
     </div>
     <script src="/static/UI.js"></script>
     <script src="/static/API.js"></script>
+    <!-- <script src="../static/UI.js"></script> -->
+    <!-- <script src="../static/API.js"></script> -->
 </body>
 </html>

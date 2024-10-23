@@ -117,8 +117,6 @@ async def submit_query(request: Query):
     message = query_rag(database, request.query_text)
     return {"query_response": message}
 
-# TODO: Implement
-
 
 @app.post("/upload_documents")
 async def upload_documents(files: List[UploadFile] = File(...)):
