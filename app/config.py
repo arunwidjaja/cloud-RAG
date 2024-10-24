@@ -59,6 +59,7 @@ LLM Constants
 """
 
 LLM_K = 5
+DEFAULT_MESSAGE_ID = '0'
 
 SEC_DESC_4 = """
 ============================================

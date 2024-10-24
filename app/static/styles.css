@@ -67,8 +67,8 @@ html, body {
     flex: 1;
 }
 #L1S3 {
-    flex: 0 0 30%;
-    max-width: 30%;
+    flex: 0 0 20%;
+    max-width: 20%;
 }
 
 /* Layer 2, Left Bar */
@@ -147,7 +147,7 @@ html, body {
 #userinput {
     box-sizing: border-box;
     width: 100%;
-    padding: var(--standard-padding);
+    padding: var(--standard-padding); /* Adjust vertical padding */
     margin-top: var(--standard-margin);
     font-size: large;
 

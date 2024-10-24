@@ -76,7 +76,7 @@ function appendConversation(content, type) {
     conversationDiv.appendChild(contentDiv);
 }
 
-// Queries LLM
+// Queries LLM, prints response
 async function submitQuery(query) {
     const user_Input = query;
     if (!user_Input) {
@@ -84,21 +84,35 @@ async function submitQuery(query) {
         return;
     }
     try {
-        const response_JSON = await fetch('/submit_query', {
+        // fetches the QueryResponse object
+        const query_response = await fetch('/submit_query', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({query_text: user_Input})
         });
-        const response_JSON_String = await response_JSON.json();
-        response_Text = response_JSON_String.query_response
-        appendConversation(response_Text, "output")
+        const query_response_JSON = await query_response.json();
+        const message_model = query_response_JSON['message_model'];
+
+        
+        response_text = message_model.message; // The actual answer
+        response_id = message_model.id; // The ID of the answer. Unused for now.
+        response_context = message_model.contexts; // Dict of context and source
+
+        appendConversation(response_text, "output") // Print answer
+        // Print each source as a separate message
+        for (const data of response_context) {
+            context = data['context'];
+            source = data['source'];
+            appendConversation("Source: \n" + source + ':\n', "output");
+            appendConversation(context, "output");
+        }
     } catch (error) {
         console.error('Error:', error);
-        response_Text = 'There was an error generating a response. Please try again.'
-        writeToLog(response_Text)
-        appendConversation(response_Text,"output")
+        response_text = 'There was an error generating a response. Please try again.'
+        writeToLog(response_text)
+        appendConversation(response_text,"output")
     }
 }
 

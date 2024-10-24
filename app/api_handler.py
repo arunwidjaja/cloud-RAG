@@ -42,8 +42,19 @@ app = FastAPI(lifespan=lifespan)
 handler = Mangum(app)
 
 
-class Query(BaseModel):
+class QueryModel(BaseModel):
     query_text: str
+
+
+class ContextModel(BaseModel):
+    context: str
+    source: str
+
+
+class MessageModel(BaseModel):
+    message: str
+    id: str
+    contexts: List[ContextModel]
 
 
 class DeleteRequest(BaseModel):
@@ -109,13 +120,19 @@ async def push_files_to_database():
 
 
 @app.post("/submit_query")
-async def submit_query(request: Query):
+async def submit_query(request: QueryModel):
     """
     Send query to LLM and retrieve the response
     """
     print("API CALL: submit_query")
-    message = query_rag(database, request.query_text)
-    return {"query_response": message}
+    query_response = query_rag(database, request.query_text)
+
+    message = query_response.message
+    id = query_response.id
+    contexts = query_response.contexts
+    message_model = MessageModel(message=message, id=id, contexts=contexts)
+
+    return {"message_model": message_model}
 
 
 @app.post("/upload_documents")

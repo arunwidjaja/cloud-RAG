@@ -7,7 +7,6 @@ from typing import List
 
 # Modules
 import config
-from query_data import ResponseContext
 
 # TODO: Implement the condition for S3
 
@@ -38,6 +37,26 @@ def get_env_paths() -> dict[str, Path]:
     return dynamic_env_values
 
 
+def extract_file_name(paths: List[str] | str) -> List[str] | str:
+    """
+    Converts extract the file name from the path or list of paths
+    """
+    file_name_list = []
+
+    # convert strings to a list first
+    if isinstance(paths, str):
+        path_list = [paths]
+
+    for path in path_list:
+        path_trim = path.split('\\')[-1]  # gets file name
+        path_trim = re.sub(r':\d+:\d+$', '', path_trim)  # trims off tags
+        file_name_list.append(path_trim)
+
+    if isinstance(paths, str):
+        return file_name_list[0]
+    return file_name_list
+
+
 def get_db_file_names(db: Chroma, file_name_only=False) -> List:
     """
     Gets a list of all unique source files in the given DB.
@@ -46,20 +65,16 @@ def get_db_file_names(db: Chroma, file_name_only=False) -> List:
     results = collection.get(include=["metadatas"])
 
     # Extract unique source file names
-    file_set = set()
+    path_set = set()
     for metadata in results['metadatas']:
         if 'source' in metadata:
-            file_set.add(metadata['source'])
-    file_list = sorted(list(file_set))
+            path_set.add(metadata['source'])
+    path_list = sorted(list(path_set))
 
     # Extracts file names (without path) if file_name_only is True
     if (file_name_only):
-        for i, file in enumerate(file_list):
-            file_trim = file.split('\\')[-1]  # gets file name
-            file_trim = re.sub(r':\d+:\d+$', '', file_trim)  # trims off tags
-            file_name_only[i] = file_trim
-
-    return file_list
+        return extract_file_name(path_list)
+    return path_list
 
 
 def get_uploads_list() -> List:
@@ -92,27 +107,6 @@ def get_folder_size(path: str, print_all=False):
                 if print_all:
                     print(f"Size of {fp}: {size_current}")
     return total_size
-
-
-def build_response_string(response: str, context: ResponseContext) -> str:
-    """
-    Accepts a Tuple containing the LLM response and the relevant context.
-    The LLM response is a string.
-    The relevant context is a List of Tuple, each with the context text and the file path.
-    """
-    response_string = f"{response}\n"
-
-    # iterate through each context and append the actual text and the file name to the response string
-    for i in range(len(context)):
-        context_current = context[i]
-
-        context_current_text = context_current[0].replace("\n", " ")
-        file_name = context_current[1].split('\\')[-1]
-
-        context_summary = f"Source #{
-            i + 1}: {file_name}\n...{context_current_text}...\n"
-        response_string = "\n".join([response_string, context_summary])
-    return response_string
 
 
 def mirror_directory(src_path: str, dest_path: str):
