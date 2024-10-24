@@ -45,12 +45,14 @@ async function get_uploads_from_user(event) {
 // Push uploads to DB
 async function pushToDB(){
     try {
-        const response = await fetch('/push_files_to_database');
-        if (!response.ok) {
+        const pushed_files = await fetch('/push_files_to_database');
+        if (!pushed_files.ok) {
             throw new Error('Network response was not ok');
         }
-        else
-            writeToLog("Pushed files to DB.")
+        else {
+            const pushed_files_JSON = await pushed_files.json();
+            writeToLog("Pushed files to DB: " + pushed_files_JSON)
+        }
     } catch (error) {
         console.error('Error refreshing database:', error);
         return [];
@@ -153,17 +155,19 @@ async function deleteFiles () {
         deletion_list: selectedFiles
     };
     try{
-        const response_JSON = await fetch('/delete_files', {
+        const deleted_files = await fetch('/delete_files', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(file_list)
         });
+
+        // Clears selections, refreshes list of files
         selectedFiles = [];
         populateFileList();
-        const deletion_message = await response_JSON.json();
-        writeToLog(deletion_message.deletion_message)
+        const deleted_files_JSON = await deleted_files.json();
+        writeToLog("Deleted from DB: " + deleted_files_JSON)
     } catch (error) {
         console.error('Error deleting files:', error)
     }
@@ -175,17 +179,19 @@ async function deleteUploads () {
         deletion_list: selectedUploads
     };
     try{
-        const response_JSON = await fetch('/delete_uploads', {
+        const deleted_uploads = await fetch('/delete_uploads', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(file_list)
         });
+
+        // Clears selections, refreshes list of uploads
         selectedUploads = [];
         populateUploadList();
-        const deletion_message = await response_JSON.json();
-        writeToLog(deletion_message.deletion_message)
+        const deleted_uploads_JSON = await deleted_uploads.json();
+        writeToLog("Removed upload: " + deleted_uploads_JSON)
     } catch (error) {
         console.error('Error deleting files:', error)
     }
@@ -222,7 +228,7 @@ async function populateUploadList() {
         const listItem = document.createElement('li');
         listItem.textContent = getFileNameOnly(file); // Set the text of the list item
         listItem.dataset.path = file;
-        listItem.classList.add('file-item'); // Add a class for styling
+        listItem.classList.add('upload-item'); // Add a class for styling
         listItem.style.cursor = 'pointer'; // Change cursor to pointer
         listItem.onclick = () => toggleFileSelection(listItem); // Add click event
         uploadsList.appendChild(listItem); // Append the list item to the file list

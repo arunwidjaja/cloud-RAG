@@ -1,13 +1,23 @@
+// Log
 const log = document.getElementById('log')
+
+// Conversation and input
 const conversation = document.getElementById('conversation')
+const userInput = document.getElementById('userinput')
+
+// Buttons
 const uploadBTN = document.getElementById('upload-btn')
 const pushToDBBtn = document.getElementById('pushbtn')
 const deleteBtn = document.getElementById('deletedbbutton')
 const deleteUploadsBtn = document.getElementById('deleteuploadsbtn')
-const userInput = document.getElementById('userinput')
+
+
+// List of files, uploads
 const databaseList = document.getElementById('file-list-ul');
 const uploadsList = document.getElementById('uploads-list-ul');
-const fileInput = document.getElementById('fileInput') // Hidden element
+
+// File upload window (hidden)
+const fileInput = document.getElementById('fileInput')
 
 
 // Array to keep track of selected files
@@ -40,15 +50,20 @@ function autoExpand(textarea) {
 // Changes list items' appearance and stores them in data when they are selected by the user
 function toggleFileSelection(li) {
     li.classList.toggle('selected'); // Toggle selected class
-    const fileName = li.dataset.path;
+    const filePath = li.dataset.path;
 
     // Toggle bold text for selected files
     if (li.classList.contains('selected')) {
         li.style.fontWeight = 'bold'; // Make text bold when selected
-        selectedFiles.push(fileName); // Add file to selectedFiles
+        if (li.classList.contains('upload-item')){
+            selectedUploads.push(filePath);
+        }
+        if (li.classList.contains('file-item')){
+            selectedFiles.push(filePath);
+        }
     } else {
         li.style.fontWeight = 'normal'; // Revert text to normal when not selected
-        selectedFiles = selectedFiles.filter(file => file !== fileName); // Remove file from selectedFiles
+        selectedFiles = selectedFiles.filter(file => file !== filePath); // Remove file from selectedFiles
     }
 }
 

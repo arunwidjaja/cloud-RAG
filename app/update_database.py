@@ -7,6 +7,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
 import os
 import shutil
+from pathlib import Path
 
 # Document Loaders
 from langchain_community.document_loaders import TextLoader
@@ -22,7 +23,7 @@ def load_documents():
     """
     Loads documents from the data folder
     """
-    documents = []
+    documents_list = []
 
     print(f"Searching for documents in: {document_path}")
     try:
@@ -30,13 +31,13 @@ def load_documents():
             print(f"Found file: {file_path.name}")
             if (file_path.suffix in '.txt.md'):
                 document = TextLoader(file_path, autodetect_encoding=True)
-                documents.extend(document.load())
+                documents_list.extend(document.load())
             else:
                 print("Invalid format. Skipping this file.")
     except Exception as e:
         raise Exception(f"Exception occured when loading files.")
 
-    return documents
+    return documents_list
 
 
 def split_text(documents: List[Document]):
@@ -88,7 +89,10 @@ def add_chunk_ids(chunks):
     return chunks
 
 
-def save_to_chroma(db: Chroma, chunks: List[Document]):
+def save_to_chroma(db: Chroma, chunks: List[Document]) -> List:
+    """
+    Returns a list of the documents that were saved to the DB
+    """
     print("Saving chunks to Chroma DB...")
     chunks_with_ids = add_chunk_ids(chunks)
     # Dictionary of file names and the number of chunks they have
@@ -143,6 +147,7 @@ def save_to_chroma(db: Chroma, chunks: List[Document]):
         print(f"{len(skipped_chunks)} chunks from the following documents are already in the DB and were not added:\n{
               "\n".join(skipped_documents)}")
     print("==========================")
+    return utils.extract_file_name(added_documents)
 
 
 def delete_db_files(db: Chroma, file_list: List) -> List:
@@ -152,9 +157,11 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
     db_size = utils.get_folder_size(db._persist_directory)
     print(f"Size of DB before deleting files: {db_size}")
     collection = db._collection
-    for file in file_list:
+    deleted_files = []
+
+    for file_path in file_list:
         file_metadata = collection.get(
-            where={"source": file},
+            where={"source": file_path},
             include=["metadatas", "documents"]
         )
         ids_to_delete = file_metadata['ids']
@@ -169,28 +176,31 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
             print(f"Size of DB after deleting files: {db_size}")
         else:
             print("No documents found from the specified source.")
-    return file_list
+        deleted_file = utils.extract_file_name(file_path)
+        deleted_files.append(deleted_file)
+    return deleted_files
 
 
-def clear_uploads():
+def delete_uploads(file_list: List) -> List:
     """
     Clears out documents from the data folder, not from the DB.
     """
-    file_list = []
-    print(f"Clearing the uploads from {document_path}")
-    for filename in os.listdir(document_path):
-        file_path = os.path.join(document_path, filename)
+    deleted_uploads = []
+    print(f"Clearing selected uploads from: {document_path}")
+    for file_path in file_list:
         try:
-            # Check if it's a file and remove it
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.remove(file_path)
-                file_list.append(str(filename))
-            # Check if it's a directory and remove it along with its contents
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
+            os.remove(file_path)
+            deleted_upload = utils.extract_file_name(file_path)
+            deleted_uploads.append(deleted_upload)
         except Exception as e:
             print(f'Failed to delete {file_path}. Reason: {e}')
-    return file_list
+    return deleted_uploads
+
+
+def delete_all_uploads() -> List:
+    all_uploads = [str(file) for file in Path(
+        document_path).rglob('*') if file.is_file()]
+    return delete_uploads(all_uploads)
 
 
 def push_to_database(db: Chroma):
@@ -199,9 +209,9 @@ def push_to_database(db: Chroma):
     """
     documents = load_documents()
     chunks = split_text(documents)
-    save_to_chroma(db, chunks)
-    clear_uploads()
-    return documents
+    documents_list = save_to_chroma(db, chunks)
+    delete_all_uploads()
+    return documents_list
 
 
 def main():

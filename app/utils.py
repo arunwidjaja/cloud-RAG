@@ -42,7 +42,7 @@ def extract_file_name(paths: List[str] | str) -> List[str] | str:
     Converts extract the file name from the path or list of paths
     """
     file_name_list = []
-
+    path_list = paths
     # convert strings to a list first
     if isinstance(paths, str):
         path_list = [paths]

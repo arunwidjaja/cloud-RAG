@@ -106,13 +106,12 @@ async def get_db_uploads_list():
 @app.get("/push_files_to_database")
 async def push_files_to_database():
     """
-    Updates the database with all the documents uploaded on the backend
+    Updates the database with all the uploaded documents
     """
     print("API CALL: push_files_to_database")
     try:
         pushed_files = update_database.push_to_database(database)
         return pushed_files
-        # return JSONResponse(content="Database updated")
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
 
@@ -167,10 +166,9 @@ async def delete_files(delete_request: DeleteRequest):
     """
     files_to_delete = delete_request.deletion_list
     try:
-        deletion_message = 'The following files have been deleted:\n'
         deleted_files = update_database.delete_db_files(
             database, files_to_delete)
-        return {"deletion_message": f"{deletion_message}{'\n'.join(deleted_files)}"}
+        return deleted_files
     except Exception as e:
         raise e
 
@@ -178,13 +176,12 @@ async def delete_files(delete_request: DeleteRequest):
 @app.delete("/delete_uploads")
 async def delete_uploads(delete_request: DeleteRequest):
     """
-    Delete the list of files from the Chroma DB
+    Delete the list of uploads from the uploads folder
     """
     files_to_delete = delete_request.deletion_list
     try:
-        deletion_message = 'The following uploads have been removed:\n'
-        deleted_files = update_database.clear_uploads()
-        return {"deletion_message": f"{deletion_message}{'\n'.join(deleted_files)}"}
+        deleted_files = update_database.delete_uploads(files_to_delete)
+        return deleted_files
     except Exception as e:
         raise e
 
