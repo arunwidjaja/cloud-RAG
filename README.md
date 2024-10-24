@@ -24,7 +24,7 @@ The web UI is not currently publicly accessible but you can compile and run the 
 
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/cloud_rag_architecture.svg" />
 
-## Feature Roadmap
+## Major Features Roadmap
 
 - Database collections support
   - Creation, deletion, and pushing to collections
