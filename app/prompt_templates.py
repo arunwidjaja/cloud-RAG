@@ -1,9 +1,11 @@
 PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
+Based only on the provided context, please answer the question. Do not use any knowledge outside of the context. 
 
+Context:
 {context}
 
----
+Question:
+{question}
 
-Answer the question based on the above context: {question}
+If the answer is not directly found in the context, do not respond.
 """

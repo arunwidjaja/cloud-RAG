@@ -101,14 +101,15 @@ async function submitQuery(query) {
         response_text = message_model.message; // The actual answer
         response_id = message_model.id; // The ID of the answer. Unused for now.
         response_context = message_model.contexts; // Dict of context and source
+        
+        // output answer
+        appendConversation(response_text, "output")
 
-        appendConversation(response_text, "output") // Print answer
-        // Print each source as a separate message
+        // output source and context
         for (const data of response_context) {
             context = data['context'];
             source = data['source'];
-            appendConversation("Source: \n" + source + ':\n', "output");
-            appendConversation(context, "output");
+            appendConversation("Source: " + source + '\n\n' + context, "output");
         }
     } catch (error) {
         console.error('Error:', error);

@@ -61,6 +61,11 @@ LLM Constants
 LLM_K = 5
 DEFAULT_MESSAGE_ID = '0'
 
+# Randomly generated string.
+# LLM is instructed to respond with this phrase when it uses outside knowledge.
+# Responses containing this phrase are filtered out.
+FILTER_PHRASE = 'p87xSlT0F3YPG1LjQXtNJZ'
+
 SEC_DESC_4 = """
 ============================================
 Authentication Constants: Keys and addresses
