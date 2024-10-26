@@ -24,7 +24,19 @@ The web UI is not currently publicly accessible but you can compile and run the 
 
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/cloud_rag_architecture.svg" />
 
+## Major Features Roadmap
 
+- Database collections support
+  - Creation, deletion, and pushing to collections
+  - Ability to search within specific collections
+- Enabling configuration of LLM and DB via front end
+  - Text splitter parameters such as chunk size and overlap
+  - K and P value tweaking
+  - Custom file and upload paths
+- Implementing support for chat memory
+  - Include context in memory?
+- Support for HTTP client and authentication
+  - Chroma HTTP client supports token and HTTP authentication
 
 ## Development Notes
 
