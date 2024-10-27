@@ -75,7 +75,7 @@ def query_rag(db:
             context = dict.fromkeys(['context', 'source'], None)
 
             doc_source = doc[0].metadata['source']
-            doc_source = utils.extract_file_name(doc_source)
+            # doc_source = utils.extract_file_name(doc_source)
             doc_context = doc[0].page_content
 
             context['source'] = doc_source

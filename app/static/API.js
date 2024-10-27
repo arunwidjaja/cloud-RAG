@@ -1,6 +1,9 @@
+const PATH_DOWNLOAD_ICON = '../static/images/download_light.svg'
+
 fileInput.addEventListener('change', get_uploads_from_user);
 pushToDBBtn.addEventListener('click', pushToDB);
 downloadBtn.addEventListener('click', downloadFiles);
+
 deleteBtn.addEventListener('click', deleteFiles);
 deleteUploadsBtn.addEventListener('click', deleteUploads);
 uploadBTN.addEventListener('click', function(){
@@ -64,20 +67,30 @@ async function pushToDB() {
 
 
 
-function appendConversation(content, type) {
-    const contentDiv = document.createElement("div");
-    switch(type.toUpperCase()) {
+function appendConversation(content_arg, type_arg, source_arg) {
+    const convoBubble = document.createElement("div");
+    switch(type_arg.toUpperCase()) {
         case "INPUT":
-            contentDiv.className = "conversation_input";
+            convoBubble.className = "conversation_input";
             break;
         case "OUTPUT":
-            contentDiv.className = "conversation_output";
+        case "CONTEXT":
+            convoBubble.className = "conversation_output";
             break;
     }
-    // contentDiv.textContent = content;
-    contentDiv.innerHTML = content.replace(/\n/g, '<br>'); //replace newlines with line breaks
+
+    // Add text to bubble
+    convoBubble.innerHTML = content_arg.replace(/\n/g, '<br>');
+
+    // Add DL button to bubble if it's context
+    if (type_arg.toUpperCase() === "CONTEXT") {
+        convoBubble.dataset.context_source = source_arg;
+        addDownloadContextButton(convoBubble)
+    }
+
+    // Add bubble to conversation
     const conversationDiv = document.getElementById("conversation");
-    conversationDiv.appendChild(contentDiv);
+    conversationDiv.appendChild(convoBubble);
 }
 
 // Queries LLM, prints response
@@ -111,7 +124,12 @@ async function submitQuery(query) {
         for (const data of response_context) {
             context = data['context'];
             source = data['source'];
-            appendConversation("Source: " + source + '\n\n' + context, "output");
+            source_stripped = getFileNameOnly(source)
+            appendConversation(
+                content_arg = "Source: " + source_stripped + '\n\n' + context,
+                type_arg = "context",
+                source_arg = source 
+            );
         }
     } catch (error) {
         console.error('Error:', error);
@@ -176,6 +194,9 @@ async function deleteFiles () {
     }
 }
 
+
+// TODO: combine downloadFiles() and downloadContext(source_arg) into one function
+// Need to modify downloadFiles() so that it accepts an argument, and pass selectedFiles as the argument on the event listener for the download db button?
 async function downloadFiles() {
     const download_list = {
         download_list: selectedFiles
@@ -196,6 +217,25 @@ async function downloadFiles() {
         console.error('Error downloading files:', error)
     }
 }
+async function downloadContext(source_arg) {
+    const context_source = {
+        download_list: [source_arg]
+    };
+    try{
+        const downloaded_source = await fetch('/download_files', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(context_source)
+        });
+        const downloaded_source_JSON = await downloaded_source.json();
+        writeToLog("Downloaded source files from DB: " + downloaded_source_JSON)
+    } catch (error) {
+        console.error('Error downloading source files:', error)
+    }    
+}
+
 
 // Clears out uploads (not DB files)
 async function deleteUploads () {
@@ -220,7 +260,6 @@ async function deleteUploads () {
         console.error('Error deleting files:', error)
     }
 }
-
 
 // Refreshes the DB files list
 async function populateFileList() {   
@@ -262,4 +301,26 @@ async function populateUploadList() {
         noFilesItem.textContent = 'No files have been uploaded.'; // Set the message for no files
         uploadsList.appendChild(noFilesItem); // Append the no files item to the file list
     }
+}
+
+function addDownloadContextButton(convoBubble) {
+    const download_context = document.createElement('div');
+    const download_icon = document.createElement('img');
+
+    // Create the download button and the icon
+    download_context.className = 'download_context';
+    download_icon.classList.add('icon');
+    download_icon.classList.add('download_context_button');
+    download_icon.id = 'download_context_button'
+    download_icon.src = PATH_DOWNLOAD_ICON;
+
+    // add icon to div, add div to convo bubble
+    download_context.appendChild(download_icon);
+    convoBubble.appendChild(download_context)
+
+    // Add event listener to the icon
+    download_icon.addEventListener('click', function() {
+        source = convoBubble.dataset.context_source;
+        downloadContext(source);
+    });
 }

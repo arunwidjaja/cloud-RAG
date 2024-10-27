@@ -12,6 +12,7 @@ const deleteUploadsBtn = document.getElementById('deleteuploadsbtn')
 const downloadBtn = document.getElementById('downloaddbbutton')
 const deleteBtn = document.getElementById('deletedbbutton')
 
+// Buttons (dynamically created)
 
 // List of files, uploads
 const databaseList = document.getElementById('file-list-ul');
