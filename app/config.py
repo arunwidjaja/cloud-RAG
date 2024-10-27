@@ -61,11 +61,6 @@ LLM Constants
 LLM_K = 5
 DEFAULT_MESSAGE_ID = '0'
 
-# Randomly generated string.
-# LLM is instructed to respond with this phrase when it uses outside knowledge.
-# Responses containing this phrase are filtered out.
-FILTER_PHRASE = 'p87xSlT0F3YPG1LjQXtNJZ'
-
 SEC_DESC_4 = """
 ============================================
 Authentication Constants: Keys and addresses
@@ -75,6 +70,10 @@ HOST = "0.0.0.0"
 PORT = 8000
 load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
+AWS_LAMBDA_SECRET_KEY = os.environ['AWS_LAMBDA_SECRET_KEY']
+AWS_LAMBDA_ACCESS_KEY = os.environ['AWS_LAMBDA_ACCESS_KEY']
+AWS_LAMBDA_ACCESS_KEY_ROOT = os.environ['AWS_LAMBDA_ACCESS_KEY_ROOT']
+AWS_LAMBDA_SECRET_KEY_ROOT = os.environ['AWS_LAMBDA_SECRET_KEY_ROOT']
 
 SEC_DESC_END = """
 
