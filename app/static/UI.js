@@ -6,10 +6,11 @@ const conversation = document.getElementById('conversation')
 const userInput = document.getElementById('userinput')
 
 // Buttons
-const uploadBTN = document.getElementById('upload-btn')
 const pushToDBBtn = document.getElementById('pushbtn')
-const deleteBtn = document.getElementById('deletedbbutton')
+const uploadBTN = document.getElementById('upload-btn')
 const deleteUploadsBtn = document.getElementById('deleteuploadsbtn')
+const downloadBtn = document.getElementById('downloaddbbutton')
+const deleteBtn = document.getElementById('deletedbbutton')
 
 
 // List of files, uploads

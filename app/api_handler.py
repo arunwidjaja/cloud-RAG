@@ -61,6 +61,10 @@ class DeleteRequest(BaseModel):
     deletion_list: List
 
 
+class DownloadRequest(BaseModel):
+    download_list: List
+
+
 # Mount static files (JS, CSS)
 app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
@@ -116,6 +120,19 @@ async def push_files_to_database():
         raise Exception(f"Exception occured when pushing files: {e}")
 
 # POST OPERATIONS
+
+
+@app.post("/download_files")
+async def download_files(request: DownloadRequest):
+    """
+    Downloads the specified files and returns a list of the downloaded files.
+    """
+    print("API CALL: download_files")
+    try:
+        download_list = utils.download_files(request.download_list)
+        return download_list
+    except Exception as e:
+        raise Exception(f"Exception occurred when downloading files: {e}")
 
 
 @app.post("/submit_query")

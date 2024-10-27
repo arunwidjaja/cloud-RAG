@@ -1,23 +1,23 @@
 :root {
-    --layer1-color: #000000; /* Define a primary color */
-    --darkgray: #1D1D1D; /* Define a secondary color */
-    --darkgold: #856107;
-    --darkergold: #503B06;
-    --darkred: #8C0002;
-    --darkgreen: #0b4400;
+    --COLOR_MAIN_1: #000000;
+    --COLOR_MAIN_2: #1D1D1D;
+    --COLOR_ACCENT_1: #856107;
+    --COLOR_DELETE: #8C0002;
+    --COLOR_PUSH: #0b4400;
+    --COLOR_DOWNLOAD: #0044ff;
 
-    --standard-padding: 10px;
-    --small-padding: 5px;
+    --PADDING_STANDARD: 10px;
+    --PADDING_SMALL: 5px;
 
-    --standard-margin: 20px;
-    --small-margin: 10px;
-    --smallest-margin: 5px;
+    --MARGIN_STANDARD: 20px;
+    --MARGIN_SMALL: 10px;
+    --MARGIN_SMALLEST: 5px;
 }
 
 * {
     margin: 0;
     padding: 0;
-    color: var(--darkgold);
+    color: var(--COLOR_ACCENT_1);
 }
 
 html, body {
@@ -50,13 +50,13 @@ html, body {
 
 /* Layer 1 */
 .L1 {
-    background-color: black;
-    border: 1px solid var(--darkgold);
+    background-color: var(--COLOR_MAIN_1);
+    border: 1px solid var(--COLOR_ACCENT_1);
     display: flex;
     flex-direction: column;
     color: white;
     height: 100%;
-    padding: var(--standard-padding);
+    padding: var(--PADDING_STANDARD);
     box-sizing: border-box;
 }
 #L1S1 {
@@ -74,31 +74,31 @@ html, body {
 /* Layer 2, Left Bar */
 
 #title {
-    padding: var(--small-padding);
-    background-color: var(--darkgray);
-    border: 1px solid var(--darkgold);
+    padding: var(--PADDING_SMALL);
+    background-color: var(--COLOR_MAIN_2);
+    border: 1px solid var(--COLOR_ACCENT_1);
     font-size: xx-large;
 }
 #version {
-    padding: var(--small-padding);
-    background-color: var(--darkgray);
-    border: 1px solid var(--darkgold);
+    padding: var(--PADDING_SMALL);
+    background-color: var(--COLOR_MAIN_2);
+    border: 1px solid var(--COLOR_ACCENT_1);
 }
 #links{
-    padding: var(--small-padding);
-    background-color: var(--darkgray);
-    border: 1px solid var(--darkgold);
+    padding: var(--PADDING_SMALL);
+    background-color: var(--COLOR_MAIN_2);
+    border: 1px solid var(--COLOR_ACCENT_1);
 }
 #auth {
-    padding: var(--small-padding);
-    background-color: var(--darkgray);
-    border: 1px solid var(--darkgold);
+    padding: var(--PADDING_SMALL);
+    background-color: var(--COLOR_MAIN_2);
+    border: 1px solid var(--COLOR_ACCENT_1);
     flex: 0 0 25%;
 }
 #log {
-    padding: var(--small-padding);
-    background-color: black;
-    border: 1px solid var(--darkgold);
+    padding: var(--PADDING_SMALL);
+    background-color: var(--COLOR_MAIN_1);
+    border: 1px solid var(--COLOR_ACCENT_1);
     overflow: auto;
     white-space: nowrap;
     flex: 1;
@@ -109,7 +109,7 @@ html, body {
 .output {
     box-sizing: border-box;
     width: 100%;
-    padding: var(--standard-padding);
+    padding: var(--PADDING_STANDARD);
 
     display: flex;
     flex-direction: column;
@@ -119,46 +119,46 @@ html, body {
     text-align: left;
 
     font-size: large;
-    background-color: black;
-    color: var(--darkgold);
+    background-color: var(--COLOR_MAIN_1);
+    color: var(--COLOR_ACCENT_1);
 
     overflow-y: auto;
 }
 
 .conversation_output {
     width: 80%;
-    margin: var(--smallest-margin);
-    padding: var(--standard-padding);
-    border-radius: var(--standard-padding);
-    background-color: var(--darkgray);
-    color: var(--darkgold);
+    margin: var(--MARGIN_SMALLEST);
+    padding: var(--PADDING_STANDARD);
+    border-radius: var(--PADDING_STANDARD);
+    background-color: var(--COLOR_MAIN_2);
+    color: var(--COLOR_ACCENT_1);
 }
 .conversation_input {
     align-self: flex-end; /* Aligns bubble to the right */
     width: 80%;
-    margin: var(--smallest-margin);
-    padding: var(--standard-padding);
-    border-radius: var(--standard-padding);
-    background-color: var(--darkgold);
-    color: black;
+    margin: var(--MARGIN_SMALLEST);
+    padding: var(--PADDING_STANDARD);
+    border-radius: var(--PADDING_STANDARD);
+    background-color: var(--COLOR_ACCENT_1);
+    color: var(--COLOR_MAIN_1);
 }
 
 
 #userinput {
     box-sizing: border-box;
     width: 100%;
-    padding: var(--standard-padding); /* Adjust vertical padding */
-    margin-top: var(--standard-margin);
+    padding: var(--PADDING_STANDARD); /* Adjust vertical padding */
+    margin-top: var(--MARGIN_STANDARD);
     font-size: large;
 
     resize: none;
     overflow: hidden;
     max-height: calc(1.5em * 8 + 20px); /* 1.5em per line, max 5 lines + padding */
 
-    border-radius: var(--standard-padding);
+    border-radius: var(--PADDING_STANDARD);
 
-    background-color: var(--darkgold);
-    color: black;
+    background-color: var(--COLOR_ACCENT_1);
+    color: var(--COLOR_MAIN_1);
 }
 
 /* Layer 3, Right Bar */
@@ -169,30 +169,30 @@ html, body {
     height: 50%;
     display: flex;
     flex-direction: column;
-    padding-bottom: var(--small-padding);
+    padding-bottom: var(--PADDING_SMALL);
 }
 
 #uploadstitle{
     box-sizing: border-box;
     width: 100%;
-    padding: var(--small-padding);
+    padding: var(--PADDING_SMALL);
 
     text-align: center;
     border: 1px solid var(--border-color);
-    background-color: var(--darkgold);
-    color: black;
+    background-color: var(--COLOR_ACCENT_1);
+    color: var(--COLOR_MAIN_1);
 }
 
 .filelist{
     box-sizing: border-box;
     width: 100%;
-    padding: var(--standard-padding);
+    padding: var(--PADDING_STANDARD);
     flex: 1;
     white-space: nowrap;
     overflow: auto;
 
-    background-color: var(--darkgray);
-    color: var(--darkgold);
+    background-color: var(--COLOR_MAIN_2);
+    color: var(--COLOR_ACCENT_1);
 }
 
 .uploadsbuttons {
@@ -209,17 +209,17 @@ html, body {
     height: 50%;
     display: flex;
     flex-direction: column;
-    padding-top: var(--small-padding);
+    padding-top: var(--PADDING_SMALL);
 }
 #databasetitle{
     box-sizing: border-box;
     width: 100%;
-    padding: var(--small-padding);
+    padding: var(--PADDING_SMALL);
 
     text-align: center;
     border: 1px solid var(--border-color);
-    background-color: var(--darkgold);
-    color: black
+    background-color: var(--COLOR_ACCENT_1);
+    color: var(--COLOR_MAIN_1)
 }
 
 #pushbtn{
@@ -227,7 +227,7 @@ html, body {
     font-size: 16px;       /* Font size for buttons */
     cursor: pointer;        /* Pointer cursor on hover */
     color: white;
-    background-color: var(--darkgreen);
+    background-color: var(--COLOR_PUSH);
 }
 
 .uploadsbuttons {
@@ -244,12 +244,18 @@ html, body {
     padding: 10px 15px;    /* Padding for buttons */
     font-size: 16px;       /* Font size for buttons */
     cursor: pointer;        /* Pointer cursor on hover */
-    background-color: var(--darkgray);
+    background-color: var(--COLOR_MAIN_2);
     flex: 1;
+}
+
+#downloaddbbutton{
+    flex: 1;
+    background-color: var(--COLOR_DOWNLOAD);
+    color: white;
 }
 
 #deletedbbutton{
     flex: 1;
-    background-color: var(--darkred);
+    background-color: var(--COLOR_DELETE);
     color: white;
 }

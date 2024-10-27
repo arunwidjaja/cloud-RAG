@@ -6,7 +6,7 @@ backup
 chroma
 scratch.py
 data/
-data_archive/
+archive/
 LLM sample texts/
 myenv
 Sample Documents/

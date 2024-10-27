@@ -17,6 +17,7 @@ import utils
 import config
 
 document_path = utils.get_env_paths()['DOCS']
+archive_path = utils.get_env_paths()['ARCHIVE']
 
 
 def load_documents():
@@ -183,7 +184,7 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
 
 def delete_uploads(file_list: List) -> List:
     """
-    Clears out documents from the data folder, not from the DB.
+    Clears out documents from the uploads folder, not from the DB.
     """
     deleted_uploads = []
     print(f"Clearing selected uploads from: {document_path}")
@@ -203,14 +204,36 @@ def delete_all_uploads() -> List:
     return delete_uploads(all_uploads)
 
 
+def archive_uploads(file_list: List) -> List:
+    """
+    Moves uploads to the archive folder so they can be retrieved later.
+    """
+    archived_uploads = []
+    print(f"Archiving uploads to: {archive_path}")
+    for file_path in file_list:
+        try:
+            shutil.move(file_path, archive_path)
+            archived_upload = utils.extract_file_name(file_path)
+            archived_uploads.append(archived_upload)
+        except Exception as e:
+            print(f'Failed to archive {file_path}. Reason: {e}')
+    return archived_uploads
+
+
+def archive_all_uploads() -> List:
+    all_uploads = [str(file) for file in Path(
+        document_path).rglob('*') if file.is_file()]
+    return archive_uploads(all_uploads)
+
+
 def push_to_database(db: Chroma):
     """
-    Loads docs, adds them to DB
+    pushes documents to the database
     """
     documents = load_documents()
     chunks = split_text(documents)
     documents_list = save_to_chroma(db, chunks)
-    delete_all_uploads()
+    archive_all_uploads()
     return documents_list
 
 

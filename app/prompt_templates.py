@@ -6,6 +6,4 @@ Context:
 
 Question:
 {question}
-
-If the answer is not directly found in the context, do not respond.
 """

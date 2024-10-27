@@ -8,14 +8,13 @@ from typing import List
 # Modules
 import config
 
-# TODO: Implement the condition for S3
-
 
 def get_env_paths() -> dict[str, Path]:
     """
     Sets environment-sensitive paths/values and returns them in a dictionary.
+
     """
-    keys = ['DB', 'DOCS']
+    keys = ['DB', 'DOCS', 'ARCHIVE']
     dynamic_env_values = dict.fromkeys(keys, None)
 
     document_paths = {
@@ -26,6 +25,9 @@ def get_env_paths() -> dict[str, Path]:
         "LOCAL": config.PATH_CHROMA_LOCAL,
         "TEMP": config.PATH_CHROMA_TEMP
     }
+    archive_paths = {
+        "LOCAL": config.PATH_ARCHIVE_LOCAL
+    }
 
     if 'var' in str(config.CURRENT_PATH):
         dynamic_env_values['DB'] = chroma_paths['TEMP']
@@ -33,13 +35,44 @@ def get_env_paths() -> dict[str, Path]:
     else:
         dynamic_env_values['DB'] = chroma_paths['LOCAL']
         dynamic_env_values['DOCS'] = document_paths['LOCAL']
+        dynamic_env_values['ARCHIVE'] = archive_paths['LOCAL']
 
     return dynamic_env_values
 
 
+def download_files(requested_files: List | str) -> List[str] | str:
+    """
+    Downloads the files in the given list to the user's home path.
+    Returns the name of the file(s) that were downloaded as a string or list
+    """
+    source_location = get_env_paths()['ARCHIVE']
+    download_location = str(Path.home())
+    downloaded_files = []
+    file_list = requested_files
+
+    if isinstance(requested_files, str):
+        file_list = [requested_files]
+    for file in file_list:
+        file_name = os.path.basename(file)
+
+        source_path = os.path.join(source_location, file_name)
+        destination_path = os.path.join(download_location, file_name)
+        try:
+            shutil.copy(source_path, destination_path)
+            downloaded_files.append(file_name)
+            print(f"Downloaded {file_name} to {destination_path}")
+        except Exception as e:
+            print(f"Error occurred while attempting to download file: {e}")
+
+    if isinstance(requested_files, str):
+        return downloaded_files[0]
+    return downloaded_files
+
+
 def extract_file_name(paths: List[str] | str) -> List[str] | str:
     """
-    Converts extract the file name from the path or list of paths
+    Extract the file name from the path or list of paths.
+    This works for both regular paths and chunk tags (which are paths that are appended with chunk data).
     """
     file_name_list = []
     path_list = paths
@@ -48,7 +81,7 @@ def extract_file_name(paths: List[str] | str) -> List[str] | str:
         path_list = [paths]
 
     for path in path_list:
-        path_trim = path.split('\\')[-1]  # gets file name
+        path_trim = os.path.basename(path)  # gets file name
         path_trim = re.sub(r':\d+:\d+$', '', path_trim)  # trims off tags
         file_name_list.append(path_trim)
 
@@ -133,19 +166,19 @@ def copy_directory(src_path: str, dest_path: str):
     shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
 
 
-def writeIDs(db: Chroma, file_name):
-    """
-    Writes all IDs of the database to file_name
-    """
-    metadata = db._collection.get()
-    ids = "\n".join(metadata["ids"])
-    with open(file_name, 'w') as file:
-        file.write(ids)
-
-
 def main():
     print("running utils.py")
 
 
 if __name__ == "__main__":
     main()
+
+
+# def writeIDs(db: Chroma, file_name):
+#     """
+#     Writes all IDs of the database to file_name
+#     """
+#     metadata = db._collection.get()
+#     ids = "\n".join(metadata["ids"])
+#     with open(file_name, 'w') as file:
+#         file.write(ids)

@@ -1,5 +1,6 @@
 fileInput.addEventListener('change', get_uploads_from_user);
 pushToDBBtn.addEventListener('click', pushToDB);
+downloadBtn.addEventListener('click', downloadFiles);
 deleteBtn.addEventListener('click', deleteFiles);
 deleteUploadsBtn.addEventListener('click', deleteUploads);
 uploadBTN.addEventListener('click', function(){
@@ -43,7 +44,7 @@ async function get_uploads_from_user(event) {
 }
 
 // Push uploads to DB
-async function pushToDB(){
+async function pushToDB() {
     try {
         const pushed_files = await fetch('/push_files_to_database');
         if (!pushed_files.ok) {
@@ -58,9 +59,10 @@ async function pushToDB(){
         return [];
     }
     populateUploadList()
-    populateFileList()
-    
+    populateFileList()   
 }
+
+
 
 function appendConversation(content, type) {
     const contentDiv = document.createElement("div");
@@ -171,6 +173,27 @@ async function deleteFiles () {
         writeToLog("Deleted from DB: " + deleted_files_JSON)
     } catch (error) {
         console.error('Error deleting files:', error)
+    }
+}
+
+async function downloadFiles() {
+    const download_list = {
+        download_list: selectedFiles
+    };
+    try{
+        const downloaded_files = await fetch('/download_files', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(download_list)
+        });
+        
+        selectedFiles = [];
+        const downloaded_files_JSON = await downloaded_files.json();
+        writeToLog("Downloaded files from DB: " + downloaded_files_JSON)
+    } catch (error) {
+        console.error('Error downloading files:', error)
     }
 }
 

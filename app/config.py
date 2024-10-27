@@ -24,15 +24,15 @@ SEC_DESC_1A = """
 Resource Paths:
 """
 
-# Local Paths
 PATH_CHROMA_LOCAL = CURRENT_PATH / Path('chroma')
 PATH_CHROMA_TEMP = Path('/tmp/chroma')
 PATH_CHROMA_S3 = PATH_CHROMA_TEMP
 
-PATH_DOCUMENTS_LOCAL = CURRENT_PATH / Path('data')
-PATH_DOCUMENTS_TEMP = Path('/tmp/data')
+PATH_DOCUMENTS_LOCAL = CURRENT_PATH / Path('uploads')
+PATH_DOCUMENTS_TEMP = Path('/tmp/uploads')
 PATH_DOCUMENTS_S3 = PATH_DOCUMENTS_TEMP
 
+PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('archive')
 
 PATH_TEMPLATES = CURRENT_PATH / Path('templates')
 PATH_STATIC = CURRENT_PATH / Path('static')
