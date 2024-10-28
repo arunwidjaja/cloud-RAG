@@ -1,23 +1,19 @@
-# External packages
-from typing import List, Tuple
-import argparse
-# from langchain_community.vectorstores import Chroma
+# External Modules
+import openai
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-import openai
-from typing import Tuple, Dict, List
-from dataclasses import dataclass, field
+from typing import Dict, List
 
-# Modules
+# Local Modules
 import config
-import prompt_templates
 import utils
+import prompt_templates
 
 openai.api_key = config.OPENAI_API_KEY
 
 
-class QueryReponse:
+class QueryResponse:
     """
     Contains message, id, and a list of dictionaries containing source and context
     """
@@ -48,7 +44,7 @@ def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
 
 
 def query_rag(db:
-              Chroma, query_text: str) -> QueryReponse:
+              Chroma, query_text: str) -> QueryResponse:
     """
     Query LLM, return response and context
     """
@@ -107,7 +103,7 @@ def query_rag(db:
     LLM_message = LLM_base_response.content
     LLM_message_id = LLM_base_response.id
 
-    query_response = QueryReponse(
+    query_response = QueryResponse(
         message_arg=LLM_message, id_arg=LLM_message_id, contexts_arg=contexts)
 
     print(query_response)
