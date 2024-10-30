@@ -206,5 +206,5 @@ async def delete_uploads(delete_request: DeleteRequest):
 # Run main to test locally on localhost:8000
 # Don't forget to set initialize_chroma_db.initialize() to 'local', not 'lambda'
 if __name__ == "__main__":
-    print(f"Running the FastAPI server locally on port {config.PORT}")
-    uvicorn.run("api_handler:app", host=config.HOST, port=config.PORT)
+    print(f"Running the FastAPI server locally on port {config.PORT_APP}")
+    uvicorn.run("api_handler:app", host=config.HOST, port=config.PORT_APP)

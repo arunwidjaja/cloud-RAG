@@ -2,6 +2,7 @@
 *.pyc
 *.notes
 .DS_Store
+*.log
 backup
 chroma
 scratch.py

@@ -27,6 +27,7 @@ Resource Paths:
 PATH_CHROMA_LOCAL = CURRENT_PATH / Path('chroma')
 PATH_CHROMA_TEMP = Path('/tmp/chroma')
 PATH_CHROMA_S3 = PATH_CHROMA_TEMP
+PATH_CHROMA_SERVER = CURRENT_PATH / Path('chroma_server')
 
 PATH_DOCUMENTS_LOCAL = CURRENT_PATH / Path('uploads')
 PATH_DOCUMENTS_TEMP = Path('/tmp/uploads')
@@ -67,7 +68,8 @@ Authentication Constants: Keys and addresses
 ============================================
 """
 HOST = "0.0.0.0"
-PORT = 8000
+PORT_APP = 8000
+PORT_DB = 8001
 load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
 AWS_LAMBDA_SECRET_KEY = os.environ['AWS_LAMBDA_SECRET_KEY']
