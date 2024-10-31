@@ -1,13 +1,12 @@
+from imports import *
+
+# Local Modules
+import config
+import utils
+
 # This file is for development use only.
 # Don't use any of these functions in production code.
 # Don't import this file into any modules
-
-import chromadb.config
-import config
-import shutil
-import utils
-import chromadb
-import os
 
 
 def resetDB(db_path=config.PATH_CHROMA_LOCAL):

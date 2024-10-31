@@ -1,14 +1,9 @@
-# External packages
-from langchain_chroma import Chroma
-from get_embedding_function import get_embedding_function
-import os
-import shutil
-import boto3
-import utils
+from imports import *
 
-
-# Modules
+# Local Modules
 import config
+import utils
+from get_embedding_function import get_embedding_function
 
 
 # TODO: Works when called locally after AWS credentials are configured through terminal, but not when called from Lambda function.

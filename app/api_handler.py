@@ -1,23 +1,11 @@
-# External packages
-from fastapi import FastAPI, UploadFile, HTTPException, File
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import JSONResponse
-from mangum import Mangum
-from pydantic import BaseModel
-from starlette.requests import Request
-import uvicorn
-from contextlib import asynccontextmanager
+from imports import *
 
-from typing import List
-import os
-import shutil
-
-# Modules
+# Local Modules
 import config
 import utils
 from query_data import query_rag
 import initialize_chroma_db
+import initialize_chroma_http_db
 import update_database
 
 
@@ -32,7 +20,8 @@ async def lifespan(app: FastAPI):
     print("FastAPI lifespan is starting")
     global database
     try:
-        database = initialize_chroma_db.initialize()
+        # database = initialize_chroma_db.initialize()
+        database = initialize_chroma_http_db.initialize_http()
     except Exception as e:
         print(f"FastAPI startup error: {e}")
         raise
