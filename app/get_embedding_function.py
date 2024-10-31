@@ -1,10 +1,6 @@
-# External packages
-# from langchain_community.embeddings.ollama import OllamaEmbeddings
-# from langchain_community.embeddings.bedrock import BedrockEmbeddings
-from langchain_openai import OpenAIEmbeddings
-import openai
+from imports import *
 
-# Modules
+# Local Modules
 import config
 
 # load_dotenv()

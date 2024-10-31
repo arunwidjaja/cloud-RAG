@@ -1,6 +1,4 @@
-from dotenv import load_dotenv
-import os
-from pathlib import Path
+from imports import *
 
 SEC_DESC_START = """
 __________________________________________________________
