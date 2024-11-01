@@ -3,7 +3,6 @@ from imports import *
 # Local Modules
 import config
 
-# load_dotenv()
 openai.api_key = config.OPENAI_API_KEY
 
 
