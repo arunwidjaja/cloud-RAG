@@ -45,7 +45,7 @@ def chunk_text(documents: List[Document]) -> List[Document]:
     return chunks
 
 
-def add_chunk_ids(chunks):
+def add_chunk_ids(chunks) -> List[Document]:
     """
     Adds IDs to the chunks you're trying to add. Returns a list of Chunks.
     The chunk IDs are formatted as "source:page number:chunk index".
@@ -76,7 +76,7 @@ def add_chunk_ids(chunks):
     return chunks
 
 
-def add_sentiment(chunks):
+def add_sentiment(chunks) -> List[Document]:
     """
     Adds sentiment labels to chunks
     """
@@ -84,4 +84,16 @@ def add_sentiment(chunks):
     for chunk in chunks:
         sentiment = sentiment_analyzer(chunk.page_content)[0]
         chunk.metadata['sentiment'] = sentiment['label']
+    return chunks
+
+
+def process_documents() -> List[Document]:
+    """
+    Runs the document processing pipeline.
+    Returns a list of chunks that will be added to the DB.
+    """
+    documents = load_documents()
+    chunks = chunk_text(documents)
+    chunks = add_chunk_ids(chunks)
+    chunks = add_sentiment(chunks)
     return chunks

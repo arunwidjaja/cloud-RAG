@@ -7,7 +7,7 @@ import utils
 import config
 
 
-def save_to_chroma(db: Chroma, chunks: List[Document]) -> List:
+def save_to_chroma(db: Chroma, chunks: List[Document]) -> List[str] | str:
     """
     Returns a list of the documents that were saved to the DB
     """
@@ -68,7 +68,7 @@ def save_to_chroma(db: Chroma, chunks: List[Document]) -> List:
     return utils.extract_file_name(added_documents)
 
 
-def delete_db_files(db: Chroma, file_list: List) -> List:
+def delete_db_files(db: Chroma, file_list: List) -> List[str]:
     """
     Deletes all chunks associated with the given files from the DB.
     """
@@ -99,12 +99,12 @@ def delete_db_files(db: Chroma, file_list: List) -> List:
     return deleted_files
 
 
-def push_to_database(db: Chroma):
+def push_to_database(db: Chroma) -> List[str]:
     """
-    pushes documents to the database
+    Pushes uploads to the database then archives them.
+    Returns a list of the pushed uploads.
     """
-    documents = doc_ops.load_documents()
-    chunks = doc_ops.chunk_text(documents)
+    chunks = doc_ops.process_documents()
     documents_list = save_to_chroma(db, chunks)
     doc_ops_utils.archive_all_uploads()
     return documents_list
