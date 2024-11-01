@@ -1,13 +1,16 @@
+# File Types
 *.env
 *.pyc
 *.notes
-.DS_Store
 *.log
-backup
-chroma
+
+# Files
 scratch.py
+
+# Folders
+chroma/
+myenv/
+Sample Documents/
 data/
 archive/
-LLM sample texts/
-myenv
-Sample Documents/
+uploads/

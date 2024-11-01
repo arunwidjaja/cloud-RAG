@@ -3,10 +3,12 @@ from imports import *
 # Local Modules
 import config
 import utils
+import init_db
+import db_ops
+import db_ops_utils
+import doc_ops_utils
+
 from query_data import query_rag
-import initialize_chroma_db
-import initialize_chroma_http_db
-import update_database
 
 
 database = None
@@ -20,8 +22,8 @@ async def lifespan(app: FastAPI):
     print("FastAPI lifespan is starting")
     global database
     try:
-        database = initialize_chroma_db.initialize()
-        # database = initialize_chroma_http_db.initialize_http()
+        database = init_db.init_db()
+        # database = init_db.init_http_db()
     except Exception as e:
         print(f"FastAPI startup error: {e}")
         raise
@@ -77,7 +79,7 @@ async def get_db_file_list():
     """
     print(f"API CALL: get_db_file_list")
     try:
-        file_list = utils.get_db_file_names(database)
+        file_list = db_ops_utils.get_db_file_names(database)
         return JSONResponse(content=file_list)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")
@@ -90,7 +92,7 @@ async def get_db_uploads_list():
     """
     print("API CALL: get_uploads_list")
     try:
-        file_list = utils.get_uploads_list()
+        file_list = doc_ops_utils.get_uploads_list()
         return JSONResponse(content=file_list)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")
@@ -103,7 +105,7 @@ async def push_files_to_database():
     """
     print("API CALL: push_files_to_database")
     try:
-        pushed_files = update_database.push_to_database(database)
+        pushed_files = db_ops.push_to_database(database)
         return pushed_files
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
@@ -118,7 +120,7 @@ async def download_files(request: DownloadRequest):
     """
     print("API CALL: download_files")
     try:
-        download_list = utils.download_files(request.download_list)
+        download_list = db_ops_utils.download_files(request.download_list)
         return download_list
     except Exception as e:
         raise Exception(f"Exception occurred when downloading files: {e}")
@@ -172,7 +174,7 @@ async def delete_files(delete_request: DeleteRequest):
     """
     files_to_delete = delete_request.deletion_list
     try:
-        deleted_files = update_database.delete_db_files(
+        deleted_files = db_ops.delete_db_files(
             database, files_to_delete)
         return deleted_files
     except Exception as e:
@@ -186,7 +188,7 @@ async def delete_uploads(delete_request: DeleteRequest):
     """
     files_to_delete = delete_request.deletion_list
     try:
-        deleted_files = update_database.delete_uploads(files_to_delete)
+        deleted_files = doc_ops_utils.delete_uploads(files_to_delete)
         return deleted_files
     except Exception as e:
         raise e

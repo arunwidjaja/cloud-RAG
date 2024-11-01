@@ -1,10 +1,18 @@
 # LangChain
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.prompts import ChatPromptTemplate
+from langchain.prompts import PromptTemplate
 from langchain_chroma import Chroma
 # from langchain_community.embeddings.bedrock import BedrockEmbeddings
 # from langchain_community.embeddings.ollama import OllamaEmbeddings
+from langchain_community.document_loaders import TextLoader
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
+from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+from transformers import pipeline
 
 # OpenAI
 import openai
@@ -29,7 +37,9 @@ from starlette.requests import Request
 import bcrypt
 import boto3
 import os
+import re
 import shutil
+from collections import Counter
 from dotenv import load_dotenv
 from pathlib import Path
 from typing import Dict, List
