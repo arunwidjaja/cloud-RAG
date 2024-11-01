@@ -36,9 +36,6 @@ def purgeDB(db_path=config.PATH_CHROMA_LOCAL):
         elif os.path.isdir(item_path):
             shutil.rmtree(item_path)
 
-# PS Commands
-# chroma utils vacuum --path "C:/Users/Arun Widjaja/Documents/_PERSONAL_DOCUMENTS/Programs - Python/openAIRAG/app/chroma"
-
 
 def main():
     print("Starting Maintenance Tasks")
