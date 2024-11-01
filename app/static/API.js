@@ -49,7 +49,7 @@ async function get_uploads_from_user(event) {
 // Push uploads to DB
 async function pushToDB() {
     try {
-        const pushed_files = await fetch('/push_files_to_database');
+        const pushed_files = await fetch('/initiate_push_to_db');
         if (!pushed_files.ok) {
             throw new Error('Network response was not ok');
         }

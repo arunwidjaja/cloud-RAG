@@ -37,6 +37,14 @@ class QueryModel(BaseModel):
     query_text: str
 
 
+class DeleteRequest(BaseModel):
+    deletion_list: List
+
+
+class DownloadRequest(BaseModel):
+    download_list: List
+
+
 class ContextModel(BaseModel):
     context: str
     source: str
@@ -46,14 +54,6 @@ class MessageModel(BaseModel):
     message: str
     id: str
     contexts: List[ContextModel]
-
-
-class DeleteRequest(BaseModel):
-    deletion_list: List
-
-
-class DownloadRequest(BaseModel):
-    download_list: List
 
 
 # Mount static files (JS, CSS)
@@ -98,8 +98,8 @@ async def get_db_uploads_list():
         raise Exception(f"Exception occured when getting file list: {e}")
 
 
-@app.get("/push_files_to_database")
-async def push_files_to_database():
+@app.get("/initiate_push_to_db")
+async def initiate_push_to_db():
     """
     Updates the database with all the uploaded documents
     """
@@ -195,7 +195,6 @@ async def delete_uploads(delete_request: DeleteRequest):
 
 
 # Run main to test locally on localhost:8000
-# Don't forget to set initialize_chroma_db.initialize() to 'local', not 'lambda'
 if __name__ == "__main__":
     print(f"Running the FastAPI server locally on port {config.PORT_APP}")
     uvicorn.run("api_handler:app", host=config.HOST, port=config.PORT_APP)

@@ -4,8 +4,8 @@
 *.notes
 *.log
 
-# Files
-scratch.py
+# Utility or temporary files not necessary for the app
+app/_*
 
 # Folders
 chroma/
