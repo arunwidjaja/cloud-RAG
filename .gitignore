@@ -3,6 +3,7 @@
 *.pyc
 *.notes
 *.log
+*.htpasswd
 
 # Utility or temporary files not necessary for the app
 app/_*

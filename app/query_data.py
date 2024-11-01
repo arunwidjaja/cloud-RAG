@@ -2,6 +2,7 @@ from imports import *
 
 # Local Modules
 import config
+import db_ops_utils
 import utils
 import prompt_templates
 
@@ -45,7 +46,7 @@ def query_rag(db:
     """
     print(f"query_rag has been called with the query: {query_text}")
     print("documents in DB: ")
-    print(utils.get_db_file_names(db))
+    print(db_ops_utils.get_db_file_names(db))
 
     model = ChatOpenAI()
     prompt_template = prompt_templates.PROMPT_TEMPLATE
