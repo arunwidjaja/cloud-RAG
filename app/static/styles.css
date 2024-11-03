@@ -1,14 +1,17 @@
 :root {
+    /* main colors */
     --COLOR_MAIN_1: #000000;
     --COLOR_MAIN_2: #1D1D1D;
+    --COLOR_FONT_1: #000000;
     --COLOR_ACCENT_1: #856107;
+
     --COLOR_DELETE: #8C0002;
     --COLOR_PUSH: #0b4400;
     --COLOR_DOWNLOAD: #0044ff;
-    --COLOR_DEBUG: #ff00bf;
 
-    --PADDING-LARGE: 15px;
+    /* dimension attributes */
     --PADDING_STANDARD: 10px;
+    --PADDING-LARGE: 15px;
     --PADDING_SMALL: 5px;
 
     --MARGIN_STANDARD: 20px;
@@ -17,6 +20,10 @@
 
     --WIDTH_ICON_STANDARD: 32px;
     --HEIGHT_ICON_STANDARD: 32px;
+
+    /* debugging colors */
+    --COLOR_DEBUG: #ff00ff;
+    --COLOR_DEBUG_2: #00ff00;
 }
 
 * {
@@ -96,10 +103,31 @@ html, body {
 }
 #auth {
     padding: var(--PADDING_SMALL);
+
+    display: flex;
+    flex-direction: column;
     background-color: var(--COLOR_MAIN_2);
     border: 1px solid var(--COLOR_ACCENT_1);
-    flex: 0 0 25%;
+    flex: 1;
 }
+#shortcuts {
+    padding: var(--PADDING_SMALL);
+
+    display: flex;
+    flex-direction: column;
+    background-color: var(--COLOR_MAIN_2);
+    border: 1px solid var(--COLOR_ACCENT_1);
+    flex: 1;
+}
+
+.shortcut_button {
+    padding: 10px 15px;    /* Padding for buttons */
+    font-size: 16px;       /* Font size for buttons */
+    cursor: pointer;        /* Pointer cursor on hover */
+    background-color: var(--COLOR_ACCENT_1);
+    color: var(--COLOR_FONT_1);
+}
+
 #log {
     padding: var(--PADDING_SMALL);
     background-color: var(--COLOR_MAIN_1);
@@ -144,8 +172,9 @@ html, body {
 .download_context {
     display: flex;
     align-items: center;
+    margin-left: auto;
     /* background-color: var(--COLOR_DEBUG); */
-    color: var(--COLOR_MAIN_1);
+    color: var(--COLOR_FONT_1);
     padding: var(--PADDING-SMALL);
 }
 .conversation_input {
@@ -156,7 +185,7 @@ html, body {
     padding: var(--PADDING_STANDARD);
     border-radius: var(--PADDING_STANDARD);
     background-color: var(--COLOR_ACCENT_1);
-    color: var(--COLOR_MAIN_1);
+    color: var(--COLOR_FONT_1);
 }
 
 
@@ -174,7 +203,7 @@ html, body {
     border-radius: var(--PADDING_STANDARD);
 
     background-color: var(--COLOR_ACCENT_1);
-    color: var(--COLOR_MAIN_1);
+    color: var(--COLOR_FONT_1);
 }
 
 /* Layer 3, Right Bar */
@@ -196,7 +225,7 @@ html, body {
     text-align: center;
     border: 1px solid var(--border-color);
     background-color: var(--COLOR_ACCENT_1);
-    color: var(--COLOR_MAIN_1);
+    color: var(--COLOR_FONT_1);
 }
 
 .filelist{
@@ -235,7 +264,7 @@ html, body {
     text-align: center;
     border: 1px solid var(--border-color);
     background-color: var(--COLOR_ACCENT_1);
-    color: var(--COLOR_MAIN_1)
+    color: var(--COLOR_FONT_1)
 }
 
 #pushbtn{
@@ -282,4 +311,14 @@ html, body {
     width: var(--WIDTH_ICON_STANDARD);
     height: var(--HEIGHT_ICON_STANDARD);
     cursor: pointer;
+}
+
+/* Dev Elements */
+.devtools{
+    padding: 10px 15px;    /* Padding for buttons */
+    font-size: 16px;       /* Font size for buttons */
+    cursor: pointer;        /* Pointer cursor on hover */
+    background-color: var(--COLOR_DEBUG);
+    color: var(--COLOR_DEBUG_2);
+    margin-top: auto;
 }

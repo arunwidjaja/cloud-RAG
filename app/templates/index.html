@@ -28,15 +28,23 @@
                     <img class="icon" src="../static/images/github_light.svg"/>
                   </a>
             </div>
-            <div id="auth">(WIP) Auth/Collections Section</div>
+            <div id="auth">
+                (WIP) Auth/Collections Section
+                <button class="devtools" id="dev_create_input">Create input bubble</button>
+                <button class="devtools" id="dev_create_response">Create response bubble</button>
+                <button class="devtools" id="dev_create_context">Create context bubble</button>
+            </div>
+            <div id="shortcuts">
+                <button class="shortcut_button" id="summarize">Generate Summary</button>
+                <button class="shortcut_button" id="sentiment">Analyze Sentiment</button>
+            </div>
             <div id="log">
             </div>
         </div>
         <!-- Middle Pane -->
         <div class="L1" id="L1S2">
-            <div id="conversation" class="output">
-            </div>
-            <textarea id="userinput" oninput="autoExpand(this)"></textarea>
+            <div id="conversation" class="output"></div>
+            <textarea id="userinput" oninput="auto_expand(this)"></textarea>
         </div>
         <!-- Right Pane -->
         <div class="L1" id="L1S3">

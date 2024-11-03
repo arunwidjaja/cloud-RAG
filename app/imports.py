@@ -1,6 +1,7 @@
 # LangChain
-from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.chains.llm import LLMChain
 from langchain.prompts import ChatPromptTemplate
 from langchain.prompts import PromptTemplate
 from langchain_chroma import Chroma
