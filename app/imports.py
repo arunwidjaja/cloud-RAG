@@ -40,7 +40,7 @@ import boto3
 import os
 import re
 import shutil
-from collections import Counter
+from collections import Counter, defaultdict
 from dotenv import load_dotenv
 from pathlib import Path
 from typing import Dict, List

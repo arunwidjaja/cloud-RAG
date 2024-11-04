@@ -2,6 +2,52 @@ from imports import *
 
 # Modules
 import config
+import hashlib
+import time
+
+
+def format_time(ms: float):
+    """
+    Accepts millisconds and returns the amount in hours, mins, secs, and ms
+    """
+    # Calculate hours, minutes, seconds, and remaining milliseconds
+    hours = ms // (1000 * 60 * 60)
+    remaining_ms = ms % (1000 * 60 * 60)
+
+    minutes = remaining_ms // (1000 * 60)
+    remaining_ms %= (1000 * 60)
+
+    seconds = remaining_ms // 1000
+    remaining_ms %= 1000
+
+    # pad to 2 digits
+    time_components = []
+    if hours > 0:
+        time_components.append(f"{hours:02} hours")
+    if minutes > 0:
+        time_components.append(f"{minutes:02} minutes")
+    if seconds > 0:
+        time_components.append(f"{seconds:02} seconds")
+    if remaining_ms > 0:
+        time_components.append(f"{remaining_ms:.3f} milliseconds")
+
+    # Join the components with commas and return the result
+    return ", ".join(time_components)
+
+
+def timer(function):
+    """
+    Wrapper for timing functions
+    """
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = function(*args, **kwargs)
+        end_time = time.perf_counter()
+        elapsed_time_ms = (end_time - start_time) * 1000
+        print(f"{function.__name__} completed in: {
+              format_time(elapsed_time_ms)}")
+        return result
+    return wrapper
 
 
 def get_env_paths() -> dict[str, Path]:
@@ -96,6 +142,39 @@ def copy_directory(src_path: str, dest_path: str):
         os.makedirs(dest_path)
     print(f"Copying {src_path} to {dest_path}")
     shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
+
+
+def get_hash(filepath, hash_algorithm="md5", chunk_size=8192):
+    """
+    Gets the file hash.
+    Defaults to md5 and 8 KB chunk
+    """
+    hash_func = hashlib.new(hash_algorithm)
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(chunk_size), b""):
+            hash_func.update(chunk)
+    return hash_func.hexdigest()
+
+
+@timer
+def get_hash_dir(directory, hash_algorithm="md5", chunk_size=8192) -> dict:
+    dir_hash = {}
+    for item in os.listdir(directory):
+        file_path = os.path.join(directory, item)
+        if (os.path.isfile(file_path)):
+            file_hash = get_hash(file_path, hash_algorithm, chunk_size)
+            dir_hash[file_hash] = file_path
+    return dir_hash
+
+
+def get_word_count(file_path) -> int:
+    """
+    Gets word count of the file at file_path
+    """
+    with open(file_path, 'r', encoding='utf-8') as file:
+        text = file.read()  # Read the entire file as a string
+        words = text.split()  # Split text by whitespace to get words
+    return len(words)  # Count the number of words
 
 
 def main():

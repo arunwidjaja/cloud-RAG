@@ -16,9 +16,9 @@ class QueryResponse:
 
     message: str
     id: str
-    contexts: List[Dict[str, str]]
+    contexts: List[dict]
 
-    def __init__(self, message_arg: str, id_arg: str, contexts_arg: List[Dict[str, str]]):
+    def __init__(self, message_arg: str, id_arg: str, contexts_arg: List[dict]):
         self.message = message_arg
         self.id = id_arg
         self.contexts = contexts_arg
@@ -44,12 +44,8 @@ def query_rag(db:
     """
     Query LLM, return response and context
     """
-    print(f"query_rag has been called with the query: {query_text}")
-    print("documents in DB: ")
-    print(db_ops_utils.get_db_file_names(db))
-
     model = ChatOpenAI()
-    prompt_template = prompt_templates.PROMPT_TEMPLATE
+    prompt_template = prompt_templates.PT_RAG
 
     # search for relevant context
     retrieved_docs = db.similarity_search_with_relevance_scores(
@@ -60,24 +56,25 @@ def query_rag(db:
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
         LLM_message = "Unable to find matching results."
         LLM_message_id = config.DEFAULT_MESSAGE_ID
-        context = dict.fromkeys(['context', 'source'], None)
+        context = dict.fromkeys(['context', 'source', 'hash'], None)
     else:
         for doc in retrieved_docs:
             # store source and context in dictionary
-            context = dict.fromkeys(['context', 'source'], None)
+            context = dict.fromkeys(['context', 'source', 'hash'], None)
 
-            doc_source = doc[0].metadata['source']
-            # doc_source = utils.extract_file_name(doc_source)
+            doc_source = doc[0].metadata['source_base_name']
+            doc_hash = doc[0].metadata['source_hash']
             doc_context = doc[0].page_content
 
             context['source'] = doc_source
+            context['hash'] = doc_hash
             context['context'] = doc_context
 
             # merge contexts from sources that have already been added
             source_is_duplicate = False
             for entry in contexts:
-                source_existing = entry['source']
-                if source_existing == doc_source:
+                hash_existing = entry['hash']
+                if hash_existing == doc_hash:
                     entry['context'] = (
                         entry['context'] +
                         '\n...\n' +
