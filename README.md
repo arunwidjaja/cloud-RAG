@@ -1,14 +1,19 @@
 # cloud-RAG
 
-This is a RAG client that allows users to query a database of assorted file types via a web interface. It's currently powered by OpenAI's ADA and GPT-3.5 models, and runs on AWS Lambda.
+Cloud RAG is a web-based RAG GenAI client that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
+Text transformation, embedding, and generation is currently powered primarily by DistilBERT, ADA, and GPT-4.
+
+Currently, Cloud RAG does not support local LLMs.
 
 ## Getting Started
 
-The web UI is not currently publicly accessible but you can compile and run the app locally:
+Cloud RAG can be compiled and run locally, but requires OpenAI API keys:
 
 1. Update <code>/app/config.py</code> with local Chroma DB and file upload paths.
 
-2. Create <code>/.env</code> and add your <code>OPENAI_API_KEY</code> key.
+2. Update <code>/.env</code> and add your <code>OPENAI_API_KEY</code> key.
+
+3. LLM paramters can be configured in <code>/app/config.py</code>. Prompt templates and presets can be configured in <code>/app/prompt_templates.py</code>
 
 
 ## Project Stack
@@ -21,29 +26,29 @@ The web UI is not currently publicly accessible but you can compile and run the 
 - Docker, Amazon AWS - Deployment
 - HTML, CSS, JavaScript - Frontend
 
-## Architecture
+## Developer Notes
 
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/cloud_rag_architecture.svg" />
+### 2024.11.04 - v0.2
 
-## Major Features Roadmap
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.2.PNG" />
 
-- Database collections support
-  - Creation, deletion, and pushing to collections
-  - Ability to search within specific collections
-- Enabling configuration of LLM and DB via front end
-  - Text splitter parameters such as chunk size and overlap
-  - K and P value tweaking
-  - Custom file and upload paths
-- Implementing support for chat memory
-  - Include context in memory?
-- Support for HTTP client and authentication
-  - Chroma HTTP client supports token and HTTP authentication
+#### Summary
+- Document summary shortcut
+- Theme analysis shortcut
+- File download
+- Chat-style interface
+- Security updates
 
-## Development Notes
+v0.2 contains new key features as well as some added utilities. Shortcuts have been added to the sidebar for document analysis presets, such as summarizing DB documents and extracting main themes with supporting documentation. Documents are analyzed for sentiment and pushed to the DB with sentiment data, which will be used for sentiment analysis in a future update. The client now displays output in a chat-style interface with user and client chat 'bubbles,' and any source files associated with a RAG response can now be downloaded directly from the conversation UI. The backend also stores any source files pushed to the DB, which can be downloaded by the user.
 
-2024.10.21 - v0.1
+Document retrieval has been updated to use md5 hashes instead of file paths. Any backend paths as well as source file paths are not revealed to the frontend logic.
 
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.1.PNG?raw=true" />
+A library of prompt templates have been added. General purpose templates as well as templates tuned for specific use cases, such as analyzing for themes, sentiment, etc. are stored in configurable presets.
+
+### 2024.10.21 - v0.1
+
+#### Summary
+- First prototype
 
 v0.1 is the first prototype with all of the basic functionality implemented locally. Database operations can be executed via the frontend UI: uploading files, viewing DB contents/uploads, querying the DB, deleting selected files from the DB, as well as logging DB actions.
 
