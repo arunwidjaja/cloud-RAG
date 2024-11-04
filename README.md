@@ -15,6 +15,7 @@ The web UI is not currently publicly accessible but you can compile and run the 
 
 - Python
   - Langchain - LLM framework
+  - HuggingFace - Transformers
   - Chroma - Vector DB
   - FastAPI
 - Docker, Amazon AWS - Deployment
