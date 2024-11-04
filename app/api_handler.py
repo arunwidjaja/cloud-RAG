@@ -9,6 +9,7 @@ import db_ops_utils
 import doc_ops_utils
 
 from query_data import query_rag
+from summarize import summarize_map_reduce
 
 
 database = None
@@ -43,6 +44,11 @@ class DeleteRequest(BaseModel):
 
 class DownloadRequest(BaseModel):
     download_list: List
+
+
+class SummarizeRequest(BaseModel):
+    file_list: List
+    preset: str
 
 
 class ContextModel(BaseModel):
@@ -112,6 +118,23 @@ async def initiate_push_to_db():
         raise Exception(f"Exception occured when pushing files: {e}")
 
 # POST OPERATIONS
+
+
+@app.post("/summary")
+async def summarize_files(request: SummarizeRequest):
+    """
+    Generates a map-reduce summary of the specified files.
+    """
+    print("API CALL: summarize_files")
+    try:
+        summary = summarize_map_reduce(
+            db=database,
+            doc_list=request.file_list,
+            preset=request.preset
+        )
+        return summary
+    except Exception as e:
+        raise Exception(f"Exception occurred when generating summary: {e}")
 
 
 @app.post("/download_files")

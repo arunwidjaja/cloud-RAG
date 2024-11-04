@@ -1,13 +1,22 @@
 PT_RAG = """
-Based only on the provided context, please answer the question.
+Based only on the provided context, please answer the question or provide context supporting the statement.
 Do not use any knowledge outside of the context. 
 
 Context:
 {context}
 
-Question:
+Question or statement:
 {question}
 """
+
+PT_MAP_GENERAL = """
+Summarize the following documents.
+
+Documents:
+
+{docs}
+"""
+
 PT_MAP_EVENT_INTERVIEWS_GENERAL = """
 The following documents are segments of interviews with attendees at an event.
 Summarize them.
@@ -44,8 +53,24 @@ Documents:
 {docs}
 """
 
+PT_REDUCE_GENERAL = """
+Provide a concise summary of the following documents.
+
+Documents:
+
+{docs}
+"""
+
 PT_REDUCE_THEMES = """
-Provide a concise summary of the following documents that highlights some key themes.
+Provide a concise summary of the following documents that highlights a few common themes found throughout them.
+
+Documents:
+
+{docs}
+"""
+
+PT_REDUCE_THEMES_CONCISE = """
+Distill the following documents into a single, concise statement that captures the tone of the feedback on the event.
 
 Documents:
 
@@ -59,3 +84,11 @@ Documents:
 
 {docs}
 """
+
+PT_PRESETS = {
+    'GENERAL': (PT_MAP_GENERAL, PT_REDUCE_GENERAL),
+    'THEMES_GENERAL': (PT_MAP_GENERAL, PT_REDUCE_THEMES),
+    'SENTIMENT_GENERAL': (PT_MAP_GENERAL, PT_REDUCE_SENTIMENT),
+    'THEMES_INTERVIEWS_1': (PT_MAP_EVENT_INTERVIEWS_GENERAL, PT_REDUCE_THEMES),
+    'THEMES_INTERVIEWS_HIGHLIGHTS_1': (PT_MAP_EVENT_INTERVIEWS_GENERAL, PT_REDUCE_THEMES_CONCISE)
+}

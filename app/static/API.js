@@ -4,7 +4,8 @@ const PATH_DOWNLOAD_ICON = '../static/images/download_light.svg'
 file_input.addEventListener('change', get_uploads_from_user);
 
 summary_btn.addEventListener('click', generate_summary);
-// sentiment_btn.addEventListener('click', analyze_sentiment);
+summary_all_btn.addEventListener('click', generate_summary_all);
+sentiment_btn.addEventListener('click', analyze_sentiment);
 highlights_btn.addEventListener('click', generate_highlights);
 
 push_to_db_btn.addEventListener('click', push_to_DB);
@@ -18,12 +19,41 @@ upload_btn.addEventListener('click', function(){
 user_input.addEventListener('keydown', capture_input);
 
 // Shortcut: Generate summary
-async function generate_summary() {
-    add_bubble(
-        content_arg = 'Dummy Summary',
-        type_arg = 'OUTPUT'
-    )
+async function generate_summary(files) {
+    if (!Array.isArray(files)) {
+        files = selected_files;
+    }
+    const summary_list = {
+        file_list: files,
+        preset: 'GENERAL'
+    };
+    try{
+        const summary = await fetch('/summary', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(summary_list)
+        });
+        const summary_JSON = await summary.json();
+        add_bubble(
+            content_arg = summary_JSON,
+            type_arg = 'OUTPUT'
+        )
+    } catch (error) {
+        console.error('Error generating summary:', error)
+    }
+    unselect_all_files();
 }
+async function generate_summary_all() {
+    const db_files_metadata = await fetch_db_files_metadata();
+    let all_hashes = [];
+    for (const metadata of db_files_metadata) {
+        all_hashes.push(metadata.hash);
+    }
+    generate_summary(all_hashes)
+}
+
 // Shortcut: Generate sentiment analysis
 async function analyze_sentiment() {
     add_bubble(
@@ -32,10 +62,29 @@ async function analyze_sentiment() {
     )
 }
 async function generate_highlights() {
-    add_bubble(
-        content_arg = 'Dummy Highlight',
-        type_arg = 'OUTPUT'
-    )
+    const db_files_metadata = await fetch_db_files_metadata();
+    let all_hashes = [];
+    for (const metadata of db_files_metadata) {
+        all_hashes.push(metadata.hash);
+    }
+    const summary_list = {
+        file_list: all_hashes,
+        preset: 'THEMES_INTERVIEWS_HIGHLIGHTS_1'
+    };
+    try{
+        const summary = await fetch('/summary', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(summary_list)
+        });
+        const summary_JSON = await summary.json();
+        query_llm(summary_JSON);
+    } catch (error) {
+        console.error('Error generating highlights:', error)
+    }
+    unselect_all_files();
 }
 
 // Submits query when the user hits Enter
@@ -91,8 +140,8 @@ async function push_to_DB() {
         return [];
     }
     unselect_all_files();
-    populate_upload_list()
-    populate_file_list()   
+    populate_upload_list();
+    populate_file_list();
 }
 
 // Adds a chat bubble to the conversation
@@ -115,7 +164,7 @@ function add_bubble(content_arg, type_arg, source_arg, source_hash_arg) {
     if (type_arg.toUpperCase() === "CONTEXT") {
         convoBubble.dataset.context_source = source_arg;
         convoBubble.dataset.context_source_hash = source_hash_arg;
-        add_download_icon(convoBubble)
+        add_download_icon(convoBubble);
     }
 
     // Adds the bubble to the conversation and displays it
@@ -144,8 +193,8 @@ async function query_llm(query) {
 
         
         response_text = message_model.message; // The actual answer
-        response_id = message_model.id; // The ID of the answer. Unused for now.
         response_context = message_model.contexts; // Dictionary of context and source
+        response_id = message_model.id; // The ID of the answer. Unused for now.
         
         // Displays the answer
         add_bubble(response_text, "output")

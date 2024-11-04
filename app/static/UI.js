@@ -8,7 +8,7 @@ const user_input = document.getElementById('userinput')
 // Buttons (left pane, shortcuts)
 const summary_btn = document.getElementById('summarize')
 const summary_all_btn = document.getElementById('summarize_all')
-// const sentiment_btn = document.getElementById('sentiment')
+const sentiment_btn = document.getElementById('sentiment')
 const highlights_btn = document.getElementById('highlights')
 
 // Buttons (right pane)

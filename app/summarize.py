@@ -28,7 +28,7 @@ model = ChatOpenAI()
 
 
 @timer
-def summarize_large(db: Chroma, doc_list: List, identifier='hash') -> str:
+def summarize_map_reduce(db: Chroma, doc_list: List, identifier='hash', preset='general') -> str:
     """
     Retrieves the specified documents' chunks from the DB and summarizes them with map-reduce.
     By default, accepts a list of file hashes.
@@ -36,11 +36,14 @@ def summarize_large(db: Chroma, doc_list: List, identifier='hash') -> str:
     Args:
         db:
             The Chroma DB instance containing the files.
-        docs:
+        doc_list:
             The list of document file names or hashes.
         identifier:
             Specifies whether the 'docs' argument contains file names or hashes.
             Defaults to 'hash'. Can be 'file_name'.
+        preset:
+            The preset to run. Defaults to 'General'.
+            Presets will have different prompt templates that emphasize different outputs.
 
     Returns:
         The summary string.
@@ -48,14 +51,20 @@ def summarize_large(db: Chroma, doc_list: List, identifier='hash') -> str:
     if isinstance(doc_list, str):
         doc_list = [doc_list]
 
+    templates_preset = prompt_templates.PT_PRESETS[preset.upper()]
+
+    map_template = templates_preset[0]
+    map_prompt = ChatPromptTemplate.from_template(map_template)
+
+    reduce_template = templates_preset[1]
+    reduce_prompt = ChatPromptTemplate.from_template(reduce_template)
+
     # Extracts chunks from DB.
     # Converts them to Document objects and stores them.
     # .invoke() requires Documents, not raw text.
     documents = []
-    for current_doc in doc_list:
-        matching_chunks = db.get(where={'source_hash': current_doc})
-        matching_chunks['metadatas']
-        matching_chunks['documents']
+    for doc_hash in doc_list:
+        matching_chunks = db.get(where={'source_hash': doc_hash})
 
         for i in range(len(matching_chunks['ids'])):
             document = Document(
@@ -63,9 +72,6 @@ def summarize_large(db: Chroma, doc_list: List, identifier='hash') -> str:
                 metadata=matching_chunks['metadatas'][i]
             )
             documents.append(document)
-
-    map_prompt = ChatPromptTemplate.from_template(map_template)
-    reduce_prompt = ChatPromptTemplate.from_template(reduce_template)
 
     map_chain = LLMChain(
         llm=model,
@@ -77,7 +83,6 @@ def summarize_large(db: Chroma, doc_list: List, identifier='hash') -> str:
         llm_chain=reduce_chain,
         document_variable_name='docs'
     )
-
     reduce_documents_chain = ReduceDocumentsChain(
         combine_documents_chain=combine_documents_chain,
         collapse_documents_chain=combine_documents_chain,
