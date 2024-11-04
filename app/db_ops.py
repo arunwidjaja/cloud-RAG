@@ -12,7 +12,7 @@ def save_to_chroma(db: Chroma, chunks: List[Document]) -> List[str] | str:
     Returns a list of the documents that were saved to the DB
     """
     print("Saving chunks to Chroma DB...")
-    chunks_with_ids = doc_ops.add_chunk_ids(chunks)
+    # chunks_with_ids = doc_ops.add_chunk_ids(chunks)
     # Dictionary of file names and the number of chunks they have
     chunk_counts = Counter([chunk.metadata.get("source") for chunk in chunks])
 
@@ -28,12 +28,12 @@ def save_to_chroma(db: Chroma, chunks: List[Document]) -> List[str] | str:
     added_documents = []
     last_document = ""
 
-    for chunk in chunks_with_ids:
+    for chunk in chunks:
         current_document = f"{chunk.metadata["source"]}"
         # triggers when we move on to a new file (checks if file name is different)
         if (last_document != current_document):
             print(f"Currently processing {
-                  chunk_counts[current_document]} chunks from: '{current_document}'")
+                  chunk_counts[current_document]:04d} chunks from: '{utils.extract_file_name(current_document)}'")
             last_document = current_document
 
         if (chunk.metadata["id"] not in existing_ids):
@@ -60,10 +60,10 @@ def save_to_chroma(db: Chroma, chunks: List[Document]) -> List[str] | str:
     # Print the summary
     if (new_chunks):
         print(f"{len(new_chunks)} chunks from the following documents were added:\n{
-              "\n".join(added_documents)}")
+              "\n".join(utils.extract_file_name(added_documents))}")
     if (skipped_chunks):
         print(f"{len(skipped_chunks)} chunks from the following documents are already in the DB and were not added:\n{
-              "\n".join(skipped_documents)}")
+              "\n".join(utils.extract_file_name(skipped_documents))}")
     print("==========================")
     return utils.extract_file_name(added_documents)
 
@@ -77,9 +77,9 @@ def delete_db_files(db: Chroma, file_list: List) -> List[str]:
     collection = db._collection
     deleted_files = []
 
-    for file_path in file_list:
+    for file_hash in file_list:
         file_metadata = collection.get(
-            where={"source": file_path},
+            where={"source_hash": file_hash},
             include=["metadatas", "documents"]
         )
         ids_to_delete = file_metadata['ids']
@@ -90,12 +90,12 @@ def delete_db_files(db: Chroma, file_list: List) -> List[str]:
             for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
                 deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
                 collection.delete(deletion_batch)
-            db_size = utils.get_folder_size(db._persist_directory)
-            print(f"Size of DB after deleting files: {db_size}")
+            deleted_file = file_metadata['metadatas'][0]['source_base_name']
+            deleted_files.append(deleted_file)
         else:
             print("No documents found from the specified source.")
-        deleted_file = utils.extract_file_name(file_path)
-        deleted_files.append(deleted_file)
+    db_size = utils.get_folder_size(db._persist_directory)
+    print(f"Size of DB after deleting files: {db_size}")
     return deleted_files
 
 

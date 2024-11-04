@@ -4,7 +4,8 @@ const PATH_DOWNLOAD_ICON = '../static/images/download_light.svg'
 file_input.addEventListener('change', get_uploads_from_user);
 
 summary_btn.addEventListener('click', generate_summary);
-sentiment_btn.addEventListener('click', analyze_sentiment);
+// sentiment_btn.addEventListener('click', analyze_sentiment);
+highlights_btn.addEventListener('click', generate_highlights);
 
 push_to_db_btn.addEventListener('click', push_to_DB);
 download_btn.addEventListener('click', download_files);
@@ -27,6 +28,12 @@ async function generate_summary() {
 async function analyze_sentiment() {
     add_bubble(
         content_arg = 'Dummy Sentiment Analysis',
+        type_arg = 'OUTPUT'
+    )
+}
+async function generate_highlights() {
+    add_bubble(
+        content_arg = 'Dummy Highlight',
         type_arg = 'OUTPUT'
     )
 }
@@ -65,6 +72,7 @@ async function get_uploads_from_user(event) {
         }
     }
     populate_upload_list();
+    unselect_all_files();
 }
 
 // Pushes uploaded files to the DB
@@ -76,18 +84,19 @@ async function push_to_DB() {
         }
         else {
             const pushed_files_JSON = await pushed_files.json();
-            log_message("Pushed files to DB: " + pushed_files_JSON)
+            log_message("Pushed upload to DB: " + pushed_files_JSON)
         }
     } catch (error) {
         console.error('Error refreshing database:', error);
         return [];
     }
+    unselect_all_files();
     populate_upload_list()
     populate_file_list()   
 }
 
 // Adds a chat bubble to the conversation
-function add_bubble(content_arg, type_arg, source_arg) {
+function add_bubble(content_arg, type_arg, source_arg, source_hash_arg) {
     const convoBubble = document.createElement("div");
     switch(type_arg.toUpperCase()) {
         case "INPUT":
@@ -105,6 +114,7 @@ function add_bubble(content_arg, type_arg, source_arg) {
     // Adds a DL button to the bubble if it's a context citation
     if (type_arg.toUpperCase() === "CONTEXT") {
         convoBubble.dataset.context_source = source_arg;
+        convoBubble.dataset.context_source_hash = source_hash_arg;
         add_download_icon(convoBubble)
     }
 
@@ -144,11 +154,12 @@ async function query_llm(query) {
         for (const data of response_context) {
             context = data['context'];
             source = data['source'];
-            source_stripped = get_file_name(source)
+            hash = data['hash'];
             add_bubble(
-                content_arg = "Source: " + source_stripped + '\n\n' + context,
+                content_arg = "Source: " + source + '\n\n' + context,
                 type_arg = "context",
-                source_arg = source 
+                source_arg = source,
+                source_hash_arg = hash
             );
         }
     } catch (error) {
@@ -160,9 +171,9 @@ async function query_llm(query) {
 }
 
 // Gets a list of files in the DB
-async function fetch_db_files() {
+async function fetch_db_files_metadata() {
     try {
-        const response = await fetch('/db_file_list');
+        const response = await fetch('/db_files_metadata');
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -175,10 +186,10 @@ async function fetch_db_files() {
 }
 
 // Gets a list of uploaded files
-async function fetch_uploads() {
+async function fetch_uploads_metadata() {
     try {
         console.log("Fetching uploads...")
-        const response = await fetch('/db_uploads_list');
+        const response = await fetch('/uploads_metadata');
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -208,15 +219,19 @@ async function delete_files () {
         selected_files = [];
         populate_file_list();
         const deleted_files_JSON = await deleted_files.json();
-        log_message("Deleted from DB: " + deleted_files_JSON)
+        log_message("Deleted file from DB: " + deleted_files_JSON)
     } catch (error) {
         console.error('Error deleting files:', error)
     }
+    unselect_all_files();
 }
 
 
-// Downloads the selected files from the DB
-async function download_files(files = selected_files) {
+// Downloads the selected files.
+async function download_files(files) {
+    if (!Array.isArray(files)) {
+        files = selected_files;
+    }
     const download_list = {
         download_list: files
     };
@@ -235,6 +250,7 @@ async function download_files(files = selected_files) {
     } catch (error) {
         console.error('Error downloading files:', error)
     }
+    unselect_all_files();
 }
 // Downloads the source file associated with a given context
 async function download_context(source_arg) {
@@ -243,7 +259,7 @@ async function download_context(source_arg) {
 }
 
 // Deletes the selected uploads
-async function delete_uploads () {
+async function delete_uploads() {
     const file_list = {
         deletion_list: selected_uploads
     };
@@ -264,47 +280,66 @@ async function delete_uploads () {
     } catch (error) {
         console.error('Error deleting files:', error)
     }
+    unselect_all_files();
 }
 
 // Refreshes the DB files list
 async function populate_file_list() {   
-    const files = await fetch_db_files();
+    const files = await fetch_db_files_metadata();
     db_files_list.innerHTML = '';
-
-    files.forEach(file => {
+    for (const file of files) {
+        // Create a new entry for the list
         const listItem = document.createElement('li');
-        listItem.textContent = get_file_name(file); // Set the text of the list item
-        listItem.dataset.path = file;
-        listItem.classList.add('file-item'); // Add a class for styling
-        listItem.style.cursor = 'pointer'; // Change cursor to pointer
-        listItem.onclick = () => toggle_file_selection(listItem); // Add click event
-        db_files_list.appendChild(listItem); // Append the list item to the file list
-    });
+
+        // Set the display text and add the metadata
+        listItem.textContent = file.name;
+        listItem.dataset.name = file.name;
+        listItem.dataset.hash = file.hash;
+        listItem.dataset.word_count = file.word_count;
+
+        // Define the click behavior
+        listItem.classList.add('file-item');
+        listItem.style.cursor = 'pointer';
+        listItem.onclick = () => toggle_file_selection(listItem);
+
+        // Display the new entry
+        db_files_list.appendChild(listItem);
+    }
+    // If the DB is empty, display a message
     if(files.length === 0){
         const noFilesItem = document.createElement('li');
-        noFilesItem.textContent = 'Database is empty'; // Set the message for no files
-        db_files_list.appendChild(noFilesItem); // Append the no files item to the file list
+        noFilesItem.textContent = 'Database is empty';
+        db_files_list.appendChild(noFilesItem);
     }
 }
 
 // Refreshes the uploads list
 async function populate_upload_list() {
-    const files = await fetch_uploads();
+    const uploads = await fetch_uploads_metadata();
     uploads_list.innerHTML = '';
 
-    files.forEach(file => {
+    for (const upload of uploads) {
+        // Create a new entry for the list
         const listItem = document.createElement('li');
-        listItem.textContent = get_file_name(file); // Set the text of the list item
-        listItem.dataset.path = file;
-        listItem.classList.add('upload-item'); // Add a class for styling
-        listItem.style.cursor = 'pointer'; // Change cursor to pointer
-        listItem.onclick = () => toggle_file_selection(listItem); // Add click event
-        uploads_list.appendChild(listItem); // Append the list item to the file list
-    });
-    if(files.length === 0){
-        const noFilesItem = document.createElement('li');
-        noFilesItem.textContent = 'No files have been uploaded.'; // Set the message for no files
-        uploads_list.appendChild(noFilesItem); // Append the no files item to the file list
+
+        // Set the display text and add the metadata
+        listItem.textContent = upload.name;
+        listItem.dataset.name = upload.name;
+        listItem.dataset.hash = upload.hash;
+        listItem.dataset.word_count = upload.word_count;
+
+        // Define the click behavior
+        listItem.classList.add('upload-item');
+        listItem.style.cursor = 'pointer';
+        listItem.onclick = () => toggle_file_selection(listItem);
+
+        // Display the new entry
+        uploads_list.appendChild(listItem);
+    }
+    if(uploads.length === 0){
+        const noUploadsItem = document.createElement('li');
+        noUploadsItem.textContent = 'No files have been uploaded.';
+        uploads_list.appendChild(noUploadsItem);
     }
 }
 
@@ -326,8 +361,8 @@ function add_download_icon(convoBubble) {
 
     // Add event listener to the icon
     download_icon.addEventListener('click', function() {
-        source = convoBubble.dataset.context_source;
-        download_context(source);
+        source_hash = convoBubble.dataset.context_source_hash;
+        download_context(source_hash);
     });
 }
 

@@ -48,6 +48,7 @@ class DownloadRequest(BaseModel):
 class ContextModel(BaseModel):
     context: str
     source: str
+    hash: str
 
 
 class MessageModel(BaseModel):
@@ -72,30 +73,30 @@ async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/db_file_list")
-async def get_db_file_list():
+@app.get("/db_files_metadata")
+async def get_db_files_metadata():
     """
-    Gets a list of source files in the database
+    Gets the metadata of all unique files in the database
     """
-    print(f"API CALL: get_db_file_list")
+    print(f"API CALL: get_db_files_metadata")
     try:
-        file_list = db_ops_utils.get_db_file_names(database)
-        return JSONResponse(content=file_list)
+        file_metadata = db_ops_utils.get_db_files_metadata(database)
+        return JSONResponse(content=file_metadata)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")
 
 
-@app.get("/db_uploads_list")
-async def get_db_uploads_list():
+@app.get("/uploads_metadata")
+async def get_uploads_metadata():
     """
-    Gets a list of the documents waiting to be pushed to the database
+    Gets the metadata of all uploads
     """
-    print("API CALL: get_uploads_list")
+    print("API CALL: get_uploads_metadata")
     try:
-        file_list = doc_ops_utils.get_uploads_list()
-        return JSONResponse(content=file_list)
+        uploads_metadata = doc_ops_utils.get_uploads_metadata()
+        return JSONResponse(content=uploads_metadata)
     except Exception as e:
-        raise Exception(f"Exception occured when getting file list: {e}")
+        raise Exception(f"Exception occured when getting uploads list: {e}")
 
 
 @app.get("/initiate_push_to_db")
@@ -157,7 +158,7 @@ async def upload_documents(files: List[UploadFile] = File(...)):
             print(f"Copying {file} to {file_path}")
             with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
-            saved_files.append(file_path)
+            saved_files.append(utils.extract_file_name(file_path))
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload {
                                 file.filename}: {str(e)}")
@@ -172,10 +173,10 @@ async def delete_files(delete_request: DeleteRequest):
     """
     Delete the list of files from the Chroma DB
     """
-    files_to_delete = delete_request.deletion_list
+    file_hashes_to_delete = delete_request.deletion_list
     try:
         deleted_files = db_ops.delete_db_files(
-            database, files_to_delete)
+            database, file_hashes_to_delete)
         return deleted_files
     except Exception as e:
         raise e
@@ -186,9 +187,9 @@ async def delete_uploads(delete_request: DeleteRequest):
     """
     Delete the list of uploads from the uploads folder
     """
-    files_to_delete = delete_request.deletion_list
+    upload_hashes_to_delete = delete_request.deletion_list
     try:
-        deleted_files = doc_ops_utils.delete_uploads(files_to_delete)
+        deleted_files = doc_ops_utils.delete_uploads(upload_hashes_to_delete)
         return deleted_files
     except Exception as e:
         raise e

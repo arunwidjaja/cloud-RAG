@@ -176,6 +176,7 @@ html, body {
     /* background-color: var(--COLOR_DEBUG); */
     color: var(--COLOR_FONT_1);
     padding: var(--PADDING-SMALL);
+    padding-left: var(--PADDING-LARGE);
 }
 .conversation_input {
     align-self: flex-end; /* Aligns bubble to the right */
@@ -207,6 +208,7 @@ html, body {
 }
 
 /* Layer 3, Right Bar */
+
 
 #uploadssection{
     box-sizing: border-box;

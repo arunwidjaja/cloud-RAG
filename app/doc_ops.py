@@ -4,10 +4,15 @@ from imports import *
 import config
 import utils
 
+# Pipeline for processing documents:
+# 1. Load documents: retrieve list of documents in the uploads folder
+# 2. Chunk documents: split documents into chunks
+# 3. Add metadatas: add metadata tags to the chunks for easier identification
+
 
 def load_documents():
     """
-    Loads documents from the data folder
+    Loads documents from the uploads folder
     """
     document_path = utils.get_env_paths()['DOCS']
     documents_list = []
@@ -29,7 +34,7 @@ def load_documents():
 
 def chunk_text(documents: List[Document]) -> List[Document]:
     """
-    Splits Documents into chunks
+    Splits documents into chunks
     """
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=config.CHUNK_SIZE,
@@ -45,18 +50,21 @@ def chunk_text(documents: List[Document]) -> List[Document]:
     return chunks
 
 
-def add_chunk_ids(chunks) -> List[Document]:
+def add_chunk_ids(chunks):
     """
-    Adds IDs to the chunks you're trying to add. Returns a list of Chunks.
-    The chunk IDs are formatted as "source:page number:chunk index".
-    For example, data/testfile.pdf:5:3 would be the ID for the 3rd chunk of the 5th page of testfile.pdf
+    Modifies chunks.
+
+    Adds IDs to metadata.
+    The chunk IDs are formatted as "file_name:page_number:chunk_index".
+    For example, testfile.pdf:5:3 would be the ID for the 3rd chunk of the 5th page of testfile.pdf
     """
     last_page_id = None
     current_chunk_index = 0
 
     for chunk in chunks:
         # "source" is the path of the file
-        source = chunk.metadata.get("source")
+        source_path = chunk.metadata.get("source")
+        source = utils.extract_file_name(source_path)
         page = chunk.metadata.get("page")
 
         # if the chunk ID is the same as the last one, increment the index
@@ -73,18 +81,60 @@ def add_chunk_ids(chunks) -> List[Document]:
         chunk_id = f"{source}:{page}:{current_chunk_index}"
         chunk.metadata["id"] = chunk_id
         last_page_id = current_page_id
-    return chunks
 
 
-def add_sentiment(chunks) -> List[Document]:
+def add_source_hash(chunks):
     """
-    Adds sentiment labels to chunks
+    Modifies chunks.
+
+    Adds the hash of the source file to metadata
     """
-    sentiment_analyzer = pipeline('sentiment-analysis')
+    hashes = {}
+    for chunk in chunks:
+        source = chunk.metadata.get('source')
+        if source not in hashes:
+            hashes[source] = utils.get_hash(source)
+        chunk.metadata['source_hash'] = hashes[source]
+
+
+def add_source_base_name(chunks):
+    """
+    Modifies chunks.
+
+    Adds source file name to metadata. (Name only, no path.)
+    """
+    for chunk in chunks:
+        source_base_name = utils.extract_file_name(
+            chunk.metadata.get("source"))
+        chunk.metadata["source_base_name"] = source_base_name
+
+
+def add_word_count(chunks):
+    """
+    Modifies chunks.
+
+    Adds the word count to metadata.
+    """
+    for chunk in chunks:
+        word_count = len(chunk.page_content.split())
+        chunk.metadata['word_count'] = word_count
+
+
+def add_sentiment(chunks):
+    """
+    Modifies chunks.
+
+    Performs sentiment analysis and adds sentiment labels and scores to chunks.
+
+    Currently using default model for simple POSITIVE/NEGATIVE classification with a score.
+    """
+    sentiment_analyzer = pipeline(
+        task='sentiment-analysis',
+        model=config.SENTIMENT_ANALYSIS_MODEL_DEFAULT)
     for chunk in chunks:
         sentiment = sentiment_analyzer(chunk.page_content)[0]
         chunk.metadata['sentiment'] = sentiment['label']
-    return chunks
+        chunk.metadata['sentiment_score'] = sentiment['score']
 
 
 def process_documents() -> List[Document]:
@@ -94,6 +144,18 @@ def process_documents() -> List[Document]:
     """
     documents = load_documents()
     chunks = chunk_text(documents)
-    chunks = add_chunk_ids(chunks)
-    chunks = add_sentiment(chunks)
+    add_chunk_ids(chunks)
+    add_source_hash(chunks)
+    add_source_base_name(chunks)
+    add_word_count(chunks)
+    add_sentiment(chunks)
     return chunks
+
+
+def main():
+    print(f"Processing documents in the uploads folder...")
+    process_documents()
+
+
+if __name__ == "__main__":
+    main()

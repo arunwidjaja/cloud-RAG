@@ -7,7 +7,9 @@ const user_input = document.getElementById('userinput')
 
 // Buttons (left pane, shortcuts)
 const summary_btn = document.getElementById('summarize')
-const sentiment_btn = document.getElementById('sentiment')
+const summary_all_btn = document.getElementById('summarize_all')
+// const sentiment_btn = document.getElementById('sentiment')
+const highlights_btn = document.getElementById('highlights')
 
 // Buttons (right pane)
 const push_to_db_btn = document.getElementById('pushbtn')
@@ -59,21 +61,33 @@ function auto_expand(textarea) {
 // Changes list items' appearance and stores them in data when they are selected by the user
 function toggle_file_selection(li) {
     li.classList.toggle('selected'); // Toggle selected class
-    const filePath = li.dataset.path;
+    const fileHash = li.dataset.hash;
 
     // Toggle bold text for selected files
     if (li.classList.contains('selected')) {
         li.style.fontWeight = 'bold'; // Make text bold when selected
         if (li.classList.contains('upload-item')){
-            selected_uploads.push(filePath);
+            selected_uploads.push(fileHash);
         }
         if (li.classList.contains('file-item')){
-            selected_files.push(filePath);
+            selected_files.push(fileHash);
         }
     } else {
         li.style.fontWeight = 'normal'; // Revert text to normal when not selected
-        selected_files = selected_files.filter(file => file !== filePath); // Remove file from selectedFiles
+        if (li.classList.contains('upload-item')){
+            selected_uploads = selected_uploads.filter(file => file !== fileHash); // Remove file from selected_uploads
+        }
+        if (li.classList.contains('file-item')){
+            selected_files = selected_files.filter(file => file !== fileHash); // Remove file from selected_files
+        }
     }
+}
+// TODO: implement this.
+// Needs to remove selected class from all uploads and files.
+// Needs to set the selected arrays to empty.
+// Needs to revert any bolded elements to normal font weight.
+function unselect_all_files(){
+    return
 }
 
 // adds a message to the log

@@ -58,7 +58,11 @@ LLM Constants
 """
 
 LLM_K = 5
+TOKEN_LIMIT = 1000
+
+SENTIMENT_ANALYSIS_MODEL_DEFAULT = 'distilbert-base-uncased-finetuned-sst-2-english'
 DEFAULT_MESSAGE_ID = '0'
+
 
 SEC_DESC_4 = """
 ============================================
