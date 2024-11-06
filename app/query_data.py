@@ -11,7 +11,12 @@ openai.api_key = config.OPENAI_API_KEY
 
 class QueryResponse:
     """
-    Contains message, id, and a list of dictionaries containing source and context
+    Holds the LLM RAG response
+
+    Attributes:
+        message: LLM's answer
+        id: message id
+        contexts: context dictionary. contains the retrieved context and the source file
     """
 
     message: str
@@ -91,7 +96,7 @@ def query_rag(
     # Sort the retrieved docs based on relevance score and retrieve the top K results
     # Relevance score is the second element of the tuple (doc[1])
     retrieved_docs = sorted(
-        retrieved_docs,
+        aggregated_docs,
         key=lambda doc: doc[1],
         reverse=True
     )

@@ -8,30 +8,9 @@ import db_ops
 import db_ops_utils
 import doc_ops_utils
 
+from api_endpoints import router as api_router
 from query_data import query_rag
 from summarize import summarize_map_reduce
-
-
-database = None
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Starting point for the app. Runs on startup.
-    """
-    print("FastAPI lifespan is starting")
-    global database
-    try:
-        database = init_db.init_db()
-        # database = init_db.init_http_db()
-    except Exception as e:
-        print(f"FastAPI startup error: {e}")
-        raise
-    yield
-
-app = FastAPI(lifespan=lifespan)
-handler = Mangum(app)
 
 
 class QueryModel(BaseModel):
@@ -63,10 +42,29 @@ class MessageModel(BaseModel):
     contexts: List[ContextModel]
 
 
-# Mount static files (JS, CSS)
+database = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Starting point for the app. Runs on startup.
+    """
+    print("FastAPI lifespan is starting")
+    global database
+    try:
+        database = init_db.init_db()
+        # database = init_db.init_http_db()
+    except Exception as e:
+        print(f"FastAPI startup error: {e}")
+        raise
+    yield
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(api_router)
 app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
 templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
-
+handler = Mangum(app)
 
 # GET OPERATIONS
 
@@ -90,19 +88,6 @@ async def get_db_files_metadata():
         return JSONResponse(content=file_metadata)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")
-
-
-@app.get("/uploads_metadata")
-async def get_uploads_metadata():
-    """
-    Gets the metadata of all uploads
-    """
-    print("API CALL: get_uploads_metadata")
-    try:
-        uploads_metadata = doc_ops_utils.get_uploads_metadata()
-        return JSONResponse(content=uploads_metadata)
-    except Exception as e:
-        raise Exception(f"Exception occured when getting uploads list: {e}")
 
 
 @app.get("/initiate_push_to_db")

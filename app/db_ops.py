@@ -121,7 +121,7 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     return utils.extract_file_name(added_documents)
 
 
-def delete_db_files(db: Chroma, file_hash_list: List, collection: str) -> List[str]:
+def delete_db_files(db: Chroma, file_hash_list: List, collection_name: str) -> List[str]:
     """
     Deletes all chunks associated with the given files from the collection.
     Does not delete the source files from the archive.
@@ -137,7 +137,7 @@ def delete_db_files(db: Chroma, file_hash_list: List, collection: str) -> List[s
     collection_db = Chroma(
         client=db._client,
         embedding_function=db._embedding_function,
-        collection_name=collection
+        collection_name=collection_name
     )
     # Gets the actual chromadb collection
     # LangChain doesn't support deletion, deletion needs to be done through chromadb directly.
