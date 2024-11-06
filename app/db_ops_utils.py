@@ -4,24 +4,26 @@ from imports import *
 import utils
 
 
-def download_files(requested_files: List | str) -> List[str] | str:
+def download_files(requested_files_hashes: List | str) -> List[str] | str:
     """
     Downloads the files in the given list to the user's home path.
-    Returns the name of the file(s) that were downloaded as a string or list
+
+    Args:
+        requested_files_hashes: the list of hashes of the requested files
+
+    Returns:
+        The name of the file(s) that were downloaded.
     """
     source_location = utils.get_env_paths()['ARCHIVE']
     download_location = str(Path.home())
     downloaded_files = []
 
-    if isinstance(requested_files, str):
-        requested_files = [requested_files]
-
-    # Calculate hashes of all files in the archive
-    # TODO: Need to make this more efficient so that the hashes don't need to be recalculated for every file every time
+    if isinstance(requested_files_hashes, str):
+        requested_files_hashes = [requested_files_hashes]
 
     archive_hash = utils.get_hash_dir(source_location)
 
-    for requested_hash in requested_files:
+    for requested_hash in requested_files_hashes:
         source_path = archive_hash.get(requested_hash)
         try:
             if source_path is not None:
@@ -33,7 +35,7 @@ def download_files(requested_files: List | str) -> List[str] | str:
         except Exception as e:
             print(f"Error occurred while attempting to download file: {e}")
 
-    if isinstance(requested_files, str):
+    if isinstance(requested_files_hashes, str):
         return downloaded_files[0]
     return downloaded_files
 
@@ -79,6 +81,13 @@ def get_db_chunks(db: Chroma, source_list: str | List[str]) -> List[Document]:
 
 
 def generate_placeholder_document() -> List[Document]:
+    """
+    Generates a placeholder document.
+    Can be added to a Chroma DB collection to persist the collection.
+
+    Returns:
+        A placeholder document
+    """
     placeholder_document = Document(
         page_content='placeholder_document',
         metadata={
@@ -91,4 +100,12 @@ def generate_placeholder_document() -> List[Document]:
 
 
 def get_all_collections_names(db: Chroma):
+    """
+    Returns a list of all the collections in the db.
+    Args:
+        db: the database
+
+    Returns:
+        A list of the names of all collections in the db
+    """
     return [collection.name for collection in db._client.list_collections()]

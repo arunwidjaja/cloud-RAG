@@ -9,7 +9,18 @@ from get_embedding_function import get_embedding_function
 from db_ops_utils import generate_placeholder_document
 
 
-def add_persistent_collection(db: Chroma, collection_name: str, embedding_function='openai'):
+def add_persistent_collection(db: Chroma, collection_name: str, embedding_function='openai') -> str:
+    """
+    Creates a new collection in the DB. Inserts a placeholder file to force Chroma to persist it.
+
+    Args:
+        db: the database
+        collection_name: the name of the collection to create
+        embedding_function: the name of the embedding function for the collection
+
+    Returns:
+        The name of the collection
+    """
     # Create collection
     chroma_client = db._client
     ef = get_embedding_function(embedding_function)
@@ -37,7 +48,15 @@ def add_persistent_collection(db: Chroma, collection_name: str, embedding_functi
 
 def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> List[str] | str:
     """
-    Returns a list of the documents that were saved to the DB
+    Saves document chunks to the Chroma DB in the specified collection
+
+    Args:
+        db: the database
+        chunks: the document chunks
+        collection_name: the name of the collection to save to
+
+    Returns:
+        The chunks that were saved. Chunks that are skipped are not returned.
     """
     print("Saving chunks to Chroma DB...")
     # Finding number of chunks in each document
@@ -102,15 +121,32 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     return utils.extract_file_name(added_documents)
 
 
-def delete_db_files(db: Chroma, file_list: List, collection_name: str) -> List[str]:
+def delete_db_files(db: Chroma, file_hash_list: List, collection: str) -> List[str]:
     """
-    Deletes all chunks associated with the given files from the DB.
-    """
-    collection = collection_name
-    deleted_files = []
+    Deletes all chunks associated with the given files from the collection.
+    Does not delete the source files from the archive.
 
-    for file_hash in file_list:
-        file_metadata = collection.get(
+    Args:
+        db: the database
+        file_list: list of file hashes
+        collection: the collection containing the file chunks
+
+    Returns:
+        The list of file names that were deleted
+    """
+    collection_db = Chroma(
+        client=db._client,
+        embedding_function=db._embedding_function,
+        collection_name=collection
+    )
+    # Gets the actual chromadb collection
+    # LangChain doesn't support deletion, deletion needs to be done through chromadb directly.
+    # .delete() must be called on a collection, can't be called on the entire DB.
+    chroma_collection = collection_db._collection
+
+    deleted_files = []
+    for file_hash in file_hash_list:
+        file_metadata = chroma_collection.get(
             where={"source_hash": file_hash},
             include=["metadatas", "documents"]
         )
@@ -121,7 +157,7 @@ def delete_db_files(db: Chroma, file_list: List, collection_name: str) -> List[s
         if ids_to_delete:
             for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
                 deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
-                collection.delete(deletion_batch)
+                chroma_collection.delete(deletion_batch)
             deleted_file = file_metadata['metadatas'][0]['source_base_name']
             deleted_files.append(deleted_file)
         else:
@@ -132,7 +168,13 @@ def delete_db_files(db: Chroma, file_list: List, collection_name: str) -> List[s
 def push_to_database(db: Chroma, collection: str) -> List[str]:
     """
     Pushes uploads to the database then archives them.
-    Returns a list of the pushed uploads.
+
+    Args:
+        db: The database
+        collection: The collection to push the documents to
+
+    Returns:
+        a list of the pushed uploads
     """
     chunks = doc_ops.process_documents()
     documents_list = save_to_chroma(db, chunks, collection)
@@ -141,34 +183,6 @@ def push_to_database(db: Chroma, collection: str) -> List[str]:
 
 
 def main():
-    # import app.init_db as init_db
-    # import prompt_templates
-
-    # def test_function():
-
-    #     prompt = PromptTemplate(
-    #         template=prompt_templates.PROMPT_TEMPLATE_THEMATIC,
-    #         input_variables=["context"])
-
-    #     stuff_chain = create_stuff_documents_chain(
-    #         llm=model,
-    #         prompt=prompt)
-
-    #     query = "What did the interviewees like most about sports?"
-
-    #     # TODO: Reference query_data -> similiarity_search_with_relevance_scores
-    #     # Need a different type of search to reduce the size of the data into only context that supports the thematic analysis
-    #     # How to do this?
-    #     # What is the maximum token size? Maybe need to use map_reduce.
-    #     input_data = {
-    #         "context": "todo",
-    #         "question": query
-    #     }
-    #     response = stuff_chain.invoke(input_data)
-
-    #     print(response)
-
-    # test_function()
     return
 
 

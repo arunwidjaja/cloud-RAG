@@ -6,10 +6,6 @@ import utils
 from get_embedding_function import get_embedding_function
 
 
-# TODO: Works when called locally after AWS credentials are configured through terminal, but not when called from Lambda function.
-# TODO: Credential issue? Fix through AWS dashboard or change function to accept AWS credentials?
-
-
 def init_db(embedding_function='openai') -> Chroma:
     """
     Creates a Chroma (LangChain) instance that connects to a local Chroma DB.
