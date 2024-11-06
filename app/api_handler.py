@@ -112,7 +112,7 @@ async def initiate_push_to_db():
     """
     print("API CALL: push_files_to_database")
     try:
-        pushed_files = db_ops.push_to_database(database)
+        pushed_files = db_ops.push_to_database(database, 'langchain')
         return pushed_files
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
@@ -199,7 +199,10 @@ async def delete_files(delete_request: DeleteRequest):
     file_hashes_to_delete = delete_request.deletion_list
     try:
         deleted_files = db_ops.delete_db_files(
-            database, file_hashes_to_delete)
+            database,
+            file_hashes_to_delete,
+            collection_name='langchain'
+        )
         return deleted_files
     except Exception as e:
         raise e

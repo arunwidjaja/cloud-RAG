@@ -76,3 +76,19 @@ def get_db_chunks(db: Chroma, source_list: str | List[str]) -> List[Document]:
     collection = db._collection
     results = collection.get(where={'source': {'$in': source_list}})
     return results
+
+
+def generate_placeholder_document() -> List[Document]:
+    placeholder_document = Document(
+        page_content='placeholder_document',
+        metadata={
+            'id': 'placeholder_document',
+            'author': 'placeholder_document',
+            'note': 'placeholder_document'
+        }
+    )
+    return [placeholder_document]
+
+
+def get_all_collections_names(db: Chroma):
+    return [collection.name for collection in db._client.list_collections()]
