@@ -138,7 +138,11 @@ def query_rag(
 
     # Build prompt and invoke LLM
     context_values = [data['context'] for data in contexts]
-    prompt = build_prompt(query_text, context_values, prompt_template)
+    prompt = build_prompt(
+        query_text=query_text,
+        context=context_values,
+        prompt_template=prompt_template
+    )
 
     LLM_base_response = model.invoke(prompt)
 
