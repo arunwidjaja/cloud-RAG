@@ -34,17 +34,33 @@ async function fetch_uploads_metadata() {
 }
 async function start_push_to_DB() {
   try {
-      const pushed_files = await fetch(`${process.env.REACT_APP_API_BASE_URL}/initiate_push_to_db`);
-      if (!pushed_files.ok) {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/initiate_push_to_db`);
+      if (!response.ok) {
           throw new Error('Network response was not ok');
       }
       else {
-          const pushed_files_JSON = await pushed_files.json();
-          return pushed_files_JSON
+          const pushed_files = await response.json();
+          return pushed_files
       }
   } catch (error) {
       console.error('Error refreshing database:', error);
       return [];
+  }
+}
+async function start_upload_deletion(upload_deletion_list){
+  try{
+    const hashes = upload_deletion_list.map(item => item.hash);
+    const query = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`).join('&');
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/delete_uploads?${query}`,{
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const deleted_uploads = await response.json();
+    return deleted_uploads
+  } catch (error) {
+    console.error('An error occurred while deleting uploads: ', error)
   }
 }
 
@@ -52,7 +68,8 @@ async function start_push_to_DB() {
 function App() {
   const [files, set_files] = useState([]);
   const [uploads, set_uploads] = useState([]);
-  const [selected_items, set_selected_items] = useState([]);
+  const [selected_files, set_selected_files] = useState([]);
+  const [selected_uploads, set_selected_uploads] = useState([]);
   const [log_messages, set_log_messages] = useState([]);
   const upload_window = useRef(null);
   const accept_uploads = async (event) => {
@@ -80,18 +97,30 @@ function App() {
   }
 
 
+
+  
+  // Runs on start
+  useEffect(() => {
+    populate_file_list();
+    populate_upload_list();
+  }, []);
+
   const log_message = (message) => {
+  // Writing a new message to the log
     set_log_messages((prev_messages) => [...prev_messages, message]);
   };
   const populate_file_list = async () => {
+  // Refreshing the list of files in the database
     const fetched_files = await fetch_db_files_metadata();
     set_files(fetched_files)
   };
   const populate_upload_list = async () => {
+  // Refreshing the list of files in the uploads folder
     const fetched_uploads = await fetch_uploads_metadata();
     set_uploads(fetched_uploads)
   };
   const push_uploads = async () => {
+  // Pushing the uploads to the database
     const pushed_uploads = await start_push_to_DB();
     const fetched_files = await fetch_db_files_metadata();
     const fetched_uploads = await fetch_uploads_metadata();
@@ -101,22 +130,32 @@ function App() {
       log_message("Pushed Upload: " + pushed_upload)
     });
   };
-  
-  // Runs on start
-  useEffect(() => {
-    populate_file_list();
-    populate_upload_list();
-  }, []);
-
-  const toggle_selected = (item) => {
-    if (selected_items.includes(item)){
-      set_selected_items(selected_items.filter((selected) => selected !== item));
+  const delete_uploads = async () => {
+  // Deleting the selected uploads from the uploads folder
+    const deleted_uploads = await start_upload_deletion(selected_uploads);
+    deleted_uploads.forEach((deleted_upload) => {
+      log_message("Deleted Upload: " + deleted_upload)
+    });
+    populate_upload_list()
+  };
+  const toggle_selected_files = (item) => {
+  // Toggling whether or not a file is selected
+    if (selected_files.includes(item)){
+      set_selected_files(selected_files.filter((selected) => selected !== item));
     } else {
-      set_selected_items([...selected_items, item])
+      set_selected_files([...selected_files, item])
+    }
+  };
+  const toggle_selected_uploads = (item) => {
+  // Toggling whether or not an upload is selected
+    if (selected_uploads.includes(item)){
+      set_selected_uploads(selected_uploads.filter((selected) => selected !== item));
+    } else {
+      set_selected_uploads([...selected_uploads, item])
     }
   };
 
-  // Logger area content
+  // Log messages
   let log_content;
   log_content = log_messages.map((msg, index) => (
     <div
@@ -130,7 +169,7 @@ function App() {
     </div>
   ));
 
-  // Database collection file list
+  // Collection file list
   let file_list_content;
   if (files.length === 0){
     file_list_content = <li>This collection is empty</li>;
@@ -142,17 +181,18 @@ function App() {
         data_name = {file.name}
         data_hash = {file.hash}
         data_word_count = {file.word_count}
-        onClick={() => toggle_selected(file)}
+        onClick={() => toggle_selected_files(file)}
         style = {{
           cursor: 'pointer',
-          fontWeight: selected_items.includes(file) ? 'bold':'normal'
+          fontWeight: selected_files.includes(file) ? 'bold':'normal'
         }}
       >
         {file.name}
       </li>
     ));
   }
-  // Upload list
+
+  // Uploads file list
   let upload_list_content;
   if (uploads.length === 0){
     upload_list_content = <li>No files have been uploaded</li>;
@@ -160,20 +200,28 @@ function App() {
     upload_list_content = uploads.map((upload) => (
       <li
         key = {upload.hash}
-        className = 'file-item'
+        className = 'upload-item'
         data_name = {upload.name}
         data_hash = {upload.hash}
         data_word_count = {upload.word_count}
-        onClick={() => toggle_selected(upload)}
+        onClick={() => toggle_selected_uploads(upload)}
         style = {{
           cursor: 'pointer',
-          fontWeight: selected_items.includes(upload) ? 'bold':'normal'
+          fontWeight: selected_uploads.includes(upload) ? 'bold':'normal'
         }}
       >
         {upload.name}
       </li>
     ));
   }
+
+  //////////////////////////////////
+  //////////////////////////////////
+  //////////////////////////////////
+  // Start of HTML
+  //////////////////////////////////
+  //////////////////////////////////
+  //////////////////////////////////
 
   return (
     <div className="container">
@@ -236,7 +284,7 @@ function App() {
                     id="pushbtn" onClick={push_uploads}>Push Uploads to DB</button>
                   <div className="uploadsbuttons">
                       <button id='upload-btn' className="btn" onClick={() => upload_window.current.click()}>Upload Files</button>
-                      <button id='deleteuploadsbtn'className="btn">Clear Selected Uploads</button>
+                      <button id='deleteuploadsbtn'className="btn" onClick={delete_uploads}>Clear Selected Uploads</button>
                   </div>
               </div>
               <div id="databasesection">

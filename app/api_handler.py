@@ -201,13 +201,16 @@ async def delete_files(delete_request: DeleteRequest):
 
 
 @app.delete("/delete_uploads")
-async def delete_uploads(delete_request: DeleteRequest):
+async def delete_uploads(hashes: List[str] = Query(...)):
     """
     Delete the list of uploads from the uploads folder
     """
-    upload_hashes_to_delete = delete_request.deletion_list
+    if hashes is None or not isinstance(hashes, list):
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing hashes parameter.")
+
     try:
-        deleted_files = doc_ops_utils.delete_uploads(upload_hashes_to_delete)
+        deleted_files = doc_ops_utils.delete_uploads(hashes)
         return deleted_files
     except Exception as e:
         raise e
