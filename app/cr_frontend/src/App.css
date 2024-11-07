@@ -1,0 +1,328 @@
+:root {
+  /* main colors */
+  --COLOR_MAIN_1: #000000;
+  --COLOR_MAIN_2: #1D1D1D;
+  --COLOR_FONT_1: #000000;
+  --COLOR_ACCENT_1: #856107;
+
+  --COLOR_DELETE: #8C0002;
+  --COLOR_PUSH: #0b4400;
+  --COLOR_DOWNLOAD: #0044ff;
+
+  /* dimension attributes */
+  --PADDING_STANDARD: 10px;
+  --PADDING-LARGE: 15px;
+  --PADDING_SMALL: 5px;
+
+  --MARGIN_STANDARD: 20px;
+  --MARGIN_SMALL: 10px;
+  --MARGIN_SMALLEST: 5px;
+
+  --WIDTH_ICON_STANDARD: 32px;
+  --HEIGHT_ICON_STANDARD: 32px;
+
+  /* debugging colors */
+  --COLOR_DEBUG: #ff00ff;
+  --COLOR_DEBUG_2: #00ff00;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  color: var(--COLOR_ACCENT_1);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Lucida Sans';
+}
+
+.banner {
+  background-color: rgba(97, 197, 255, 0.25); /* Green with 70% opacity */
+  color: rgb(0, 0, 0); /* White text color */
+  font-size: x-large;
+  text-align: center; /* Centered text */
+  padding: 10px; /* Padding for spacing */
+  position: fixed; /* Fixed positioning */
+  top: 0; /* Stick to the top */
+  left: 0; /* Align to the left */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Higher z-index to sit above other elements */
+  backdrop-filter: blur(5px); /* Optional: adds a blur effect behind the banner */
+}
+
+
+/* Layer 0 */
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+}
+
+/* Layer 1 */
+.L1 {
+  background-color: var(--COLOR_MAIN_1);
+  border: 1px solid var(--COLOR_ACCENT_1);
+  display: flex;
+  flex-direction: column;
+  color: white;
+  height: 100%;
+  padding: var(--PADDING_STANDARD);
+  box-sizing: border-box;
+}
+#L1S1 {
+  flex: 0 0 20%;
+  max-width: 20%;
+}
+#L1S2 {
+  flex: 1;
+}
+#L1S3 {
+  flex: 0 0 20%;
+  max-width: 20%;
+}
+
+/* Layer 2, Left Bar */
+
+#title {
+  padding: var(--PADDING_SMALL);
+  background-color: var(--COLOR_MAIN_2);
+  border: 1px solid var(--COLOR_ACCENT_1);
+  font-size: xx-large;
+}
+#version {
+  padding: var(--PADDING_SMALL);
+  background-color: var(--COLOR_MAIN_2);
+  border: 1px solid var(--COLOR_ACCENT_1);
+}
+#links{
+  padding: var(--PADDING_SMALL);
+  background-color: var(--COLOR_MAIN_2);
+  border: 1px solid var(--COLOR_ACCENT_1);
+}
+#auth {
+  padding: var(--PADDING_SMALL);
+
+  display: flex;
+  flex-direction: column;
+  background-color: var(--COLOR_MAIN_2);
+  border: 1px solid var(--COLOR_ACCENT_1);
+  flex: 1;
+}
+#shortcuts {
+  padding: var(--PADDING_SMALL);
+
+  display: flex;
+  flex-direction: column;
+  background-color: var(--COLOR_MAIN_2);
+  border: 1px solid var(--COLOR_ACCENT_1);
+  flex: 1;
+}
+
+.shortcut_button {
+  padding: 10px 15px;    /* Padding for buttons */
+  font-size: 16px;       /* Font size for buttons */
+  cursor: pointer;        /* Pointer cursor on hover */
+  background-color: var(--COLOR_ACCENT_1);
+  color: var(--COLOR_FONT_1);
+}
+
+#log {
+  padding: var(--PADDING_SMALL);
+  background-color: var(--COLOR_MAIN_1);
+  border: 1px solid var(--COLOR_ACCENT_1);
+  overflow: auto;
+  white-space: nowrap;
+  flex: 1;
+}
+
+
+/* Layer 2, Middle Bar */
+.output {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--PADDING_STANDARD);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: auto;
+  flex-grow: 1; /* Take up remaining height */
+  text-align: left;
+
+  font-size: large;
+  background-color: var(--COLOR_MAIN_1);
+  color: var(--COLOR_ACCENT_1);
+
+  overflow-y: auto;
+}
+
+.conversation_output {
+  width: 80%;
+  box-sizing: border-box;
+  margin: var(--MARGIN_SMALLEST);
+  padding: var(--PADDING_STANDARD);
+  border-radius: var(--PADDING_STANDARD);
+  background-color: var(--COLOR_MAIN_2);
+  color: var(--COLOR_ACCENT_1);
+
+  display: flex;
+}
+.download_context {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  /* background-color: var(--COLOR_DEBUG); */
+  color: var(--COLOR_FONT_1);
+  padding: var(--PADDING-SMALL);
+  padding-left: var(--PADDING-LARGE);
+}
+.conversation_input {
+  align-self: flex-end; /* Aligns bubble to the right */
+  width: 80%;
+  box-sizing: border-box;
+  margin: var(--MARGIN_SMALLEST);
+  padding: var(--PADDING_STANDARD);
+  border-radius: var(--PADDING_STANDARD);
+  background-color: var(--COLOR_ACCENT_1);
+  color: var(--COLOR_FONT_1);
+}
+
+
+#userinput {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--PADDING_STANDARD); /* Adjust vertical padding */
+  margin-top: var(--MARGIN_STANDARD);
+  font-size: large;
+
+  resize: none;
+  overflow: hidden;
+  max-height: calc(1.5em * 8 + 20px); /* 1.5em per line, max 5 lines + padding */
+
+  border-radius: var(--PADDING_STANDARD);
+
+  background-color: var(--COLOR_ACCENT_1);
+  color: var(--COLOR_FONT_1);
+}
+
+/* Layer 3, Right Bar */
+
+
+#uploadssection{
+  box-sizing: border-box;
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--PADDING_SMALL);
+}
+
+#uploadstitle{
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--PADDING_SMALL);
+
+  text-align: center;
+  border: 1px solid var(--border-color);
+  background-color: var(--COLOR_ACCENT_1);
+  color: var(--COLOR_FONT_1);
+}
+
+.filelist{
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--PADDING_STANDARD);
+  flex: 1;
+  white-space: nowrap;
+  overflow: auto;
+
+  background-color: var(--COLOR_MAIN_2);
+  color: var(--COLOR_ACCENT_1);
+}
+
+.uploadsbuttons {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+}
+
+
+#databasesection{
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--PADDING_SMALL);
+}
+#databasetitle{
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--PADDING_SMALL);
+
+  text-align: center;
+  border: 1px solid var(--border-color);
+  background-color: var(--COLOR_ACCENT_1);
+  color: var(--COLOR_FONT_1)
+}
+
+#pushbtn{
+  padding: 10px 15px;    /* Padding for buttons */
+  font-size: 16px;       /* Font size for buttons */
+  cursor: pointer;        /* Pointer cursor on hover */
+  color: white;
+  background-color: var(--COLOR_PUSH);
+}
+
+.uploadsbuttons {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;          /* Use flexbox for horizontal alignment */
+}
+.databasebuttons {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;          /* Use flexbox for horizontal alignment */
+}
+.btn {
+  padding: 10px 15px;    /* Padding for buttons */
+  font-size: 16px;       /* Font size for buttons */
+  cursor: pointer;        /* Pointer cursor on hover */
+  background-color: var(--COLOR_MAIN_2);
+  flex: 1;
+}
+
+#downloaddbbutton{
+  flex: 1;
+  background-color: var(--COLOR_DOWNLOAD);
+  color: white;
+}
+
+#deletedbbutton{
+  flex: 1;
+  background-color: var(--COLOR_DELETE);
+  color: white;
+}
+
+/* Embedded Images */
+
+.icon {
+  width: var(--WIDTH_ICON_STANDARD);
+  height: var(--HEIGHT_ICON_STANDARD);
+  cursor: pointer;
+}
+
+/* Dev Elements */
+.devtools{
+  padding: 10px 15px;    /* Padding for buttons */
+  font-size: 16px;       /* Font size for buttons */
+  cursor: pointer;        /* Pointer cursor on hover */
+  background-color: var(--COLOR_DEBUG);
+  color: var(--COLOR_DEBUG_2);
+  margin-top: auto;
+}

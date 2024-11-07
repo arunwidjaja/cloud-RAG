@@ -23,7 +23,7 @@ Cloud RAG can be compiled and run locally, but requires OpenAI API keys:
   - HuggingFace - Transformers
   - Chroma - Vector DB
   - FastAPI
-- Docker, Amazon AWS - Deployment
+- ReactJS, Docker, Amazon AWS - Deployment
 - HTML, CSS, JavaScript - Frontend
 
 ## Developer Notes
