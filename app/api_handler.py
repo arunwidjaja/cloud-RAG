@@ -97,6 +97,22 @@ async def get_db_files_metadata():
         raise Exception(f"Exception occured when getting file list: {e}")
 
 
+@app.get("/download_files")
+async def download_files(hashes: List[str] = Query(...)):
+    """
+    Downloads the specified files and returns a list of the downloaded files.
+    """
+    print("API CALL: download_files")
+    if hashes is None or not isinstance(hashes, list):
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing hashes parameter.")
+    try:
+        download_list = db_ops_utils.download_files(hashes)
+        return download_list
+    except Exception as e:
+        raise Exception(f"Exception occurred when downloading files: {e}")
+
+
 @app.get("/initiate_push_to_db")
 async def initiate_push_to_db():
     """
@@ -202,22 +218,6 @@ async def delete_uploads(hashes: List[str] = Query(...)):
         return deleted_files
     except Exception as e:
         raise e
-
-
-@app.get("/download_files")
-async def download_files(hashes: List[str] = Query(...)):
-    """
-    Downloads the specified files and returns a list of the downloaded files.
-    """
-    print("API CALL: download_files")
-    if hashes is None or not isinstance(hashes, list):
-        raise HTTPException(
-            status_code=422, detail="Invalid or missing hashes parameter.")
-    try:
-        download_list = db_ops_utils.download_files(hashes)
-        return download_list
-    except Exception as e:
-        raise Exception(f"Exception occurred when downloading files: {e}")
 
 
 # Run main to test locally on localhost:8000
