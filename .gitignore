@@ -16,7 +16,7 @@ data/
 archive/
 uploads/
 
-# React.JS .gitignore
+# React.JS (Frontend Files)
 
 # dependencies
 app/cr_frontend/node_modules

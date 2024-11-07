@@ -16,16 +16,33 @@ async function fetch_db_files_metadata() {
       return [];
   }
 }
+async function fetch_uploads_metadata() {
+  try {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/uploads_metadata`);
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      const files = await response.json();
+      return files;
+  } catch (error) {
+      console.error('Error fetching uploads:', error);
+      return [];
+  }
+}
 
 function App() {
-  const [files, set_files] = useState([]); //
+  const [files, set_files] = useState([]);
+  const [uploads, set_uploads] = useState([]);
 
   const populate_file_list = async () => {
     const fetched_files = await fetch_db_files_metadata();
     set_files(fetched_files)
   };
-  const populate_upload_list = () => {
-  }
+  const populate_upload_list = async () => {
+    const fetched_uploads = await fetch_uploads_metadata();
+    set_uploads(fetched_uploads)
+  };
+  
 
   useEffect(() => {
     populate_file_list();
@@ -56,6 +73,25 @@ function App() {
       </li>
     ));
   }
+    // Database collection file list
+    let upload_list_content;
+    if (uploads.length === 0){
+      upload_list_content = <li>Searching for uploads...</li>;
+    } else {
+      upload_list_content = uploads.map((upload) => (
+        <li
+          key = {upload.hash}
+          className = 'file-item'
+          style = {{cursor: 'pointer'}}
+          onClick={() => toggleFileSelection(upload)}
+          data_name = {upload.name}
+          data_hash = {upload.hash}
+          data_word_count = {upload.word_count}
+        >
+          {upload.name}
+        </li>
+      ));
+    }
 
   return (
     <div className="container">
@@ -105,7 +141,7 @@ function App() {
                   </div>
                   <div className="filelist" id="uploadslist">
                       <ul id="uploads-list-ul">
-                          <li>Searching for files. Please wait...</li>
+                          {upload_list_content}
                       </ul>
                   </div>
                   <button id="pushbtn">Push Uploads to DB</button>
