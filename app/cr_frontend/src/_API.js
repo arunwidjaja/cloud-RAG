@@ -139,7 +139,6 @@ async function push_to_DB() {
         console.error('Error refreshing database:', error);
         return [];
     }
-    unselect_all_files();
     populate_upload_list();
     populate_file_list();
 }

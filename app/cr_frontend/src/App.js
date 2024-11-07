@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 
 async function fetch_db_files_metadata() {
+  // Fetches the list of files in the database
+  // TODO: Make it collection specific
   try {
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/db_files_metadata`);
       if (!response.ok) {
@@ -17,6 +19,7 @@ async function fetch_db_files_metadata() {
   }
 }
 async function fetch_uploads_metadata() {
+  // Fetches the list of uploads from backend
   try {
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/uploads_metadata`);
       if (!response.ok) {
@@ -29,10 +32,31 @@ async function fetch_uploads_metadata() {
       return [];
   }
 }
+async function start_push_to_DB() {
+  try {
+      const pushed_files = await fetch(`${process.env.REACT_APP_API_BASE_URL}/initiate_push_to_db`);
+      if (!pushed_files.ok) {
+          throw new Error('Network response was not ok');
+      }
+      else {
+          const pushed_files_JSON = await pushed_files.json();
+          return pushed_files_JSON
+      }
+  } catch (error) {
+      console.error('Error refreshing database:', error);
+      return [];
+  }
+}
 
 function App() {
   const [files, set_files] = useState([]);
   const [uploads, set_uploads] = useState([]);
+  const [selected_items, set_selected_items] = useState([]);
+  const [log_messages, set_log_messages] = useState([]);
+
+  const log_message = (message) => {
+    set_log_messages((prev_messages) => [...prev_messages, message]);
+  };
 
   const populate_file_list = async () => {
     const fetched_files = await fetch_db_files_metadata();
@@ -42,51 +66,83 @@ function App() {
     const fetched_uploads = await fetch_uploads_metadata();
     set_uploads(fetched_uploads)
   };
+  const push_uploads = async () => {
+    const pushed_uploads = await start_push_to_DB();
+    const fetched_files = await fetch_db_files_metadata();
+    const fetched_uploads = await fetch_uploads_metadata();
+    set_files(fetched_files);
+    set_uploads(fetched_uploads);
+    pushed_uploads.forEach((pushed_upload) => {
+      log_message("Pushed Upload: " + pushed_upload)
+    });
+  };
   
-
   useEffect(() => {
     populate_file_list();
     populate_upload_list();
   }, []);
 
-  const toggleFileSelection = (file) => {
-    alert(`File selected: ${file.name}`);
-    // Here, you could add or remove the file from a "selected" state, if needed
+  const toggle_selected = (item) => {
+    if (selected_items.includes(item)){
+      set_selected_items(selected_items.filter((selected) => selected !== item));
+    } else {
+      set_selected_items([...selected_items, item])
+    }
   };
+
+  // list of logger messages
+  let log_content;
+  log_content = log_messages.map((msg, index) => (
+    <div
+      key = {index}
+      style = {{
+        fontSize: '12px',
+        fontFamily: 'monospace'
+      }}
+    >
+      {msg}
+    </div>
+  ));
 
   // Database collection file list
   let file_list_content;
   if (files.length === 0){
-    file_list_content = <li>Searching for files in the collection...</li>;
+    file_list_content = <li>This collection is empty</li>;
   } else {
     file_list_content = files.map((file) => (
       <li
         key = {file.hash}
         className = 'file-item'
-        style = {{cursor: 'pointer'}}
-        onClick={() => toggleFileSelection(file)}
         data_name = {file.name}
         data_hash = {file.hash}
         data_word_count = {file.word_count}
+        onClick={() => toggle_selected(file)}
+        style = {{
+          cursor: 'pointer',
+          fontWeight: selected_items.includes(file) ? 'bold':'normal'
+        }}
       >
         {file.name}
       </li>
     ));
   }
-    // Database collection file list
+    // Upload list
     let upload_list_content;
     if (uploads.length === 0){
-      upload_list_content = <li>Searching for uploads...</li>;
+      upload_list_content = <li>No files have been uploaded</li>;
     } else {
       upload_list_content = uploads.map((upload) => (
         <li
           key = {upload.hash}
           className = 'file-item'
-          style = {{cursor: 'pointer'}}
-          onClick={() => toggleFileSelection(upload)}
           data_name = {upload.name}
           data_hash = {upload.hash}
           data_word_count = {upload.word_count}
+          onClick={() => toggle_selected(upload)}
+          style = {{
+            cursor: 'pointer',
+            fontWeight: selected_items.includes(upload) ? 'bold':'normal'
+          }}
         >
           {upload.name}
         </li>
@@ -126,6 +182,7 @@ function App() {
                   <button className="shortcut_button" id="sentiment">(WIP) Analyze Sentiment</button>
               </div>
               <div id="log">
+                {log_content}
               </div>
           </div>
           {/* Middle Pane */}
@@ -144,7 +201,8 @@ function App() {
                           {upload_list_content}
                       </ul>
                   </div>
-                  <button id="pushbtn">Push Uploads to DB</button>
+                  <button
+                    id="pushbtn" onClick={push_uploads}>Push Uploads to DB</button>
                   <div className="uploadsbuttons">
                       <button id='upload-btn' className="btn">Upload Files</button>
                       <button id='deleteuploadsbtn'className="btn">Clear Selected Uploads</button>
