@@ -187,15 +187,14 @@ async def upload_documents(files: List[UploadFile] = File(...)):
 
 
 @app.delete("/delete_files")
-async def delete_files(delete_request: DeleteRequest):
+async def delete_files(hashes: List[str] = Query(...)):
     """
     Delete the list of files from the Chroma DB
     """
-    file_hashes_to_delete = delete_request.deletion_list
     try:
         deleted_files = db_ops.delete_db_files(
             database,
-            file_hashes_to_delete,
+            hashes,
             collection_name='langchain'
         )
         return deleted_files

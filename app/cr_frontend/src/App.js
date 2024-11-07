@@ -1,84 +1,6 @@
-// src/App.js
-
 import React, { useEffect, useState, useRef } from 'react';
+import api from './api_calls/api';
 import './App.css';
-
-async function fetch_db_files_metadata() {
-  // Fetches the list of files in the database
-  // TODO: Make it collection specific
-  try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/db_files_metadata`);
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
-      const files = await response.json();
-      return files;
-  } catch (error) {
-      console.error('Error fetching files:', error);
-      return [];
-  }
-}
-async function fetch_uploads_metadata() {
-  // Fetches the list of uploads from backend
-  try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/uploads_metadata`);
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
-      const files = await response.json();
-      return files;
-  } catch (error) {
-      console.error('Error fetching uploads:', error);
-      return [];
-  }
-}
-async function start_push_to_DB() {
-  try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/initiate_push_to_db`);
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
-      else {
-          const pushed_files = await response.json();
-          return pushed_files
-      }
-  } catch (error) {
-      console.error('Error refreshing database:', error);
-      return [];
-  }
-}
-async function start_upload_deletion(upload_deletion_list){
-  try{
-    const hashes = upload_deletion_list.map(item => item.hash);
-    const query = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`).join('&');
-    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/delete_uploads?${query}`,{
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const deleted_uploads = await response.json();
-    return deleted_uploads
-  } catch (error) {
-    console.error('An error occurred while deleting uploads: ', error)
-  }
-}
-async function start_file_download(file_download_list){
-  try {
-    const hashes = file_download_list.map(item => item.hash);
-    const query = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`).join('&');
-    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/download_files?${query}`,{
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const downloaded_files = await response.json();
-    return downloaded_files
-  } catch (error) {
-    console.error('An error occurred while download files: ', error)
-  }
-}
 
 
 function App() {
@@ -109,57 +31,79 @@ function App() {
           console.error('Error uploading files:', error);
       }
     }
-    populate_upload_list();
+    refresh_uploads();
   }
 
 
-
   
-  // Runs on start
+  // Runs once on start
   useEffect(() => {
-    populate_file_list();
-    populate_upload_list();
+    refresh_files();
+    refresh_uploads();
   }, []);
+
+
+
 
   const log_message = (message) => {
   // Writing a new message to the log
     set_log_messages((prev_messages) => [...prev_messages, message]);
   };
-  const populate_file_list = async () => {
+  const refresh_files = async () => {
   // Refreshing the list of files in the database
-    const fetched_files = await fetch_db_files_metadata();
+    const fetched_files = await api.fetch_db_files_metadata();
     set_files(fetched_files)
   };
-  const populate_upload_list = async () => {
+  const refresh_uploads = async () => {
   // Refreshing the list of files in the uploads folder
-    const fetched_uploads = await fetch_uploads_metadata();
+    const fetched_uploads = await api.fetch_uploads_metadata();
     set_uploads(fetched_uploads)
   };
+
+
+
+
   const push_uploads = async () => {
   // Pushing the uploads to the database
-    const pushed_uploads = await start_push_to_DB();
-    const fetched_files = await fetch_db_files_metadata();
-    const fetched_uploads = await fetch_uploads_metadata();
-    set_files(fetched_files);
-    set_uploads(fetched_uploads);
+    const pushed_uploads = await api.start_push_to_DB();
+    refresh_files();
+    refresh_uploads();
+    set_selected_uploads([]);
     pushed_uploads.forEach((pushed_upload) => {
-      log_message("Pushed Upload: " + pushed_upload)
-    });
-  };
-  const download_files = async () => {
-    const downloaded_files = await start_file_download(selected_files);
-    downloaded_files.forEach((downloaded_file) => {
-      log_message("Downloaded File: " + downloaded_file)
+      log_message("Pushed upload: " + pushed_upload)
     });
   };
   const delete_uploads = async () => {
   // Deleting the selected uploads from the uploads folder
-    const deleted_uploads = await start_upload_deletion(selected_uploads);
+    const deleted_uploads = await api.start_upload_deletion(selected_uploads);
+    refresh_uploads();
+    set_selected_uploads([]);
     deleted_uploads.forEach((deleted_upload) => {
-      log_message("Deleted Upload: " + deleted_upload)
+      log_message("Deleted upload: " + deleted_upload)
     });
-    populate_upload_list()
+  };  
+  const download_files = async () => {
+  // Download files from the collection
+    const downloaded_files = await api.start_file_download(selected_files);
+    set_selected_files([]);
+    downloaded_files.forEach((downloaded_file) => {
+      log_message("Downloaded file: " + downloaded_file)
+    });
   };
+  const delete_files = async () => {
+  // Delete files from the collection
+    const deleted_files = await api.start_file_deletion(selected_files);
+    refresh_files();
+    set_selected_files([]);
+    deleted_files.forEach((deleted_file) => {
+      log_message("Deleted file from collection: " + deleted_file)
+    });
+  }
+
+
+
+
+
   const toggle_selected_files = (item) => {
   // Toggling whether or not a file is selected
     if (selected_files.includes(item)){
@@ -177,7 +121,18 @@ function App() {
     }
   };
 
-  // Log messages
+
+  //////////////////////////////////
+  //////////////////////////////////
+  //////////////////////////////////
+  // Components
+  //////////////////////////////////
+  //////////////////////////////////
+  //////////////////////////////////
+
+
+
+  // Log Messages Component
   let log_content;
   log_content = log_messages.map((msg, index) => (
     <div
@@ -191,7 +146,9 @@ function App() {
     </div>
   ));
 
-  // Collection file list
+
+
+  // File List Component
   let file_list_content;
   if (files.length === 0){
     file_list_content = <li>This collection is empty</li>;
@@ -214,7 +171,7 @@ function App() {
     ));
   }
 
-  // Uploads file list
+  // Uploads List Component
   let upload_list_content;
   if (uploads.length === 0){
     upload_list_content = <li>No files have been uploaded</li>;
@@ -267,7 +224,7 @@ function App() {
               <div id="version">v0.2</div>
               <div id="links"><br />
                   <a href="https://github.com/arunwidjaja/cloud-RAG" target="_blank">
-                      <img className="icon" src="/github_light.svg"/>
+                      <img className="icon" src="/github_light.svg" alt="Repo Link"/>
                     </a>
               </div>
               <div id="auth">
@@ -320,7 +277,7 @@ function App() {
                   </div>
                   <div className="databasebuttons">
                       <button className="btn" id="downloaddbbutton" onClick={download_files}>Download Selected Files from DB</button>
-                      <button className="btn" id="deletedbbutton">Delete Selected Files from DB</button>
+                      <button className="btn" id="deletedbbutton" onClick={delete_files}>Delete Selected Files from DB</button>
                   </div>
               </div>
           </div>
