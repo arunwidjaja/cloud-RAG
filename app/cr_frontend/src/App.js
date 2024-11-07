@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import api from './api_calls/api';
+
+import { fetch_db_files_metadata } from './api/api';
+import { fetch_uploads_metadata } from './api/api';
+import { start_push_to_DB } from './api/api';
+import { start_upload_deletion } from './api/api';
+import { start_file_deletion } from './api/api';
+import { start_file_download } from './api/api';
+
 import './App.css';
 
 
@@ -34,6 +41,7 @@ function App() {
     refresh_uploads();
   }
 
+  //
 
   
   // Runs once on start
@@ -51,12 +59,12 @@ function App() {
   };
   const refresh_files = async () => {
   // Refreshing the list of files in the database
-    const fetched_files = await api.fetch_db_files_metadata();
+    const fetched_files = await fetch_db_files_metadata();
     set_files(fetched_files)
   };
   const refresh_uploads = async () => {
   // Refreshing the list of files in the uploads folder
-    const fetched_uploads = await api.fetch_uploads_metadata();
+    const fetched_uploads = await fetch_uploads_metadata();
     set_uploads(fetched_uploads)
   };
 
@@ -65,7 +73,7 @@ function App() {
 
   const push_uploads = async () => {
   // Pushing the uploads to the database
-    const pushed_uploads = await api.start_push_to_DB();
+    const pushed_uploads = await start_push_to_DB();
     refresh_files();
     refresh_uploads();
     set_selected_uploads([]);
@@ -75,7 +83,7 @@ function App() {
   };
   const delete_uploads = async () => {
   // Deleting the selected uploads from the uploads folder
-    const deleted_uploads = await api.start_upload_deletion(selected_uploads);
+    const deleted_uploads = await start_upload_deletion(selected_uploads);
     refresh_uploads();
     set_selected_uploads([]);
     deleted_uploads.forEach((deleted_upload) => {
@@ -84,7 +92,7 @@ function App() {
   };  
   const download_files = async () => {
   // Download files from the collection
-    const downloaded_files = await api.start_file_download(selected_files);
+    const downloaded_files = await start_file_download(selected_files);
     set_selected_files([]);
     downloaded_files.forEach((downloaded_file) => {
       log_message("Downloaded file: " + downloaded_file)
@@ -92,7 +100,7 @@ function App() {
   };
   const delete_files = async () => {
   // Delete files from the collection
-    const deleted_files = await api.start_file_deletion(selected_files);
+    const deleted_files = await start_file_deletion(selected_files);
     refresh_files();
     set_selected_files([]);
     deleted_files.forEach((deleted_file) => {
@@ -283,7 +291,7 @@ function App() {
           </div>
       </div>
       <script src="../static/UI.js"></script>
-      <script src="../static/API.js"></script>
+      <script src="../static/js"></script>
     </div>
   );
 }
