@@ -63,6 +63,22 @@ async function start_upload_deletion(upload_deletion_list){
     console.error('An error occurred while deleting uploads: ', error)
   }
 }
+async function start_file_download(file_download_list){
+  try {
+    const hashes = file_download_list.map(item => item.hash);
+    const query = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`).join('&');
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/download_files?${query}`,{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const downloaded_files = await response.json();
+    return downloaded_files
+  } catch (error) {
+    console.error('An error occurred while download files: ', error)
+  }
+}
 
 
 function App() {
@@ -128,6 +144,12 @@ function App() {
     set_uploads(fetched_uploads);
     pushed_uploads.forEach((pushed_upload) => {
       log_message("Pushed Upload: " + pushed_upload)
+    });
+  };
+  const download_files = async () => {
+    const downloaded_files = await start_file_download(selected_files);
+    downloaded_files.forEach((downloaded_file) => {
+      log_message("Downloaded File: " + downloaded_file)
     });
   };
   const delete_uploads = async () => {
@@ -297,7 +319,7 @@ function App() {
                       </ul>
                   </div>
                   <div className="databasebuttons">
-                      <button className="btn" id="downloaddbbutton">Download Selected Files from DB</button>
+                      <button className="btn" id="downloaddbbutton" onClick={download_files}>Download Selected Files from DB</button>
                       <button className="btn" id="deletedbbutton">Delete Selected Files from DB</button>
                   </div>
               </div>

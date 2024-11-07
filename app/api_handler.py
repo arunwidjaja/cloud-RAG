@@ -129,19 +129,6 @@ async def summarize_files(request: SummarizeRequest):
         raise Exception(f"Exception occurred when generating summary: {e}")
 
 
-@app.post("/download_files")
-async def download_files(request: DownloadRequest):
-    """
-    Downloads the specified files and returns a list of the downloaded files.
-    """
-    print("API CALL: download_files")
-    try:
-        download_list = db_ops_utils.download_files(request.download_list)
-        return download_list
-    except Exception as e:
-        raise Exception(f"Exception occurred when downloading files: {e}")
-
-
 @app.post("/submit_query")
 async def submit_query(request: QueryModel):
     """
@@ -205,6 +192,7 @@ async def delete_uploads(hashes: List[str] = Query(...)):
     """
     Delete the list of uploads from the uploads folder
     """
+    print("API CALL: delete_uploads")
     if hashes is None or not isinstance(hashes, list):
         raise HTTPException(
             status_code=422, detail="Invalid or missing hashes parameter.")
@@ -214,6 +202,22 @@ async def delete_uploads(hashes: List[str] = Query(...)):
         return deleted_files
     except Exception as e:
         raise e
+
+
+@app.get("/download_files")
+async def download_files(hashes: List[str] = Query(...)):
+    """
+    Downloads the specified files and returns a list of the downloaded files.
+    """
+    print("API CALL: download_files")
+    if hashes is None or not isinstance(hashes, list):
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing hashes parameter.")
+    try:
+        download_list = db_ops_utils.download_files(hashes)
+        return download_list
+    except Exception as e:
+        raise Exception(f"Exception occurred when downloading files: {e}")
 
 
 # Run main to test locally on localhost:8000
