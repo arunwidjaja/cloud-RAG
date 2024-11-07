@@ -62,19 +62,26 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(api_router)
-app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
-templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React.JS url
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
+# app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
+# templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
 handler = Mangum(app)
 
 # GET OPERATIONS
 
 
-@app.get("/")
-async def read_root(request: Request):
-    """
-    Loads the landing page
-    """
-    return templates.TemplateResponse("index.html", {"request": request})
+# @app.get("/")
+# async def read_root(request: Request):
+#     """
+#     Loads the landing page
+#     """
+#     return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/db_files_metadata")
@@ -174,6 +181,7 @@ async def upload_documents(files: List[UploadFile] = File(...)):
     return JSONResponse(content={"message": "Files uploaded successfully", "files": saved_files})
 
 # DELETE OPERATIONS
+# TODO: change delete operation to use query parameters intead of request body
 
 
 @app.delete("/delete_files")
