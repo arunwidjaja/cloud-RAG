@@ -177,8 +177,7 @@ async def upload_documents(files: List[UploadFile] = File(...)):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload {
                                 file.filename}: {str(e)}")
-
-    return JSONResponse(content={"message": "Files uploaded successfully", "files": saved_files})
+    return saved_files
 
 # DELETE OPERATIONS
 # TODO: change delete operation to use query parameters intead of request body

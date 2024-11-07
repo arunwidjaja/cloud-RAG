@@ -1,6 +1,6 @@
 // src/App.js
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './App.css';
 
 async function fetch_db_files_metadata() {
@@ -48,16 +48,41 @@ async function start_push_to_DB() {
   }
 }
 
+
 function App() {
   const [files, set_files] = useState([]);
   const [uploads, set_uploads] = useState([]);
   const [selected_items, set_selected_items] = useState([]);
   const [log_messages, set_log_messages] = useState([]);
+  const upload_window = useRef(null);
+  const accept_uploads = async (event) => {
+    const files = event.target.files;
+    if (files.length > 0) {
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload_documents`, {
+            method: 'POST',
+            body: formData
+        });
+        const uploaded_files = await response.json();
+        uploaded_files.forEach((uploaded_file) => {
+          log_message("Uploaded File: " + uploaded_file)
+        });
+        upload_window.current.value = '';
+      } catch (error) {
+          console.error('Error uploading files:', error);
+      }
+    }
+    populate_upload_list();
+  }
+
 
   const log_message = (message) => {
     set_log_messages((prev_messages) => [...prev_messages, message]);
   };
-
   const populate_file_list = async () => {
     const fetched_files = await fetch_db_files_metadata();
     set_files(fetched_files)
@@ -77,6 +102,7 @@ function App() {
     });
   };
   
+  // Runs on start
   useEffect(() => {
     populate_file_list();
     populate_upload_list();
@@ -90,7 +116,7 @@ function App() {
     }
   };
 
-  // list of logger messages
+  // Logger area content
   let log_content;
   log_content = log_messages.map((msg, index) => (
     <div
@@ -126,28 +152,28 @@ function App() {
       </li>
     ));
   }
-    // Upload list
-    let upload_list_content;
-    if (uploads.length === 0){
-      upload_list_content = <li>No files have been uploaded</li>;
-    } else {
-      upload_list_content = uploads.map((upload) => (
-        <li
-          key = {upload.hash}
-          className = 'file-item'
-          data_name = {upload.name}
-          data_hash = {upload.hash}
-          data_word_count = {upload.word_count}
-          onClick={() => toggle_selected(upload)}
-          style = {{
-            cursor: 'pointer',
-            fontWeight: selected_items.includes(upload) ? 'bold':'normal'
-          }}
-        >
-          {upload.name}
-        </li>
-      ));
-    }
+  // Upload list
+  let upload_list_content;
+  if (uploads.length === 0){
+    upload_list_content = <li>No files have been uploaded</li>;
+  } else {
+    upload_list_content = uploads.map((upload) => (
+      <li
+        key = {upload.hash}
+        className = 'file-item'
+        data_name = {upload.name}
+        data_hash = {upload.hash}
+        data_word_count = {upload.word_count}
+        onClick={() => toggle_selected(upload)}
+        style = {{
+          cursor: 'pointer',
+          fontWeight: selected_items.includes(upload) ? 'bold':'normal'
+        }}
+      >
+        {upload.name}
+      </li>
+    ));
+  }
 
   return (
     <div className="container">
@@ -155,8 +181,13 @@ function App() {
       {/* <div class="banner">
           Cloud RAG UI - Draft Only. Do Not Use.
       </div> */}
-      {/* Hidden element - file open window */}
-      <input type="file" id="fileInput" style={{display: 'none'}} multiple />
+      {/* Hidden element - uploads window */}
+      <input
+        type="file"
+        ref={upload_window}
+        onChange={accept_uploads}
+        style={{display: 'none'}}
+        multiple />
       <div className="container">
           {/* Left Pane */}
           <div className="L1" id="L1S1">
@@ -204,7 +235,7 @@ function App() {
                   <button
                     id="pushbtn" onClick={push_uploads}>Push Uploads to DB</button>
                   <div className="uploadsbuttons">
-                      <button id='upload-btn' className="btn">Upload Files</button>
+                      <button id='upload-btn' className="btn" onClick={() => upload_window.current.click()}>Upload Files</button>
                       <button id='deleteuploadsbtn'className="btn">Clear Selected Uploads</button>
                   </div>
               </div>
