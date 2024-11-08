@@ -1,4 +1,4 @@
-# cloud-RAG
+# Cloud RAG
 
 Cloud RAG is a web-based RAG GenAI client that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
 Text transformation, embedding, and generation is currently powered primarily by DistilBERT, ADA, and GPT-4.
@@ -26,16 +26,16 @@ Cloud RAG can be compiled and run locally, but requires OpenAI API keys:
 - ReactJS, Docker, Amazon AWS - Deployment
 - HTML, CSS, JavaScript - Frontend
 
-## Developer Notes
-
-### 2024.11.04 - v0.2
+## Release Notes
 
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.2.PNG" />
 
-#### Summary
+### 2024.11.04 - v0.2
+
+#### Feature Summary
 - Document summary shortcut
 - Theme analysis shortcut
-- File download
+- File download from context
 - Chat-style interface
 - Security updates
 
@@ -43,17 +43,18 @@ v0.2 contains new key features as well as some added utilities. Shortcuts have b
 
 Document retrieval has been updated to use md5 hashes instead of file paths. Any backend paths as well as source file paths are not revealed to the frontend logic.
 
-A library of prompt templates have been added. General purpose templates as well as templates tuned for specific use cases, such as analyzing for themes, sentiment, etc. are stored in configurable presets.
+A library of prompt templates has been added. General purpose templates as well as templates tuned for specific use cases, such as analyzing for themes, sentiment, etc. are stored in configurable presets.
 
 ### 2024.10.21 - v0.1
 
-#### Summary
-- First prototype
+#### Feature Summary
+- RAG querying
+- File operations: upload, download, delete
+- Logging window
 
-v0.1 is the first prototype with all of the basic functionality implemented locally. Database operations can be executed via the frontend UI: uploading files, viewing DB contents/uploads, querying the DB, deleting selected files from the DB, as well as logging DB actions.
+v0.1 is the first prototype with all of the basic client functionality implemented locally. Database operations can be executed via the frontend UI: uploading files, viewing DB contents/uploads, querying the DB, deleting selected files from the DB, as well as logging DB actions.
 
-Deployment on AWS Lambda has been a learning experience, and working around its read-only nature has revealed nuances in the behavior of the client that I would have otherwise overlooked. Opening a connection to a Chroma database, for instance, requires a writable file system, as there is no way to open a read-only connection. This prevents Lambda from being used for database storage unless the data is copied to the writable /tmp folder first.
-Another challenge has been trying to use LangChain's DirectoryLoader class for vectorizing assorted/unknown file types in a single directory. DirectoryLoader attempts to download dependency data, and therefore cannot be used in a read-only file system. More detail on this issue can be found [here](https://github.com/langchain-ai/langchain/issues/17936#issuecomment-2021689653). A workaround that doesn't involve switching to a different cloud service is to parse file extensions with RegEx and call the appropriate loader (TextLoader, PyPDFLoader, etc.), instead of using DirectoryLoader to parse them automatically.
+The originally planned architecture was to have Cloud RAG deployed on AWS Lambda, but the read-only file system is too restrictive. DirectoryLoader cannot be used to load multiple file types from a single directory because it requires a writable file system to download nltk dependency data. Currently, the best solution is to preprocess data into a single format and use the appropriate loader, or to manually parse file extensions rather than rely on DirectoryLoader. The /tmp folder for the Lambda function is erased after every invocation of the FastAPI handler and cannot be used to store data, even during a single session. This project will be moved to a different Cloud serivce; AWS EC2 and S3 are officially supported and have documentation [here](https://docs.trychroma.com/deployment/aws).
 
-The exact conditions that trigger the wiping of the /tmp folder in Lambda are unknown. It often gets wiped after invocations of the Lambda function, only minutes or seconds apart, and doesn't seem to be the appropriate service for this project, even for temporary demonstration purposes. Along with S3 not supporting the functionality to stream a file/database, the originally planned architecture for this project might not be feasible. I'm considering migrating the project over to a different service.  Chroma's officially recommended AWS cloud service for connecting to an instance of their HTTP Client is Amazon EC2, [here](https://docs.trychroma.com/deployment/aws). This would also allow me to use Chroma's native authentication support instead of using IAM permissions to control access to the Lambda function.
+More detail on the DirectoryLoader issue can be found [here](https://github.com/langchain-ai/langchain/issues/17936#issuecomment-2021689653).
 
