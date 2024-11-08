@@ -160,27 +160,31 @@ html, body, #root {
   overflow-y: auto;
 }
 
-.conversation_input {
-  align-self: flex-end; /* Aligns bubble to the right */
+.chat-bubble {
   width: 80%;
   box-sizing: border-box;
   margin: var(--MARGIN_SMALLEST);
   padding: var(--PADDING_STANDARD);
   border-radius: var(--PADDING_STANDARD);
+}
+
+.conversation_input {
+  align-self: flex-end; /* Aligns bubble to the right */
   background-color: var(--COLOR_ACCENT_1);
   color: var(--COLOR_FONT_1);
 }
 .conversation_output {
-  width: 80%;
-  box-sizing: border-box;
-  margin: var(--MARGIN_SMALLEST);
-  padding: var(--PADDING_STANDARD);
-  border-radius: var(--PADDING_STANDARD);
+  display: flex;
   background-color: var(--COLOR_MAIN_2);
   color: var(--COLOR_ACCENT_1);
-
-  display: flex;
 }
+.conversation_context {
+  display: flex;
+  background-color: var(--COLOR_MAIN_2);
+  color: var(--COLOR_ACCENT_1);
+}
+
+
 .download_context {
   display: flex;
   align-items: center;

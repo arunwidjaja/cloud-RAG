@@ -14,14 +14,22 @@ import {
 
 import './App.css';
 
+const HREF_REPO = 'https://github.com/arunwidjaja/cloud-RAG'
+const SRC_GITHUB_ICON = '/github_light.svg'
+const SRC_DL_ICON = '/download_light.svg'
+
+
 
 
 function App() {
+  // Left Section
   const [log_messages, set_log_messages] = useState([]);
 
+  // Middle Section
   const [user_input, set_user_input] = useState("");
   const [messages, set_messages] = useState([]);
 
+  // Right Section
   const [files, set_files] = useState([]);
   const [uploads, set_uploads] = useState([]);
   const [selected_files, set_selected_files] = useState([]);
@@ -169,12 +177,12 @@ function App() {
         set_messages((prev_messages) => [...prev_messages, { text: bubble_content, type: message_type }]);
         break;
       case "CONTEXT":
-        message_type = "conversation_output";
+        message_type = "conversation_context";
         const context_source = bubble_content.source;
         const context_text = bubble_content.context;
-        const context_hash = bubble_content.source;
+        const context_hash = bubble_content.hash;
         const context_full_text = "Source: " + context_source + "\n\n" + context_text;
-        set_messages((prev_messages) => [...prev_messages, { text: context_full_text, type: message_type }]);
+        set_messages((prev_messages) => [...prev_messages, { text: context_full_text, hash: context_hash, type: message_type }]);
         break;
     }
   }
@@ -200,9 +208,9 @@ function App() {
     });
   };
 
-  const download_files = async () => {
+  const download_files = async (files_to_download) => {
     // Download files from the collection
-    const downloaded_files = await start_file_download(selected_files);
+    const downloaded_files = await start_file_download(files_to_download);
     set_selected_files([]);
     downloaded_files.forEach((downloaded_file) => {
       write_to_log("Downloaded file: " + downloaded_file)
@@ -217,9 +225,9 @@ function App() {
       write_to_log("Removed upload: " + deleted_upload)
     });
   };
-  const delete_files = async () => {
+  const delete_files = async (files_to_delete) => {
     // Delete files from the collection
-    const deleted_files = await start_file_deletion(selected_files);
+    const deleted_files = await start_file_deletion(files_to_delete);
     refresh_files();
     set_selected_files([]);
     deleted_files.forEach((deleted_file) => {
@@ -256,11 +264,15 @@ function App() {
 
   let ChatBubble;
   ChatBubble = ({ message }) => {
-    return (
-      <div className={`${message.type}`} style={{ whiteSpace: 'pre-wrap' }}>
-        {message.text}
-      </div>
-    )
+    const chat_bubble_content = <div className={`${message.type} chat-bubble`} style={{ whiteSpace: 'pre-wrap' }}>
+      {message.text}
+      {(message.type === 'conversation_context') && (
+        <div className={`download_context`}>
+          <img className={`icon`} src={SRC_DL_ICON} onClick={() => download_files([message])} />
+        </div>
+      )}
+    </div>
+    return chat_bubble_content;
   };
 
   let LogEntry;
@@ -350,8 +362,8 @@ function App() {
           </div>
           <div id="version">v0.2</div>
           <div id="links"><br />
-            <a href="https://github.com/arunwidjaja/cloud-RAG" target="_blank">
-              <img className="icon" src="/github_light.svg" alt="Repo Link" />
+            <a href={HREF_REPO} target="_blank">
+              <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
             </a>
           </div>
           <div id="auth">
@@ -404,8 +416,8 @@ function App() {
               </ul>
             </div>
             <div className="databasebuttons">
-              <button className="btn" id="downloaddbbutton" onClick={download_files}>Download Selected Files from DB</button>
-              <button className="btn" id="deletedbbutton" onClick={delete_files}>Delete Selected Files from DB</button>
+              <button className="btn" id="downloaddbbutton" onClick={() => download_files(selected_files)}>Download Selected Files from DB</button>
+              <button className="btn" id="deletedbbutton" onClick={() => delete_files(selected_files)}>Delete Selected Files from DB</button>
             </div>
           </div>
         </div>
