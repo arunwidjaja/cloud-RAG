@@ -1,11 +1,11 @@
 PT_RAG = """
-Based only on the provided context, please answer the question or provide context supporting the statement.
+Based only on the provided context, please answer the question.
 Do not use any knowledge outside of the context. 
 
 Context:
 {context}
 
-Question or statement:
+Question:
 {question}
 """
 
@@ -62,7 +62,7 @@ Documents:
 """
 
 PT_REDUCE_THEMES = """
-Provide a concise summary of the following documents that highlights a few common themes found throughout them.
+Generate brief taglines that describe the best and worst parts of the following documents.
 
 Documents:
 
@@ -89,6 +89,7 @@ PT_PRESETS = {
     'GENERAL': (PT_MAP_GENERAL, PT_REDUCE_GENERAL),
     'THEMES_GENERAL': (PT_MAP_GENERAL, PT_REDUCE_THEMES),
     'SENTIMENT_GENERAL': (PT_MAP_GENERAL, PT_REDUCE_SENTIMENT),
+
     'THEMES_INTERVIEWS_1': (PT_MAP_EVENT_INTERVIEWS_GENERAL, PT_REDUCE_THEMES),
     'THEMES_INTERVIEWS_HIGHLIGHTS_1': (PT_MAP_EVENT_INTERVIEWS_GENERAL, PT_REDUCE_THEMES_CONCISE)
 }
