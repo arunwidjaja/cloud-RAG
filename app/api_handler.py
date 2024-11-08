@@ -125,11 +125,9 @@ async def initiate_push_to_db():
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
 
-# POST OPERATIONS
 
-
-@app.post("/summary")
-async def summarize_files(request: SummarizeRequest):
+@app.get("/summary")
+async def summarize(hashes: List[str] = Query(...)):
     """
     Generates a map-reduce summary of the specified files.
     """
@@ -137,8 +135,8 @@ async def summarize_files(request: SummarizeRequest):
     try:
         summary = summarize_map_reduce(
             db=database,
-            doc_list=request.file_list,
-            preset=request.preset
+            doc_list=hashes,
+            preset='GENERAL'
         )
         return summary
     except Exception as e:
