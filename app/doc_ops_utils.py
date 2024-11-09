@@ -5,16 +5,22 @@ import config
 import utils
 
 
-def delete_uploads(file_list: List) -> List:
+def delete_uploads(file_hash_list: List) -> List:
     """
     Deletes documents from the uploads folder (not from the DB)
+
+    Args:
+        file_hash_list: a list of the hashes of the uploads that need to be deleted
+
+    Returns:
+        A list of names of deleted uploads
     """
     document_path = utils.get_env_paths()['DOCS']
     deleted_uploads = []
 
     uploads_folder_hash = utils.get_hash_dir(document_path)
 
-    for upload_hash in file_list:
+    for upload_hash in file_hash_list:
         upload_path = uploads_folder_hash.get(upload_hash)
         try:
             if upload_path is not None:
@@ -27,6 +33,12 @@ def delete_uploads(file_list: List) -> List:
 
 
 def delete_all_uploads() -> List:
+    """
+    Deletes all uploads.
+
+    Returns:
+        A list of names of deleted uploads
+    """
     document_path = utils.get_env_paths()['DOCS']
     uploads_folder_hash = utils.get_hash_dir(document_path)
     return delete_uploads(uploads_folder_hash.keys())
@@ -34,11 +46,13 @@ def delete_all_uploads() -> List:
 
 def archive_uploads(file_list: List) -> List:
     """
-    Moves uploads to the archive folder.
+    Moves uploads to the archive folder. Overwrites files with the same name.
 
-    Overwrites files with the same name.
+    Args:
+        file_list: A list of files to be moved
 
-    Returns a list of the moved files' names.
+    Returns:
+        A list of the moved files' names
     """
     archive_path = utils.get_env_paths()['ARCHIVE']
     archived_uploads = []
@@ -58,6 +72,12 @@ def archive_uploads(file_list: List) -> List:
 
 
 def archive_all_uploads() -> List:
+    """
+    Moves all uploads to the archive folder. Overwrites files with the same name.
+
+    Returns:
+        A list of the moved files' names
+    """
     document_path = utils.get_env_paths()['DOCS']
     all_uploads = [str(file) for file in Path(
         document_path).rglob('*') if file.is_file()]
@@ -69,7 +89,7 @@ def get_uploads_metadata() -> List[dict]:
     Gets the metadata of all the uploads.
 
     Returns:
-        A list of dictionaries that list the file name, hash, and word count
+        A list of dictionaries containing the file name, hash, and word count
     """
     uploads_folder_path = utils.get_env_paths()['DOCS']
     uploads_metadata = []

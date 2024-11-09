@@ -15,3 +15,28 @@ Sample Documents/
 data/
 archive/
 uploads/
+
+# React.JS (Frontend Files)
+
+# dependencies
+app/cr_frontend/node_modules
+app/cr_frontend/.pnp
+.pnp.js
+
+# testing
+app/cr_frontend/coverage
+
+# production
+app/cr_frontend/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

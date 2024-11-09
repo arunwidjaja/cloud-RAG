@@ -11,7 +11,12 @@ openai.api_key = config.OPENAI_API_KEY
 
 class QueryResponse:
     """
-    Contains message, id, and a list of dictionaries containing source and context
+    Holds the LLM RAG response
+
+    Attributes:
+        message: LLM's answer
+        id: message id
+        contexts: context dictionary. contains the retrieved context and the source file
     """
 
     message: str
@@ -24,32 +29,85 @@ class QueryResponse:
         self.contexts = contexts_arg
 
 
-def build_prompt(query_text: str, context: List, prompt_template: str) -> str:
+def build_prompt(
+    query_text: str,
+    context: List[tuple],
+    prompt_template: str
+) -> str:
     """
-    Builds a prompt from given query, context, and prompt template.
-    Context is a list of Tuples, each containing the context string and the source file.
-    Query is a string. Prompt Template is an f-string.
+    Builds a prompt to feed to the LLM.
+
+    Args:
+        query_text: The user's query string
+        context: a list of Tuples, each containing the context string and the source file,
+        prompt_template: f-string prompt template
+
+    Returns:
+        The formatted prompt string
     """
     # Assemble the prompt to include the context from the relevant docs.
     context_text = "\n\n---\n\n".join(
         context_current for context_current in context)
     prompt_template = ChatPromptTemplate.from_template(prompt_template)
+
     prompt = prompt_template.format(
         context=context_text, question=query_text)
     return (prompt)
 
 
-def query_rag(db:
-              Chroma, query_text: str) -> QueryResponse:
+def query_rag(
+    db: Chroma,
+    query_text: str,
+    query_type: str,
+    collections=None
+) -> QueryResponse:
     """
     Query LLM, return response and context
+
+    Args:
+        db: The Chroma instance
+        query_text: The user's query string
+        collections: List of collection names include in the search
+
+    Returns:
+        QueryResponse
     """
     model = ChatOpenAI()
-    prompt_template = prompt_templates.PT_RAG
+    if query_type == 'question':
+        prompt_template = prompt_templates.PT_RAG
+    if query_type == 'statement':
+        prompt_template = prompt_templates.PT_RAG_STATEMENT
+    if collections is not None:
+        coll_list = collections
+    else:
+        coll_list = db_ops_utils.get_all_collections_names(db)
 
-    # search for relevant context
-    retrieved_docs = db.similarity_search_with_relevance_scores(
-        query_text, k=config.LLM_K)
+    # Search all collections and combine the results into one list
+    aggregated_docs = []
+    for coll_name in coll_list:
+        print(f"Searching collection: {coll_name}")
+        collection = Chroma(
+            client=db._client,
+            embedding_function=db._embedding_function,
+            collection_name=coll_name
+        )
+        aggregated_docs_partial = collection.similarity_search_with_relevance_scores(
+            query=query_text,
+            k=config.LLM_K
+        )
+        aggregated_docs.extend(aggregated_docs_partial)
+
+    # Sort the retrieved docs based on relevance score and retrieve the top K results
+    # Relevance score is the second element of the tuple (doc[1])
+    retrieved_docs = sorted(
+        aggregated_docs,
+        key=lambda doc: doc[1],
+        reverse=True
+    )
+    retrieved_docs = retrieved_docs[:config.LLM_K]
+
+    # retrieved_docs = db.similarity_search_with_relevance_scores(
+    #     query_text, k=config.LLM_K)
 
     # aggregate context
     contexts = []
@@ -89,7 +147,11 @@ def query_rag(db:
 
     # Build prompt and invoke LLM
     context_values = [data['context'] for data in contexts]
-    prompt = build_prompt(query_text, context_values, prompt_template)
+    prompt = build_prompt(
+        query_text=query_text,
+        context=context_values,
+        prompt_template=prompt_template
+    )
 
     LLM_base_response = model.invoke(prompt)
 
@@ -97,7 +159,10 @@ def query_rag(db:
     LLM_message_id = LLM_base_response.id
 
     query_response = QueryResponse(
-        message_arg=LLM_message, id_arg=LLM_message_id, contexts_arg=contexts)
+        message_arg=LLM_message,
+        id_arg=LLM_message_id,
+        contexts_arg=contexts
+    )
 
     print(query_response)
     return (query_response)

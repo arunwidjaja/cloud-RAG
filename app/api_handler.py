@@ -8,34 +8,14 @@ import db_ops
 import db_ops_utils
 import doc_ops_utils
 
+from api_endpoints import router as api_router
 from query_data import query_rag
 from summarize import summarize_map_reduce
 
 
-database = None
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Starting point for the app. Runs on startup.
-    """
-    print("FastAPI lifespan is starting")
-    global database
-    try:
-        database = init_db.init_db()
-        # database = init_db.init_http_db()
-    except Exception as e:
-        print(f"FastAPI startup error: {e}")
-        raise
-    yield
-
-app = FastAPI(lifespan=lifespan)
-handler = Mangum(app)
-
-
 class QueryModel(BaseModel):
     query_text: str
+    query_type: str
 
 
 class DeleteRequest(BaseModel):
@@ -63,20 +43,46 @@ class MessageModel(BaseModel):
     contexts: List[ContextModel]
 
 
-# Mount static files (JS, CSS)
-app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
-templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
+database = None
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Starting point for the app. Runs on startup.
+    """
+    print("FastAPI lifespan is starting")
+    global database
+    try:
+        database = init_db.init_db()
+        # database = init_db.init_http_db()
+    except Exception as e:
+        print(f"FastAPI startup error: {e}")
+        raise
+    yield
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(api_router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React.JS url
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
+# app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
+# templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
+handler = Mangum(app)
 
 # GET OPERATIONS
 
 
-@app.get("/")
-async def read_root(request: Request):
-    """
-    Loads the landing page
-    """
-    return templates.TemplateResponse("index.html", {"request": request})
+# @app.get("/")
+# async def read_root(request: Request):
+#     """
+#     Loads the landing page
+#     """
+#     return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/db_files_metadata")
@@ -92,17 +98,20 @@ async def get_db_files_metadata():
         raise Exception(f"Exception occured when getting file list: {e}")
 
 
-@app.get("/uploads_metadata")
-async def get_uploads_metadata():
+@app.get("/download_files")
+async def download_files(hashes: List[str] = Query(...)):
     """
-    Gets the metadata of all uploads
+    Downloads the specified files and returns a list of the downloaded files.
     """
-    print("API CALL: get_uploads_metadata")
+    print("API CALL: download_files")
+    if hashes is None or not isinstance(hashes, list):
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing hashes parameter.")
     try:
-        uploads_metadata = doc_ops_utils.get_uploads_metadata()
-        return JSONResponse(content=uploads_metadata)
+        download_list = db_ops_utils.download_files(hashes)
+        return download_list
     except Exception as e:
-        raise Exception(f"Exception occured when getting uploads list: {e}")
+        raise Exception(f"Exception occurred when downloading files: {e}")
 
 
 @app.get("/initiate_push_to_db")
@@ -112,16 +121,14 @@ async def initiate_push_to_db():
     """
     print("API CALL: push_files_to_database")
     try:
-        pushed_files = db_ops.push_to_database(database)
+        pushed_files = db_ops.push_to_database(database, 'langchain')
         return pushed_files
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
 
-# POST OPERATIONS
 
-
-@app.post("/summary")
-async def summarize_files(request: SummarizeRequest):
+@app.get("/summary")
+async def summarize(hashes: List[str] = Query(...)):
     """
     Generates a map-reduce summary of the specified files.
     """
@@ -129,25 +136,29 @@ async def summarize_files(request: SummarizeRequest):
     try:
         summary = summarize_map_reduce(
             db=database,
-            doc_list=request.file_list,
-            preset=request.preset
+            doc_list=hashes,
+            preset='GENERAL'
         )
         return summary
     except Exception as e:
         raise Exception(f"Exception occurred when generating summary: {e}")
 
 
-@app.post("/download_files")
-async def download_files(request: DownloadRequest):
+@app.get("/theme")
+async def analyze_theme(hashes: List[str] = Query(...)):
     """
-    Downloads the specified files and returns a list of the downloaded files.
+    Generates a map-reduce summary of the specified files.
     """
-    print("API CALL: download_files")
+    print("API CALL: summarize_files")
     try:
-        download_list = db_ops_utils.download_files(request.download_list)
-        return download_list
+        summary = summarize_map_reduce(
+            db=database,
+            doc_list=hashes,
+            preset='THEMES_INTERVIEWS_1'
+        )
+        return summary
     except Exception as e:
-        raise Exception(f"Exception occurred when downloading files: {e}")
+        raise Exception(f"Exception occurred when generating summary: {e}")
 
 
 @app.post("/submit_query")
@@ -156,7 +167,10 @@ async def submit_query(request: QueryModel):
     Send query to LLM and retrieve the response
     """
     print("API CALL: submit_query")
-    query_response = query_rag(database, request.query_text)
+    query_response = query_rag(
+        db=database,
+        query_text=request.query_text,
+        query_type=request.query_type)
 
     message = query_response.message
     id = query_response.id
@@ -185,34 +199,40 @@ async def upload_documents(files: List[UploadFile] = File(...)):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload {
                                 file.filename}: {str(e)}")
-
-    return JSONResponse(content={"message": "Files uploaded successfully", "files": saved_files})
+    return saved_files
 
 # DELETE OPERATIONS
+# TODO: change delete operation to use query parameters intead of request body
 
 
 @app.delete("/delete_files")
-async def delete_files(delete_request: DeleteRequest):
+async def delete_files(hashes: List[str] = Query(...)):
     """
     Delete the list of files from the Chroma DB
     """
-    file_hashes_to_delete = delete_request.deletion_list
     try:
         deleted_files = db_ops.delete_db_files(
-            database, file_hashes_to_delete)
+            database,
+            hashes,
+            collection_name='langchain'
+        )
         return deleted_files
     except Exception as e:
         raise e
 
 
 @app.delete("/delete_uploads")
-async def delete_uploads(delete_request: DeleteRequest):
+async def delete_uploads(hashes: List[str] = Query(...)):
     """
     Delete the list of uploads from the uploads folder
     """
-    upload_hashes_to_delete = delete_request.deletion_list
+    print("API CALL: delete_uploads")
+    if hashes is None or not isinstance(hashes, list):
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing hashes parameter.")
+
     try:
-        deleted_files = doc_ops_utils.delete_uploads(upload_hashes_to_delete)
+        deleted_files = doc_ops_utils.delete_uploads(hashes)
         return deleted_files
     except Exception as e:
         raise e
