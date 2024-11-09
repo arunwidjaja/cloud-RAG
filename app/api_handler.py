@@ -15,6 +15,7 @@ from summarize import summarize_map_reduce
 
 class QueryModel(BaseModel):
     query_text: str
+    query_type: str
 
 
 class DeleteRequest(BaseModel):
@@ -143,13 +144,33 @@ async def summarize(hashes: List[str] = Query(...)):
         raise Exception(f"Exception occurred when generating summary: {e}")
 
 
+@app.get("/theme")
+async def analyze_theme(hashes: List[str] = Query(...)):
+    """
+    Generates a map-reduce summary of the specified files.
+    """
+    print("API CALL: summarize_files")
+    try:
+        summary = summarize_map_reduce(
+            db=database,
+            doc_list=hashes,
+            preset='THEMES_INTERVIEWS_1'
+        )
+        return summary
+    except Exception as e:
+        raise Exception(f"Exception occurred when generating summary: {e}")
+
+
 @app.post("/submit_query")
 async def submit_query(request: QueryModel):
     """
     Send query to LLM and retrieve the response
     """
     print("API CALL: submit_query")
-    query_response = query_rag(database, request.query_text)
+    query_response = query_rag(
+        db=database,
+        query_text=request.query_text,
+        query_type=request.query_type)
 
     message = query_response.message
     id = query_response.id

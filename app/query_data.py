@@ -58,6 +58,7 @@ def build_prompt(
 def query_rag(
     db: Chroma,
     query_text: str,
+    query_type: str,
     collections=None
 ) -> QueryResponse:
     """
@@ -72,7 +73,10 @@ def query_rag(
         QueryResponse
     """
     model = ChatOpenAI()
-    prompt_template = prompt_templates.PT_RAG
+    if query_type == 'question':
+        prompt_template = prompt_templates.PT_RAG
+    if query_type == 'statement':
+        prompt_template = prompt_templates.PT_RAG_STATEMENT
     if collections is not None:
         coll_list = collections
     else:

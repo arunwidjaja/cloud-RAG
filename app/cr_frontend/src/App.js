@@ -62,7 +62,7 @@ function App() {
       add_bubble(user_input, 'INPUT');
       set_user_input('')
 
-      const ai_reply = await start_submit_query(user_input);
+      const ai_reply = await start_submit_query(user_input, 'question');
       const ai_reply_text = ai_reply.message;
       const ai_reply_context = ai_reply.contexts;
       const ai_reply_id = ai_reply.id;
@@ -104,15 +104,15 @@ function App() {
       set_selected_files([]);
 
       const theme_analysis = await start_theme_analysis(selected_files);
-      const theme_analysis_text = theme_analysis.message;
-      const theme_analysis_context = theme_analysis.contexts;
-      const theme_analysis_id = theme_analysis.id;
+      // const theme_analysis_text = theme_analysis.message;
+      // const theme_analysis_context = theme_analysis.contexts;
+      // const theme_analysis_id = theme_analysis.id;
 
-      add_bubble(theme_analysis_text, 'OUTPUT');
-      for (let i = 0; i < theme_analysis_context.length; i++) {
-        const context = theme_analysis_context[i];
-        add_bubble(context, 'CONTEXT');
-      }
+      add_bubble(theme_analysis, 'OUTPUT');
+      // for (let i = 0; i < theme_analysis_context.length; i++) {
+      //   const context = theme_analysis_context[i];
+      //   add_bubble(context, 'CONTEXT');
+      // }
 
       write_to_log("Files analyzed: ")
       analyzed_files.forEach(file => {
@@ -329,7 +329,6 @@ function App() {
     ref={text_area}
     value={user_input}
     onChange={adjust_text_area}
-    placeholder={'placeholder text'}
     onKeyDown={handle_key_down}
   />
 
