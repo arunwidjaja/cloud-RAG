@@ -12,18 +12,18 @@ import {
   start_theme_analysis
 } from './api/api'
 
+import { useLog } from './hooks/useLog'
+
 import './App.css';
 
 const HREF_REPO = 'https://github.com/arunwidjaja/cloud-RAG'
 const SRC_GITHUB_ICON = '/github_light.svg'
 const SRC_DL_ICON = '/download_light.svg'
 
-
-
-
 function App() {
   // Left Section
-  const [log_messages, set_log_messages] = useState([]);
+  // const [log_messages, set_log_messages] = useState([]);
+  const {log_messages, write_to_log} = useLog();
 
   // Middle Section
   const [user_input, set_user_input] = useState("");
@@ -161,9 +161,9 @@ function App() {
 
 
 
-  const write_to_log = (log_message) => {
-    set_log_messages((prev_messages) => [...prev_messages, { text: log_message }]);
-  };
+  // const write_to_log = (log_message) => {
+  //   set_log_messages((prev_messages) => [...prev_messages, { text: log_message }]);
+  // };
 
   const add_bubble = (bubble_content, bubble_type) => {
     let message_type;
@@ -187,10 +187,7 @@ function App() {
     }
   }
 
-  const refresh_files = async () => {
-    const fetched_files = await fetch_db_files_metadata();
-    set_files(fetched_files)
-  };
+
   const refresh_uploads = async () => {
     const fetched_uploads = await fetch_uploads_metadata();
     set_uploads(fetched_uploads)
@@ -225,6 +222,28 @@ function App() {
       write_to_log("Removed upload: " + deleted_upload)
     });
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const delete_files = async (files_to_delete) => {
     // Delete files from the collection
     const deleted_files = await start_file_deletion(files_to_delete);
@@ -234,6 +253,42 @@ function App() {
       write_to_log("Deleted file from collection: " + deleted_file)
     });
   }
+  const handle_delete_files = async (files_to_delete) => {
+    const deleted_files = await start_file_deletion(files_to_delete); // Deletes the files from the DB
+    refresh_files(); // Refreshes the file list (calls )
+    set_selected_files([]); // Unselects the files
+    deleted_files.forEach((deleted_file) => {
+      write_to_log("Deleted file from collection: " + deleted_file)
+    });
+  }
+  const refresh_files = async () => {
+    const fetched_files = await fetch_db_files_metadata();
+    set_files(fetched_files)
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const toggle_selected_files = (item) => {
     // Toggling whether or not a file is selected
@@ -367,6 +422,7 @@ function App() {
           </div>
           <div id="auth">
             (WIP) Auth/Collections
+            {/* <button onClick = {() => write_to_log("asdf")}>Test Button</button> */}
             {/* <button class="devtools" id="dev_create_input">Create input bubble</button>
                   <button class="devtools" id="dev_create_response">Create response bubble</button>
                   <button class="devtools" id="dev_create_context">Create context bubble</button> */}
