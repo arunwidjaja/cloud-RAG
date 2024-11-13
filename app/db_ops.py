@@ -171,6 +171,7 @@ def push_to_database(db: Chroma, collection: str) -> List[str]:
 
     Args:
         db: The database
+        file_hash_list: The list of hashes of files to push
         collection: The collection to push the documents to
 
     Returns:
