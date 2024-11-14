@@ -4,11 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import useFilesStore from './stores/filesStore';
 import useLogsStore from './stores/logsStore';
 import useMessageStore from './stores/messageStore.js';
-
-// API Calls
-import {
-  start_submit_query,
-} from './api/api'
+import useCollectionsStore from './stores/collectionsStore.js'
 
 // Handlers
 import { refresh_files, refresh_uploads } from './handlers/file_handlers';
@@ -24,6 +20,10 @@ import {
   preset_analyze_themes,
   preset_summarize_selection
 } from './handlers/preset_handlers';
+import {
+  choose_collection,
+  create_collection
+} from './handlers/collection_handlers';
 
 // Components
 import { FilesList, UploadsList } from './components/FileList';
@@ -31,6 +31,7 @@ import { Logs } from './components/Logs';
 import { TextInput } from './components/TextInput.js';
 import { ChatBubble } from './components/ChatBubble.js';
 import { FileUploadWindow } from './components/FileUpload.js';
+import { DropDownMenu } from './components/DropDownMenu.js';
 
 // Styling
 import './App.css';
@@ -40,9 +41,10 @@ import { HREF_REPO, SRC_GITHUB_ICON } from './constants/constants.js';
 
 function App() {
 
-  const { files, uploads, selected_files, selected_uploads} = useFilesStore();
+  const { files, uploads, selected_files, selected_uploads } = useFilesStore();
   const { logs } = useLogsStore();
   const { messages } = useMessageStore();
+  const { collections } = useCollectionsStore();
 
   const uploadRef = useRef(null);
 
@@ -80,10 +82,8 @@ function App() {
           </div>
           <div id="auth">
             (WIP) Auth/Collections
-            {/* <button onClick = {() => // write_to_log("asdf")}>Test Button</button> */}
-            {/* <button class="devtools" id="dev_create_input">Create input bubble</button>
-                  <button class="devtools" id="dev_create_response">Create response bubble</button>
-                  <button class="devtools" id="dev_create_context">Create context bubble</button> */}
+            <DropDownMenu options = {collections} onSelect={choose_collection}/>
+            <button onClick={() => create_collection('Dummy Collection')}>Add New Collection</button>
           </div>
           <div id="shortcuts">
             <button className="shortcut_button" id="summarize" onClick={() => preset_summarize_selection(selected_files)}>Summarize Selected Documents</button>
@@ -91,7 +91,7 @@ function App() {
             <button className="shortcut_button" id="sentiment" onClick={() => preset_analyze_sentiment(selected_files)}>(WIP) Analyze Sentiment</button>
           </div>
           <div id="log">
-            <Logs logs={logs}/>
+            <Logs logs={logs} />
           </div>
         </div>
         {/* Middle Pane */}
@@ -109,13 +109,13 @@ function App() {
             </div>
             <div className="filelist" id="uploadslist">
               <ul id="uploads-list-ul">
-                <UploadsList uploads={uploads}/>
+                <UploadsList uploads={uploads} />
               </ul>
             </div>
             <button
               id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push All Uploads to DB</button>
             <div className="uploadsbuttons">
-              <FileUploadWindow ref={uploadRef}/>
+              <FileUploadWindow ref={uploadRef} />
               <button id='upload-btn' className="btn" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</button>
               <button id='deleteuploadsbtn' className="btn" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Selected Uploads</button>
             </div>
@@ -126,7 +126,7 @@ function App() {
             </div>
             <div className="filelist" id="databaselist">
               <ul id="file-list-ul">
-                <FilesList files={files}/>
+                <FilesList files={files} />
               </ul>
             </div>
             <div className="databasebuttons">
