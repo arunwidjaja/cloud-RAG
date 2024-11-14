@@ -15,16 +15,3 @@ export const ChatBubble = ({ message }) => {
         </div>
     )
 };
-
-// let ChatBubble;
-// ChatBubble = ({ message }) => {
-//     const chat_bubble_content = <div className={`${message.type} chat-bubble`} style={{ whiteSpace: 'pre-wrap' }}>
-//         {message.text}
-//         {(message.type === 'conversation_context') && (
-//             <div className={`download_context`}>
-//                 <img className={`icon`} src={SRC_DL_ICON} onClick={() => download_files([message])} />
-//             </div>
-//         )}
-//     </div>
-//     return chat_bubble_content;
-// };
