@@ -10,6 +10,10 @@ import {
   start_push_to_DB,
   start_upload_deletion
 } from '../api/api';
+import useCollectionsStore from '../stores/collectionsStore.js';
+
+import { EF } from '../constants/constants.js';
+import { create_collection } from './collection_handlers.js';
 
 // Accepts user uploads
 export const handle_accept_uploads = async (uploadRef) => {
@@ -54,4 +58,25 @@ export const handle_delete_selected_files = async (files_to_delete) => {
   delete_files.forEach(element => {
     add_log("Deleted file from DB: " + element)
   });
+};
+
+export const handle_create_collection = async () => {
+  const collections = useCollectionsStore.getState().collections;
+  const collection_name = prompt("Enter a collection name");
+
+  if (!collection_name) {
+    alert("Collection name is required.");
+    return;
+  }
+
+  if (collections.includes(collection_name)){
+    alert("This collection already exists. Please choose a unique name.")
+    return;
+  }
+
+  const select_embedding_function = prompt(
+    `Select an embedding function: ${EF.join(", ")}`
+  );
+
+  create_collection(collection_name, select_embedding_function)
 };

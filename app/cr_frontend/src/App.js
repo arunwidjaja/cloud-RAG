@@ -8,12 +8,14 @@ import useCollectionsStore from './stores/collectionsStore.js'
 
 // Handlers
 import { refresh_files, refresh_uploads } from './handlers/file_handlers';
+import { refresh_collections } from './handlers/collection_handlers';
 import {
   handle_push_uploads,
   handle_remove_selected_uploads,
   handle_download_selected_files,
   handle_delete_selected_files,
-  handle_accept_uploads
+  handle_accept_uploads,
+  handle_create_collection
 } from './handlers/button_handlers';
 import {
   preset_analyze_sentiment,
@@ -22,7 +24,6 @@ import {
 } from './handlers/preset_handlers';
 import {
   choose_collection,
-  create_collection
 } from './handlers/collection_handlers';
 
 // Components
@@ -30,9 +31,9 @@ import { FilesList, UploadsList } from './components/FileList';
 import { Logs } from './components/Logs';
 import { TextInput } from './components/TextInput.js';
 import { ChatBubble } from './components/ChatBubble.js';
-import { FileUploadWindow } from './components/FileUpload.js';
 import { DropDownMenu } from './components/DropDownMenu.js';
 
+import { FileUploadWindow } from './components/FileUpload.js'; // hidden
 // Styling
 import './App.css';
 
@@ -50,6 +51,7 @@ function App() {
 
   // Refresh files and uploads on start
   useEffect(() => {
+    refresh_collections();
     refresh_files();
     refresh_uploads();
   }, []);
@@ -83,7 +85,7 @@ function App() {
           <div id="auth">
             (WIP) Auth/Collections
             <DropDownMenu options = {collections} onSelect={choose_collection}/>
-            <button onClick={() => create_collection('Dummy Collection')}>Add New Collection</button>
+            <button onClick={handle_create_collection}>Add New Collection</button>
           </div>
           <div id="shortcuts">
             <button className="shortcut_button" id="summarize" onClick={() => preset_summarize_selection(selected_files)}>Summarize Selected Documents</button>

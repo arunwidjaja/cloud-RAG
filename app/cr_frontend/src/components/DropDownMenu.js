@@ -15,7 +15,7 @@ export const DropDownMenu = ({ options, onSelect }) => {
   return (
     <div className="dropdown">
       <button onClick={toggleDropdown} className="dropdown-toggle">
-        {selectedOption || "Select an option"}
+        {selectedOption || "Select a Collection"}
       </button>
       {isOpen && (
         <ul className="dropdown-menu">

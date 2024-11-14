@@ -2,9 +2,7 @@ export const fetch_db_files_metadata = async () => {
   // TODO: Make it collection specific
   try {
     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/db_files_metadata`);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const files = await response.json();
     return files;
   } catch (error) {
@@ -15,9 +13,7 @@ export const fetch_db_files_metadata = async () => {
 export const fetch_uploads_metadata = async () => {
   try {
     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/uploads_metadata`);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const files = await response.json();
     return files;
   } catch (error) {
@@ -25,15 +21,25 @@ export const fetch_uploads_metadata = async () => {
     return [];
   }
 }
+export const fetch_db_collections = async () => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/collections`);
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    const collections = await response.json();
+    return collections;
+  } catch (error) {
+    console.error('Error fetching collections:', error);
+    return [];
+  }
+}
+
 export const start_push_to_DB = async (uploads) => {
   if (!Array.isArray(uploads) || uploads.length === 0) {
     return ['No uploads to push']
   }
   try {
     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/initiate_push_to_db`);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
       const pushed_files = await response.json();
       return pushed_files
@@ -56,6 +62,7 @@ export const start_upload_deletion = async (upload_deletion_list) => {
         'Content-Type': 'application/json',
       },
     });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const deleted_uploads = await response.json();
     return deleted_uploads
   } catch (error) {
@@ -75,6 +82,7 @@ export const start_file_deletion = async (file_deletion_list) => {
         'Content-Type': 'application/json',
       },
     });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const deleted_files = await response.json();
     return deleted_files
   } catch (error) {
@@ -94,10 +102,30 @@ export const start_file_download = async (file_download_list) => {
         'Content-Type': 'application/json',
       },
     });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const downloaded_files = await response.json();
     return downloaded_files
   } catch (error) {
     console.error('An error occurred while download files: ', error)
+  }
+}
+export const start_create_collection = async (collection_name, embedding_function) => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/create_collection`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        collection_name: collection_name,
+        embedding_function: embedding_function
+      })
+    });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    const collection = await response.json();
+    return collection;
+  } catch (error) {
+    console.error('Error creating a new collection: ', error)
   }
 }
 export const start_submit_query = async (user_query, query_type) => {
@@ -112,6 +140,7 @@ export const start_submit_query = async (user_query, query_type) => {
         query_type: query_type
       })
     });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const llm_response = await response.json();
     const message_model = llm_response['message_model'];
     return message_model;
@@ -132,6 +161,7 @@ export const start_summarization = async (files) => {
         'Content-Type': 'application/json',
       }
     });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const summary = await response.json();
     return summary;
   } catch (error) {
@@ -152,6 +182,7 @@ export const start_theme_analysis = async (files) => {
         'Content-Type': 'application/json',
       }
     });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     const themes = await response.json();
     // const highlights = await start_submit_query(themes, 'statement');
     return themes;

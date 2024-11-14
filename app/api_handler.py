@@ -8,6 +8,8 @@ import db_ops
 import db_ops_utils
 import doc_ops_utils
 
+from globals import get_database, set_database
+
 from api_endpoints import router as api_router
 from query_data import query_rag
 from summarize import summarize_map_reduce
@@ -16,6 +18,11 @@ from summarize import summarize_map_reduce
 class QueryModel(BaseModel):
     query_text: str
     query_type: str
+
+
+class CollectionModel(BaseModel):
+    collection_name: str
+    embedding_function: str
 
 
 class DeleteRequest(BaseModel):
@@ -43,19 +50,19 @@ class MessageModel(BaseModel):
     contexts: List[ContextModel]
 
 
-database = None
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     Starting point for the app. Runs on startup.
     """
     print("FastAPI lifespan is starting")
-    global database
+
     try:
         database = init_db.init_db()
         # database = init_db.init_http_db()
+
+        set_database(database)
+
     except Exception as e:
         print(f"FastAPI startup error: {e}")
         raise
@@ -70,32 +77,10 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
-# app.mount("/static", StaticFiles(directory=config.PATH_STATIC), name="static")
-# templates = Jinja2Templates(directory=config.PATH_TEMPLATES)
+
 handler = Mangum(app)
 
 # GET OPERATIONS
-
-
-# @app.get("/")
-# async def read_root(request: Request):
-#     """
-#     Loads the landing page
-#     """
-#     return templates.TemplateResponse("index.html", {"request": request})
-
-
-@app.get("/db_files_metadata")
-async def get_db_files_metadata():
-    """
-    Gets the metadata of all unique files in the database
-    """
-    print(f"API CALL: get_db_files_metadata")
-    try:
-        file_metadata = db_ops_utils.get_db_files_metadata(database)
-        return JSONResponse(content=file_metadata)
-    except Exception as e:
-        raise Exception(f"Exception occured when getting file list: {e}")
 
 
 @app.get("/download_files")
@@ -121,6 +106,7 @@ async def initiate_push_to_db():
     """
     print("API CALL: push_files_to_database")
     try:
+        database = get_database()
         pushed_files = db_ops.push_to_database(database, 'langchain')
         return pushed_files
     except Exception as e:
@@ -134,6 +120,7 @@ async def summarize(hashes: List[str] = Query(...)):
     """
     print("API CALL: summarize_files")
     try:
+        database = get_database()
         summary = summarize_map_reduce(
             db=database,
             doc_list=hashes,
@@ -151,6 +138,7 @@ async def analyze_theme(hashes: List[str] = Query(...)):
     """
     print("API CALL: summarize_files")
     try:
+        database = get_database()
         summary = summarize_map_reduce(
             db=database,
             doc_list=hashes,
@@ -161,12 +149,30 @@ async def analyze_theme(hashes: List[str] = Query(...)):
         raise Exception(f"Exception occurred when generating summary: {e}")
 
 
+@app.post("/create_collection")
+async def create_collection(request: CollectionModel):
+    """
+    Create a new collection in the database
+    """
+    print("API CALL: create_collection")
+    try:
+        database = get_database()
+        collection_name = request.collection_name
+        ef = request.embedding_function
+        collection = db_ops.add_persistent_collection(
+            database, collection_name, ef)
+        return collection
+    except Exception as e:
+        raise Exception(f"Exception occurred when creating a collection: {e}")
+
+
 @app.post("/submit_query")
 async def submit_query(request: QueryModel):
     """
     Send query to LLM and retrieve the response
     """
     print("API CALL: submit_query")
+    database = get_database()
     query_response = query_rag(
         db=database,
         query_text=request.query_text,
@@ -201,9 +207,6 @@ async def upload_documents(files: List[UploadFile] = File(...)):
                                 file.filename}: {str(e)}")
     return saved_files
 
-# DELETE OPERATIONS
-# TODO: change delete operation to use query parameters intead of request body
-
 
 @app.delete("/delete_files")
 async def delete_files(hashes: List[str] = Query(...)):
@@ -211,6 +214,7 @@ async def delete_files(hashes: List[str] = Query(...)):
     Delete the list of files from the Chroma DB
     """
     try:
+        database = get_database()
         deleted_files = db_ops.delete_db_files(
             database,
             hashes,

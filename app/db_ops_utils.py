@@ -99,7 +99,7 @@ def generate_placeholder_document() -> List[Document]:
     return [placeholder_document]
 
 
-def get_all_collections_names(db: Chroma):
+def get_all_collections_names(db: Chroma) -> List[str]:
     """
     Returns a list of all the collections in the db.
     Args:

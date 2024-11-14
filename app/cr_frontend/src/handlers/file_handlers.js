@@ -5,7 +5,7 @@ import { fetch_db_files_metadata, fetch_uploads_metadata } from "../api/api";
 export const refresh_files = async () => {
     const setFiles = useFilesStore.getState().setFiles;
     const fetched_files = await fetch_db_files_metadata();
-    setFiles(fetched_files)
+    setFiles(fetched_files);
 };
 export const refresh_uploads = async () => {
     const setUploads = useFilesStore.getState().setUploads;
