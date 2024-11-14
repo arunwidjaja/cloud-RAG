@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { start_submit_query } from '../api/api';
 import { add_bubble } from '../handlers/conversation_handlers';
 
 export const TextInput = () => {
@@ -24,16 +25,16 @@ export const TextInput = () => {
             add_bubble(user_input, 'INPUT');
             set_user_input('')
 
-            // const ai_reply = await start_submit_query(user_input, 'question');
-            // const ai_reply_text = ai_reply.message;
-            // const ai_reply_context = ai_reply.contexts;
-            // const ai_reply_id = ai_reply.id;
-            // add_bubble(ai_reply_text, 'OUTPUT');
+            const ai_reply = await start_submit_query(user_input, 'question');
+            const ai_reply_text = ai_reply.message;
+            const ai_reply_context = ai_reply.contexts;
+            const ai_reply_id = ai_reply.id;
+            add_bubble(ai_reply_text, 'OUTPUT');
 
-            // for (let i = 0; i < ai_reply_context.length; i++) {
-            //     const context = ai_reply_context[i];
-            //     add_bubble(context, 'CONTEXT');
-            // }
+            for (let i = 0; i < ai_reply_context.length; i++) {
+                const context = ai_reply_context[i];
+                add_bubble(context, 'CONTEXT');
+            }
         }
     };
 

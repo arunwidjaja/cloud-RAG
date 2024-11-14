@@ -45,44 +45,12 @@ function App() {
   const { messages } = useMessageStore();
 
   const uploadRef = useRef(null);
-  // Runs once on start
+
+  // Refresh files and uploads on start
   useEffect(() => {
     refresh_files();
     refresh_uploads();
   }, []);
-
-
-  // Dummy function for context download button to prevent error
-  const download_files = () => {
-    alert('dummy')
-  }
-
-
-
-  // const accept_uploads = async (event) => {
-  //   const files = event.target.files;
-  //   if (files.length > 0) {
-  //     const formData = new FormData();
-  //     for (let i = 0; i < files.length; i++) {
-  //       formData.append('files', files[i]);
-  //     }
-  //     try {
-  //       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload_documents`, {
-  //         method: 'POST',
-  //         body: formData
-  //       });
-  //       const uploaded_files = await response.json();
-  //       uploaded_files.forEach((uploaded_file) => {
-  //         // // write_to_log("Uploaded File: " + uploaded_file)
-  //       });
-  //       upload_window.current.value = '';
-  //     } catch (error) {
-  //       console.error('Error uploading files:', error);
-  //     }
-  //   }
-  //   refresh_uploads();
-  // }
-
 
   //////////////////////////////////
   //////////////////////////////////
@@ -131,7 +99,6 @@ function App() {
           <div id="conversation" className="output">
             {messages.map((msg, index) => (<ChatBubble key={index} message={msg} />))}
           </div>
-          {/* {text_area_comp} */}
           <TextInput />
         </div>
         {/* Right Pane */}
