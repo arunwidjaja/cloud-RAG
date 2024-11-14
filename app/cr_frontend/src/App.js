@@ -7,8 +7,6 @@ import useLogsStore from './stores/logsStore';
 // API Calls
 import {
   start_submit_query,
-  start_summarization,
-  start_theme_analysis
 } from './api/api'
 
 // Handlers
@@ -28,6 +26,7 @@ import {
 // Components
 import { FilesList, UploadsList } from './components/FileList';
 import { Logs } from './components/Logs';
+import { TextInput } from './components/TextInput.js';
 
 // Styling
 import './App.css';
@@ -41,14 +40,11 @@ function App() {
 
   const { files, uploads, selected_files, selected_uploads} = useFilesStore();
   const { logs } = useLogsStore();
-
-
   
-  const [user_input, set_user_input] = useState("");
+  // const [user_input, set_user_input] = useState("");
   const [messages, set_messages] = useState([]);
 
-
-  const text_area = useRef(null);
+  // const text_area = useRef(null);
   const upload_window = useRef(null);
 
   // Runs once on start
@@ -57,37 +53,8 @@ function App() {
     refresh_uploads();
   }, []);
 
-  // Text field behavior
-  const adjust_text_area = (e) => {
-    set_user_input(e.target.value);
-    text_area.current.style.height = "auto";
-    const new_height = Math.min(text_area.current.scrollHeight, 200);
-    text_area.current.style.height = `${new_height}px`;
-  }
-  const handle_key_down = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      send_user_input();
-    }
-  }
-  const send_user_input = async () => {
-    if (user_input.trim()) {
-      add_bubble(user_input, 'INPUT');
-      set_user_input('')
 
-      const ai_reply = await start_submit_query(user_input, 'question');
-      const ai_reply_text = ai_reply.message;
-      const ai_reply_context = ai_reply.contexts;
-      const ai_reply_id = ai_reply.id;
-      add_bubble(ai_reply_text, 'OUTPUT');
-
-      for (let i = 0; i < ai_reply_context.length; i++) {
-        const context = ai_reply_context[i];
-        add_bubble(context, 'CONTEXT');
-      }
-    }
-  };
-
+  // Dummy function for context download button to prevent error
   const download_files = () => {
     alert('dummy')
   }
@@ -168,16 +135,6 @@ function App() {
     return chat_bubble_content;
   };
 
-  // User Input Component
-  let text_area_comp;
-  text_area_comp = <textarea
-    id='userinput'
-    ref={text_area}
-    value={user_input}
-    onChange={adjust_text_area}
-    onKeyDown={handle_key_down}
-  />
-
   //////////////////////////////////
   //////////////////////////////////
   //////////////////////////////////
@@ -232,7 +189,8 @@ function App() {
           <div id="conversation" className="output">
             {messages.map((msg, index) => (<ChatBubble key={index} message={msg} />))}
           </div>
-          {text_area_comp}
+          {/* {text_area_comp} */}
+          <TextInput />
         </div>
         {/* Right Pane */}
         <div className="L1" id="L1S3">
@@ -246,7 +204,7 @@ function App() {
               </ul>
             </div>
             <button
-              id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push Selected Uploads to DB</button>
+              id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push All Uploads to DB</button>
             <div className="uploadsbuttons">
               <button id='upload-btn' className="btn" onClick={() => upload_window.current.click()}>Upload Files</button>
               <button id='deleteuploadsbtn' className="btn" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Selected Uploads</button>
