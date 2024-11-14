@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { add_bubble } from '../handlers/conversation_handlers';
 
 export const TextInput = () => {
     const [user_input, set_user_input] = useState("");
@@ -20,7 +21,7 @@ export const TextInput = () => {
     }
     const send_user_input = async () => {
         if (user_input.trim()) {
-            // add_bubble(user_input, 'INPUT');
+            add_bubble(user_input, 'INPUT');
             set_user_input('')
 
             // const ai_reply = await start_submit_query(user_input, 'question');

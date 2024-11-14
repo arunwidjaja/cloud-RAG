@@ -1,4 +1,4 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 
 const useFilesStore = create((set) => ({
   files: [],
@@ -15,7 +15,7 @@ const useFilesStore = create((set) => ({
   addSelectedUpload: (selectedUpload) => set((state) => ({ selected_uploads: [...state.selected_uploads, selectedUpload] })),
 
   clearSelectedFiles: () => set({ selected_files: [] }),
-  clearSelectedUploads: () => set({ selected_uploads: [] }),
+  clearSelectedUploads: () => set({ selected_uploads: [] })
 }));
 
 export default useFilesStore;

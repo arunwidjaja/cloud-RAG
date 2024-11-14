@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 // States
 import useFilesStore from './stores/filesStore';
 import useLogsStore from './stores/logsStore';
+import useMessageStore from './stores/messageStore.js';
 
 // API Calls
 import {
@@ -27,24 +28,25 @@ import {
 import { FilesList, UploadsList } from './components/FileList';
 import { Logs } from './components/Logs';
 import { TextInput } from './components/TextInput.js';
+import { ChatBubble } from './components/ChatBubble.js';
 
 // Styling
 import './App.css';
 
+
 // Constants
 const HREF_REPO = 'https://github.com/arunwidjaja/cloud-RAG'
 const SRC_GITHUB_ICON = '/github_light.svg'
-const SRC_DL_ICON = '/download_light.svg'
 
 function App() {
 
   const { files, uploads, selected_files, selected_uploads} = useFilesStore();
   const { logs } = useLogsStore();
+  const { messages } = useMessageStore();
   
   // const [user_input, set_user_input] = useState("");
-  const [messages, set_messages] = useState([]);
+  // const [messages, set_messages] = useState([]);
 
-  // const text_area = useRef(null);
   const upload_window = useRef(null);
 
   // Runs once on start
@@ -58,9 +60,6 @@ function App() {
   const download_files = () => {
     alert('dummy')
   }
-
-
-
 
 
 
@@ -88,27 +87,27 @@ function App() {
     refresh_uploads();
   }
 
-  const add_bubble = (bubble_content, bubble_type) => {
-    let message_type;
-    switch (bubble_type.toUpperCase()) {
-      case "INPUT":
-        message_type = "conversation_input";
-        set_messages((prev_messages) => [...prev_messages, { text: bubble_content, type: message_type }]);
-        break;
-      case "OUTPUT":
-        message_type = "conversation_output";
-        set_messages((prev_messages) => [...prev_messages, { text: bubble_content, type: message_type }]);
-        break;
-      case "CONTEXT":
-        message_type = "conversation_context";
-        const context_source = bubble_content.source;
-        const context_text = bubble_content.context;
-        const context_hash = bubble_content.hash;
-        const context_full_text = "Source: " + context_source + "\n\n" + context_text;
-        set_messages((prev_messages) => [...prev_messages, { text: context_full_text, hash: context_hash, type: message_type }]);
-        break;
-    }
-  }
+  // const add_bubble = (bubble_content, bubble_type) => {
+  //   let message_type;
+  //   switch (bubble_type.toUpperCase()) {
+  //     case "INPUT":
+  //       message_type = "conversation_input";
+  //       set_messages((prev_messages) => [...prev_messages, { text: bubble_content, type: message_type }]);
+  //       break;
+  //     case "OUTPUT":
+  //       message_type = "conversation_output";
+  //       set_messages((prev_messages) => [...prev_messages, { text: bubble_content, type: message_type }]);
+  //       break;
+  //     case "CONTEXT":
+  //       message_type = "conversation_context";
+  //       const context_source = bubble_content.source;
+  //       const context_text = bubble_content.context;
+  //       const context_hash = bubble_content.hash;
+  //       const context_full_text = "Source: " + context_source + "\n\n" + context_text;
+  //       set_messages((prev_messages) => [...prev_messages, { text: context_full_text, hash: context_hash, type: message_type }]);
+  //       break;
+  //   }
+  // }
 
 
 
@@ -122,18 +121,18 @@ function App() {
   //////////////////////////////////
 
 
-  let ChatBubble;
-  ChatBubble = ({ message }) => {
-    const chat_bubble_content = <div className={`${message.type} chat-bubble`} style={{ whiteSpace: 'pre-wrap' }}>
-      {message.text}
-      {(message.type === 'conversation_context') && (
-        <div className={`download_context`}>
-          <img className={`icon`} src={SRC_DL_ICON} onClick={() => download_files([message])} />
-        </div>
-      )}
-    </div>
-    return chat_bubble_content;
-  };
+  // let ChatBubble;
+  // ChatBubble = ({ message }) => {
+  //   const chat_bubble_content = <div className={`${message.type} chat-bubble`} style={{ whiteSpace: 'pre-wrap' }}>
+  //     {message.text}
+  //     {(message.type === 'conversation_context') && (
+  //       <div className={`download_context`}>
+  //         <img className={`icon`} src={SRC_DL_ICON} onClick={() => download_files([message])} />
+  //       </div>
+  //     )}
+  //   </div>
+  //   return chat_bubble_content;
+  // };
 
   //////////////////////////////////
   //////////////////////////////////
