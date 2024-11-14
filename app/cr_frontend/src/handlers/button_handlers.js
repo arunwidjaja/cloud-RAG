@@ -11,6 +11,11 @@ import {
   start_upload_deletion
 } from '../api/api';
 
+// Accepts user uploads
+export const handle_accept_uploads = async (uploadRef) => {
+  if (uploadRef && uploadRef.current) { uploadRef.current.click(); }
+};
+
 // Pushes all uploads to the DB
 export const handle_push_uploads = async (uploads) => {
   const pushed_uploads = await start_push_to_DB(uploads);

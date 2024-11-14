@@ -16,7 +16,8 @@ import {
   handle_push_uploads,
   handle_remove_selected_uploads,
   handle_download_selected_files,
-  handle_delete_selected_files
+  handle_delete_selected_files,
+  handle_accept_uploads
 } from './handlers/button_handlers';
 import {
   preset_analyze_sentiment,
@@ -29,14 +30,13 @@ import { FilesList, UploadsList } from './components/FileList';
 import { Logs } from './components/Logs';
 import { TextInput } from './components/TextInput.js';
 import { ChatBubble } from './components/ChatBubble.js';
+import { FileUploadWindow } from './components/FileUpload.js';
 
 // Styling
 import './App.css';
 
-
 // Constants
-const HREF_REPO = 'https://github.com/arunwidjaja/cloud-RAG'
-const SRC_GITHUB_ICON = '/github_light.svg'
+import { HREF_REPO, SRC_GITHUB_ICON } from './constants/constants.js';
 
 function App() {
 
@@ -44,8 +44,7 @@ function App() {
   const { logs } = useLogsStore();
   const { messages } = useMessageStore();
 
-  const upload_window = useRef(null);
-
+  const uploadRef = useRef(null);
   // Runs once on start
   useEffect(() => {
     refresh_files();
@@ -60,29 +59,29 @@ function App() {
 
 
 
-  const accept_uploads = async (event) => {
-    const files = event.target.files;
-    if (files.length > 0) {
-      const formData = new FormData();
-      for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-      }
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload_documents`, {
-          method: 'POST',
-          body: formData
-        });
-        const uploaded_files = await response.json();
-        uploaded_files.forEach((uploaded_file) => {
-          // // write_to_log("Uploaded File: " + uploaded_file)
-        });
-        upload_window.current.value = '';
-      } catch (error) {
-        console.error('Error uploading files:', error);
-      }
-    }
-    refresh_uploads();
-  }
+  // const accept_uploads = async (event) => {
+  //   const files = event.target.files;
+  //   if (files.length > 0) {
+  //     const formData = new FormData();
+  //     for (let i = 0; i < files.length; i++) {
+  //       formData.append('files', files[i]);
+  //     }
+  //     try {
+  //       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload_documents`, {
+  //         method: 'POST',
+  //         body: formData
+  //       });
+  //       const uploaded_files = await response.json();
+  //       uploaded_files.forEach((uploaded_file) => {
+  //         // // write_to_log("Uploaded File: " + uploaded_file)
+  //       });
+  //       upload_window.current.value = '';
+  //     } catch (error) {
+  //       console.error('Error uploading files:', error);
+  //     }
+  //   }
+  //   refresh_uploads();
+  // }
 
 
   //////////////////////////////////
@@ -99,13 +98,6 @@ function App() {
       {/* <div class="banner">
           Cloud RAG UI - Draft Only. Do Not Use.
       </div> */}
-      {/* Hidden element - uploads window */}
-      <input
-        type="file"
-        ref={upload_window}
-        onChange={accept_uploads}
-        style={{ display: 'none' }}
-        multiple />
       <div className="container">
         {/* Left Pane */}
         <div className="L1" id="L1S1">
@@ -156,7 +148,8 @@ function App() {
             <button
               id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push All Uploads to DB</button>
             <div className="uploadsbuttons">
-              <button id='upload-btn' className="btn" onClick={() => upload_window.current.click()}>Upload Files</button>
+              <FileUploadWindow ref={uploadRef}/>
+              <button id='upload-btn' className="btn" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</button>
               <button id='deleteuploadsbtn' className="btn" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Selected Uploads</button>
             </div>
           </div>
