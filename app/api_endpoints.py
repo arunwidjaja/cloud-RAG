@@ -25,14 +25,15 @@ async def get_collections():
 
 
 @router.get("/db_files_metadata")
-async def get_db_files_metadata():
+async def get_db_files_metadata(collections: List[str] = Query(...)):
     """
-    Gets the metadata of all unique files in the database
+    Gets the metadata of all unique files in the database for the given collections
     """
     print("API CALL: get_db_files_metadata")
     try:
         database = get_database()
-        file_metadata = db_ops_utils.get_db_files_metadata(database)
+        file_metadata = db_ops_utils.get_db_files_metadata(
+            database, collections)
         return JSONResponse(content=file_metadata)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")

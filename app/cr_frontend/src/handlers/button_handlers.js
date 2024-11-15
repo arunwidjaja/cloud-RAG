@@ -74,9 +74,7 @@ export const handle_create_collection = async () => {
     return;
   }
 
-  const select_embedding_function = prompt(
-    `Select an embedding function: ${EF.join(", ")}`
-  );
+  const select_embedding_function = 'openai'
 
   create_collection(collection_name, select_embedding_function)
 };

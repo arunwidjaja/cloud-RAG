@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-export const DropDownMenu = ({ options, onSelect }) => {
+export const DropDownMenu = ({ options, onSelect, default_selection, default_text }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(default_selection);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -15,7 +15,7 @@ export const DropDownMenu = ({ options, onSelect }) => {
   return (
     <div className="dropdown">
       <button onClick={toggleDropdown} className="dropdown-toggle">
-        {selectedOption || "Select a Collection"}
+        {selectedOption || default_text}
       </button>
       {isOpen && (
         <ul className="dropdown-menu">

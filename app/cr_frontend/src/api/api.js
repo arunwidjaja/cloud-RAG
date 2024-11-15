@@ -1,10 +1,14 @@
-export const fetch_db_files_metadata = async () => {
-  // TODO: Make it collection specific
+export const fetch_db_files_metadata = async (collection_names) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/db_files_metadata`);
+    const query = collection_names.map(collection => `collections=${encodeURIComponent(collection)}`).join('&');
+    const url = `${process.env.REACT_APP_API_BASE_URL}/db_files_metadata?${query}`
+    console.log("Query: " + url)
+    const response = await fetch(url);
     if (!response.ok) { throw new Error('Network response was not ok'); }
-    const files = await response.json();
-    return files;
+    else {
+      const files = await response.json();
+      return files;
+    }
   } catch (error) {
     console.error('Error fetching files:', error);
     return [];
@@ -14,8 +18,10 @@ export const fetch_uploads_metadata = async () => {
   try {
     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/uploads_metadata`);
     if (!response.ok) { throw new Error('Network response was not ok'); }
-    const files = await response.json();
-    return files;
+    else {
+      const files = await response.json();
+      return files;
+    }
   } catch (error) {
     console.error('Error fetching uploads:', error);
     return [];

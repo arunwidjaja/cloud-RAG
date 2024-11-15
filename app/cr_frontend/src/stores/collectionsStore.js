@@ -5,7 +5,7 @@ import start_create_collection from '../api/api';
 const useCollectionsStore = create((set) => ({
     collections: [],
     selected_collections: [],
-    current_collection: [],
+    current_collection: ['langchain'],
     
     setCollections: (newCollections) => set({ collections: newCollections }),
     addCollection: (collection) => set((state) => ({collections: [...state.collections, collection]})),

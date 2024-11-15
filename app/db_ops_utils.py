@@ -40,7 +40,7 @@ def download_files(requested_files_hashes: List | str) -> List[str] | str:
     return downloaded_files
 
 
-def get_db_files_metadata(db: Chroma) -> List[dict]:
+def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[dict]:
     """
     Gets the metadata of all the unique files in the DB.
 
@@ -50,15 +50,26 @@ def get_db_files_metadata(db: Chroma) -> List[dict]:
     Returns:
         A list of dictionaries that list the file name, hash, and word count
     """
-    all_metadata = db.get(include=["metadatas"])
-    chunk_metadata = all_metadata['metadatas']
+    # all_metadata: Dict[str, any] = {}
+    all_chunk_metadata: List[dict] = []
+    print(f"Collections currently in db: ")
+    print(get_all_collections_names(db))
+    # Iterate through each collection and retrieve metadata
+    for collection in collection_names:
+        print(f"Retrieving collection: {collection}")
+        collection_db = get_collection(db, collection)
+        metadata = collection_db.get(include=['metadatas'])
+        if metadata:
+            chunk_metadata = metadata['metadatas']
+            all_chunk_metadata.extend(chunk_metadata)
 
     word_count_dict = defaultdict(int)
 
     # Sum the word counts of each chunk belonging to a unique file/hash
-    for chunk in chunk_metadata:
-        key = (chunk["source_base_name"], chunk["source_hash"])
-        word_count_dict[key] += chunk["word_count"]
+    for chunk_metadata in all_chunk_metadata:
+        key = (chunk_metadata["source_base_name"],
+               chunk_metadata["source_hash"])
+        word_count_dict[key] += chunk_metadata["word_count"]
 
     file_metadata = [
         {
@@ -97,6 +108,24 @@ def generate_placeholder_document() -> List[Document]:
         }
     )
     return [placeholder_document]
+
+
+def get_collection(db: Chroma, collection: str) -> Chroma:
+    """
+    Returns a Chroma instance pointing to the specific collection in the database.
+
+    Args:
+        db: the databasse or a collection in the same database as the target collection
+
+    Returns:
+        A Chroma object pointing to collection
+    """
+    chroma_client = db._client
+    collection_db = Chroma(
+        client=chroma_client,
+        collection_name=collection
+    )
+    return collection_db
 
 
 def get_all_collections_names(db: Chroma) -> List[str]:

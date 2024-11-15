@@ -1,8 +1,9 @@
 import useCollectionsStore from '../stores/collectionsStore';
+import { refresh_files } from './file_handlers';
 import { fetch_db_collections, start_create_collection } from "../api/api";
 import { add_log } from './log_handlers';
 
-// Refreshes the lsit of collections
+// Refreshes the list of collections
 export const refresh_collections = async () => {
     const setCollections = useCollectionsStore.getState().setCollections;
     const fetched_collections = await fetch_db_collections();
@@ -11,8 +12,8 @@ export const refresh_collections = async () => {
 
 export const choose_collection = (selected_collection) => {
     const setCurrentCollection = useCollectionsStore.getState().setCurrentCollection;
-    setCurrentCollection(selected_collection);
-    // TODO: trigger a refresh of the file list to load the files from the selected collection
+    setCurrentCollection([selected_collection]);
+    refresh_files([selected_collection]);
     add_log("Current collection is: " + selected_collection);
 };
 

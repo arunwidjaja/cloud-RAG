@@ -45,14 +45,14 @@ function App() {
   const { files, uploads, selected_files, selected_uploads } = useFilesStore();
   const { logs } = useLogsStore();
   const { messages } = useMessageStore();
-  const { collections } = useCollectionsStore();
+  const { collections, current_collection } = useCollectionsStore();
 
   const uploadRef = useRef(null);
 
   // Refresh files and uploads on start
   useEffect(() => {
     refresh_collections();
-    refresh_files();
+    refresh_files(current_collection);
     refresh_uploads();
   }, []);
 
@@ -84,7 +84,11 @@ function App() {
           </div>
           <div id="auth">
             (WIP) Auth/Collections
-            <DropDownMenu options = {collections} onSelect={choose_collection}/>
+            <DropDownMenu
+              options={collections}
+              onSelect={choose_collection}
+              default_text='Select Collection'
+              default_selection='langchain' />
             <button onClick={handle_create_collection}>Add New Collection</button>
           </div>
           <div id="shortcuts">
