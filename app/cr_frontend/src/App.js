@@ -15,16 +15,16 @@ import {
   handle_download_selected_files,
   handle_delete_selected_files,
   handle_accept_uploads,
-  handle_create_collection
+  handle_create_collection,
+  handle_choose_collection,
+  handle_delete_collection
 } from './handlers/button_handlers';
 import {
   preset_analyze_sentiment,
   preset_analyze_themes,
   preset_summarize_selection
 } from './handlers/preset_handlers';
-import {
-  choose_collection,
-} from './handlers/collection_handlers';
+
 
 // Components
 import { FilesList, UploadsList } from './components/FileList';
@@ -128,10 +128,11 @@ function App() {
               Current Collection:
               <DropDownMenu
                 options={collections}
-                onSelect={choose_collection}
+                onSelect={handle_choose_collection}
                 default_text='Select Collection'
-                default_selection='langchain'/>
+                default_selection={collections[0]}/>
               <button className="btn" onClick={handle_create_collection}>+</button>
+              <button className="btn" onClick={handle_delete_collection}>Delete Collection</button>
             </div>
             <div className="filelist" id="databaselist">
 

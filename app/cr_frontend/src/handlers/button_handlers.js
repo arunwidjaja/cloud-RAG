@@ -5,7 +5,7 @@ import {
   clear_all_selections
 } from '../handlers/file_handlers';
 import { add_log } from '../handlers/log_handlers.js';
-import { create_collection, get_current_collection } from './collection_handlers.js';
+import { choose_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './collection_handlers.js';
 import useCollectionsStore from '../stores/collectionsStore.js';
 import {
   start_file_deletion,
@@ -69,6 +69,7 @@ export const handle_delete_selected_files = async () => {
   });
 };
 
+// Creates a new collection
 export const handle_create_collection = async () => {
   const collections = useCollectionsStore.getState().collections;
   const collection_name = prompt("Enter a collection name");
@@ -84,4 +85,19 @@ export const handle_create_collection = async () => {
 
   const select_embedding_function = 'openai'
   create_collection(collection_name, select_embedding_function)
+};
+
+// Deletes a collection
+export const handle_delete_collection = async() => {
+  const current_collection = get_current_collection();
+  delete_collection(current_collection)
+  const all_collections = await get_all_collections();
+  choose_collection(all_collections[0])
+};
+
+// Chooses a collection from the drop down menu
+export const handle_choose_collection = (selected_collection) => {
+  choose_collection(selected_collection);
+  clear_all_selections();
+  refresh_files([selected_collection]);
 };

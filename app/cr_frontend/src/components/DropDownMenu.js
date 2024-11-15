@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export const DropDownMenu = ({ options, onSelect, default_selection, default_text }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +11,13 @@ export const DropDownMenu = ({ options, onSelect, default_selection, default_tex
     onSelect(option);
     setIsOpen(false);
   };
+
+  // Refreshes the lsit when options or default_selection changes
+  useEffect(() => {
+    if (!options.includes(selectedOption)) {
+      setSelectedOption(default_selection || options[0] || null);
+    }
+  }, [default_selection, options]);
 
   return (
     <div className="dropdown">

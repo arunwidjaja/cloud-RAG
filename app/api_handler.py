@@ -253,6 +253,25 @@ async def delete_uploads(hashes: List[str] = Query(...)):
         raise e
 
 
+@app.delete("/delete_collection")
+async def delete_collection(collection: List[str] = Query(...)):
+    """
+    Deletes the collection from the database
+    """
+    print("API CALL: delete_collection")
+    if collection is None or len(collection) != 1:
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing collection parameter.")
+
+    try:
+        database = get_database()
+        # Collection can only have one element in it
+        deleted_collection = db_ops.delete_collection(database, collection[0])
+        return deleted_collection
+    except Exception as e:
+        raise e
+
+
 # Run main to test locally on localhost:8000
 if __name__ == "__main__":
     print(f"Running the FastAPI server locally on port {config.PORT_APP}")

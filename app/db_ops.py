@@ -47,6 +47,24 @@ def add_persistent_collection(db: Chroma, collection_name: str, embedding_functi
         raise
 
 
+def delete_collection(db: Chroma, collection_name: str) -> str:
+    """
+    Deletes the collection from the db. Deletes all contents as well.
+
+    Args:
+        db: the database
+        collection_name: the collection to delete
+
+    Reteurns:
+        The name of the deleted collection
+    """
+    try:
+        db._client.delete_collection(collection_name)
+        return collection_name
+    except Exception as e:
+        print(f"There was an error deleting the collection: {e}")
+
+
 def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> List[str] | str:
     """
     Saves document chunks to the Chroma DB in the specified collection
@@ -57,7 +75,7 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
         collection_name: the name of the collection to save to
 
     Returns:
-        The chunks that were saved. Chunks that are skipped are not returned.
+        List of chunks that were saved. Chunks that are skipped are not returned.
     """
     print("Saving chunks to Chroma DB...")
     # Finding number of chunks in each document
