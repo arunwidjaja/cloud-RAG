@@ -10,6 +10,11 @@ export const refresh_collections = async () => {
     setCollections(fetched_collections);
 };
 
+export const get_current_collection = () => {
+    const currentCollection = useCollectionsStore.getState().current_collection;
+    return currentCollection;
+}
+
 export const choose_collection = (selected_collection) => {
     const setCurrentCollection = useCollectionsStore.getState().setCurrentCollection;
     setCurrentCollection([selected_collection]);

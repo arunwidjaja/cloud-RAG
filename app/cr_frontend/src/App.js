@@ -74,9 +74,9 @@ function App() {
         {/* Left Pane */}
         <div className="L1" id="L1S1">
           <div id="title">
-            Cloud RAG
+            Cloud RAG - Development Version
           </div>
-          <div id="version">v0.3</div>
+          <div id="version">v0.3x</div>
           <div id="links"><br />
             <a href={HREF_REPO} target="_blank">
               <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
@@ -84,12 +84,6 @@ function App() {
           </div>
           <div id="auth">
             (WIP) Auth/Collections
-            <DropDownMenu
-              options={collections}
-              onSelect={choose_collection}
-              default_text='Select Collection'
-              default_selection='langchain' />
-            <button onClick={handle_create_collection}>Add New Collection</button>
           </div>
           <div id="shortcuts">
             <button className="shortcut_button" id="summarize" onClick={() => preset_summarize_selection(selected_files)}>Summarize Selected Documents</button>
@@ -119,7 +113,7 @@ function App() {
               </ul>
             </div>
             <button
-              id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push All Uploads to DB</button>
+              id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push All Uploads to Collection</button>
             <div className="uploadsbuttons">
               <FileUploadWindow ref={uploadRef} />
               <button id='upload-btn' className="btn" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</button>
@@ -130,14 +124,24 @@ function App() {
             <div id="databasetitle">
               Database Files
             </div>
+            <div>
+              Current Collection:
+              <DropDownMenu
+                options={collections}
+                onSelect={choose_collection}
+                default_text='Select Collection'
+                default_selection='langchain'/>
+              <button className="btn" onClick={handle_create_collection}>+</button>
+            </div>
             <div className="filelist" id="databaselist">
+
               <ul id="file-list-ul">
                 <FilesList files={files} />
               </ul>
             </div>
             <div className="databasebuttons">
-              <button className="btn" id="downloaddbbutton" onClick={() => handle_download_selected_files(selected_files)}>Download Selected Files from DB</button>
-              <button className="btn" id="deletedbbutton" onClick={() => handle_delete_selected_files(selected_files)}>Delete Selected Files from DB</button>
+              <button className="btn" id="downloaddbbutton" onClick={handle_download_selected_files}>Download Selected Files from Collection</button>
+              <button className="btn" id="deletedbbutton" onClick={() => handle_delete_selected_files(selected_files)}>Delete Selected Files from Collection</button>
             </div>
           </div>
         </div>

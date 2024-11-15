@@ -80,11 +80,9 @@ app.add_middleware(
 
 handler = Mangum(app)
 
-# GET OPERATIONS
-
 
 @app.get("/download_files")
-async def download_files(hashes: List[str] = Query(...)):
+async def download_files(hashes: List[str] = Query(...), collection: List[str] = Query(...)):
     """
     Downloads the specified files and returns a list of the downloaded files.
     """
@@ -92,25 +90,55 @@ async def download_files(hashes: List[str] = Query(...)):
     if hashes is None or not isinstance(hashes, list):
         raise HTTPException(
             status_code=422, detail="Invalid or missing hashes parameter.")
+    if collection is None or len(collection) != 1:
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        download_list = db_ops_utils.download_files(hashes)
+        # Collection can only have one element in it
+        download_list = db_ops_utils.download_files(hashes, collection[0])
         return download_list
     except Exception as e:
         raise Exception(f"Exception occurred when downloading files: {e}")
 
 
 @app.get("/initiate_push_to_db")
-async def initiate_push_to_db():
+async def initiate_push_to_db(collection: List[str] = Query(...)):
     """
     Updates the database with all the uploaded documents
     """
     print("API CALL: push_files_to_database")
+    if collection is None or len(collection) != 1:
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing collection parameter.")
     try:
         database = get_database()
-        pushed_files = db_ops.push_to_database(database, 'langchain')
+        # Collection can only have one element in it
+        pushed_files = db_ops.push_to_database(database, collection[0])
         return pushed_files
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
+
+
+@app.delete("/delete_files")
+async def delete_files(hashes: List[str] = Query(...), collection: List[str] = Query(...)):
+    """
+    Delete the list of files from the Chroma DB
+    """
+    print("API CALL: /delete_files")
+    if collection is None or len(collection) != 1:
+        raise HTTPException(
+            status_code=422, detail="Invalid or missing collection parameter.")
+    try:
+        database = get_database()
+        # Collection can only have one element in it
+        deleted_files = db_ops.delete_db_files(
+            database,
+            hashes,
+            collection_name=collection[0]
+        )
+        return deleted_files
+    except Exception as e:
+        raise e
 
 
 @app.get("/summary")
@@ -206,23 +234,6 @@ async def upload_documents(files: List[UploadFile] = File(...)):
             raise HTTPException(status_code=500, detail=f"Failed to upload {
                                 file.filename}: {str(e)}")
     return saved_files
-
-
-@app.delete("/delete_files")
-async def delete_files(hashes: List[str] = Query(...)):
-    """
-    Delete the list of files from the Chroma DB
-    """
-    try:
-        database = get_database()
-        deleted_files = db_ops.delete_db_files(
-            database,
-            hashes,
-            collection_name='langchain'
-        )
-        return deleted_files
-    except Exception as e:
-        raise e
 
 
 @app.delete("/delete_uploads")

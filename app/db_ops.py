@@ -3,6 +3,7 @@ from imports import *
 # Local Modules
 import doc_ops
 import doc_ops_utils
+import db_ops_utils
 import utils
 import config
 from get_embedding_function import get_embedding_function
@@ -134,11 +135,8 @@ def delete_db_files(db: Chroma, file_hash_list: List, collection_name: str) -> L
     Returns:
         The list of file names that were deleted
     """
-    collection_db = Chroma(
-        client=db._client,
-        embedding_function=db._embedding_function,
-        collection_name=collection_name
-    )
+
+    collection_db = db_ops_utils.get_collection(db, collection_name)
     # Gets the actual chromadb collection
     # LangChain doesn't support deletion, deletion needs to be done through chromadb directly.
     # .delete() must be called on a collection, can't be called on the entire DB.

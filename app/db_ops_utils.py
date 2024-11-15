@@ -4,7 +4,7 @@ from imports import *
 import utils
 
 
-def download_files(requested_files_hashes: List | str) -> List[str] | str:
+def download_files(requested_files_hashes: List | str, collection_name) -> List[str] | str:
     """
     Downloads the files in the given list to the user's home path.
 
@@ -14,6 +14,7 @@ def download_files(requested_files_hashes: List | str) -> List[str] | str:
     Returns:
         The name of the file(s) that were downloaded.
     """
+    # collection_name is actually not used because all documents are stored in the same archive
     source_location = utils.get_env_paths()['ARCHIVE']
     download_location = str(Path.home())
     downloaded_files = []

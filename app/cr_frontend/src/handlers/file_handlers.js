@@ -7,11 +7,14 @@ export const refresh_files = async (collection_name) => {
     const fetched_files = await fetch_db_files_metadata(collection_name);
     setFiles(fetched_files);
 };
+export const get_selected_files = () => {
+    const selectedFiles = useFilesStore.getState().selected_files;
+    return selectedFiles;
+};
 export const set_selected_files = (selected_files) => {
     const setSelectedFiles = useFilesStore.getState().setSelectedFiles;
     setSelectedFiles(selected_files);
 };
-
 export const add_selected_file = async (selected_file) => {
     const addSelectedFile = useFilesStore.getState().addSelectedFile;
     addSelectedFile(selected_file);
