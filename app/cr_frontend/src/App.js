@@ -70,7 +70,7 @@ function App() {
         {/* Left Pane */}
         <div className="L1" id="L1S1">
           <div id="title">
-            Cloud RAG - dev version
+            Cloud RAG
           </div>
           <div id="version">v0.2</div>
           <div id="links"><br />
