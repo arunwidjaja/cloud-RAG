@@ -72,9 +72,9 @@ function App() {
         {/* Left Pane */}
         <div className="L1" id="L1S1">
           <div id="title">
-            Cloud RAG - Development Version
+            Cloud RAG
           </div>
-          <div id="version">v0.3x</div>
+          <div id="version">v0.3</div>
           <div id="links"><br />
             <a href={HREF_REPO} target="_blank">
               <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
