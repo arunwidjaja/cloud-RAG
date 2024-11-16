@@ -19,15 +19,15 @@ uploads/
 # React.JS (Frontend Files)
 
 # dependencies
-app/cr_frontend/node_modules
-app/cr_frontend/.pnp
+app/cr_vite/node_modules
+app/cr_vite/.pnp
 .pnp.js
 
 # testing
-app/cr_frontend/coverage
+app/cr_vite/coverage
 
 # production
-app/cr_frontend/build
+app/cr_vite/build
 
 # misc
 .DS_Store
