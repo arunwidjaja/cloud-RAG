@@ -44,7 +44,7 @@ Vector Database Constants
 =========================
 """
 
-DEFAULT_COLLECTION_NAME = "defaultCollection"
+DEFAULT_COLLECTION_NAME = "CloudRag"
 CHUNK_SIZE = 450
 CHUNK_OVERLAP = 100
 MAX_BATCH_SIZE = 5000

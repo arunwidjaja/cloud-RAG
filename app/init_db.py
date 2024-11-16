@@ -6,7 +6,7 @@ import utils
 from get_embedding_function import get_embedding_function
 
 
-def init_db(embedding_function='openai') -> Chroma:
+def init_db(collection_name=config.DEFAULT_COLLECTION_NAME, embedding_function='openai') -> Chroma:
     """
     Creates a Chroma (LangChain) instance that connects to a local Chroma DB.
     """
@@ -18,7 +18,13 @@ def init_db(embedding_function='openai') -> Chroma:
         persistent_client = chromadb.PersistentClient(
             path=str(chroma_path)
         )
+        existing_collections = persistent_client.list_collections()
+        if not existing_collections:
+            default_collection = collection_name
+        else:
+            default_collection = existing_collections[0].name
         db = Chroma(
+            collection_name=default_collection,
             client=persistent_client,
             embedding_function=ef
         )
@@ -28,7 +34,7 @@ def init_db(embedding_function='openai') -> Chroma:
         raise
 
 
-def init_http_db(embedding_function='openai', host_arg='localhost', port_arg=config.PORT_DB) -> Chroma:
+def init_http_db(collection_name=config.DEFAULT_COLLECTION_NAME, embedding_function='openai', host_arg='localhost', port_arg=config.PORT_DB) -> Chroma:
     """
     Creates a Chroma (LangChain) instance that connects to an HTTP Chroma DB.
     Defaults to localhost.
@@ -39,8 +45,15 @@ def init_http_db(embedding_function='openai', host_arg='localhost', port_arg=con
         print("Connecting to the Chroma HTTP client at {host_arg}:{port_arg}")
         http_client = chromadb.HttpClient(
             host=host_arg,
-            port=port_arg)
+            port=port_arg
+        )
+        existing_collections = http_client.list_collections()
+        if not existing_collections:
+            default_collection = collection_name
+        else:
+            default_collection = existing_collections[0].name
         db = Chroma(
+            collection_name=default_collection,
             client=http_client,
             embedding_function=ef)
         return db
