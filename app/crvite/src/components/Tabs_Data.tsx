@@ -37,7 +37,7 @@ export function Tabs_Data() {
     // const retrieved = use_retrieved_files();
     const uploadRef = useRef(null);
     return (
-        <Tabs defaultValue="files" className="w-[400px] flex flex-col h-full pb-2">
+        <Tabs defaultValue="files" className="w-[500px] flex flex-col h-full pb-2">
             <TabsList className="grid w-full grid-cols-3 bg-[#18181B]">
                 <TabsTrigger
                     value="data"
@@ -46,7 +46,7 @@ export function Tabs_Data() {
                         data-[state=active]:text-white
                         data-[state=inactive]:bg-[#18181B]
                         mr-1"
-                >Data</TabsTrigger>
+                >Retrieval</TabsTrigger>
                 <TabsTrigger
                     value="files"
                     className="
@@ -65,19 +65,18 @@ export function Tabs_Data() {
                 >Uploads</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="data" className=' flex-1 border border-slate-400 rounded-lg p-4 mt-2'>
-                <p className='text-xl'>Retrieved Documents</p>
-                <p className='text-sm mt-1 mb-3'>Once you submit a query, any relevant documents will be displayed here.</p>
-
-                <div className='flex'>
-                    <DropdownMenuContext
-                        useItemsHook={use_retrieved_files}
-                        placeholder='Select document'
-                        searchPlaceholder='Search retrieved documents...'
-                        className='flex-1 mt-1 border-gray-800'>
-                    </DropdownMenuContext>
-                </div>
-                <div className='border border-white flex-1 mt-4 p-2'>
+            <TabsContent id="retrieval_tab_content" value="data" className='flex-1 border border-pink-400 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
+                <div id="contentdiv" className='border border-blue-600 h-full overflow-auto flex flex-col'>
+                    <p className='text-xl'>Retrieved Documents</p>
+                    <p className='text-sm mt-1 mb-3'>Once you submit a query, any relevant documents will be displayed here.</p>
+                    <div className='flex'>
+                        <DropdownMenuContext
+                            useItemsHook={use_retrieved_files}
+                            placeholder='Select document'
+                            searchPlaceholder='Search retrieved documents...'
+                            className='flex-1 mt-1 border-gray-800'>
+                        </DropdownMenuContext>
+                    </div>
                     <FileDisplay></FileDisplay>
                 </div>
             </TabsContent>
@@ -102,7 +101,7 @@ export function Tabs_Data() {
             <TabsContent value="uploads" className=' flex-1 border border-slate-400 rounded-lg p-4 mt-2'>
                 <div className='flex flex-col h-full'>
                     <div className='text-xl'>Uploads</div>
-                    <div className='text-sm mt-1 mb-3'>Upload files here to add them to your Collection</div>
+                    <div className='text-sm mt-1 mb-3'>Upload files here. Select a collection to push your files to. For best performance, keep thematically distinct files in different collections.</div>
                     <div className="flex">
                         <DropdownMenu
                             useItemsHook={use_collections}

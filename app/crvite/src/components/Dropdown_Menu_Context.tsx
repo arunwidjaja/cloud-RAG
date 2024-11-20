@@ -44,7 +44,7 @@ export function DropdownMenuContext({
   useItemsHook: useHook,
   placeholder = "Select an item...",
   searchPlaceholder = "Search items...",
-  emptyMessage = "No item found.",
+  emptyMessage = "",
   className = "w-[200px]",
   value = "",
   onChange
