@@ -64,8 +64,8 @@ export function Tabs_Data() {
             </TabsList>
 
             <TabsContent value="data" className=' flex-1 border border-slate-400 rounded-lg p-4 mt-2'>
-                <p className='text-xl'>Dummy Content Here</p>
-                <p className='text-sm mt-1 mb-3'>This section will display retrieved documents when the users submits a query</p>
+                <p className='text-xl'>Retrieved Documents</p>
+                <p className='text-sm mt-1 mb-3'>Once you submit a query, any relevant documents will be displayed here.</p>
                 <div className='border border-white'>
                     Preview of Retrieved Files
                 </div>
@@ -73,7 +73,7 @@ export function Tabs_Data() {
                     <DropdownMenu
                         useItemsHook={() => {
                             const retrieved = use_retrieved_files();
-                            return retrieved.map(file => file.source);}}
+                            return retrieved.map(context => context.file.name);}}
                         onChange={handle_select_retrieved}>
                     </DropdownMenu>
                 </div>

@@ -1,27 +1,33 @@
 import { create } from 'zustand';
-import { FileData } from '../types/types';
+import { ContextData } from '../types/types';
 
 // Base Message interface with common properties
 interface BaseMessage {
     type: string;
     text: string;
-    file?: FileData
+    context_list?: ContextData[]
 }
 
-// Specific message types
+// InputMessage is for user inputs
+// Contains type and text
 interface InputMessage extends BaseMessage {
     type: 'input';
     text: string;
 }
 
+// AnswerMessage is for any responses not containing context information
+// Contains type and text
 interface AnswerMessage extends BaseMessage {
     type: 'answer';
     text: string;
 }
 
+// ContextMessage is for RAG responses with associated context information
+// In addition to type and text (the answer), contains an array of ContextData objects
 interface ContextMessage extends BaseMessage {
     type: 'context';
-    file: FileData;
+    text: string;
+    context_list: ContextData[];
 }
 
 // Union type for all message types
@@ -46,12 +52,10 @@ export const createAnswerMessage = (text: string): AnswerMessage => ({
     text
 });
 
-export const createContextMessage = (
-    file: FileData
-): ContextMessage => ({
+export const createContextMessage = (text: string, context_list: ContextData[]): ContextMessage => ({
     type: 'context',
-    text: file.name,
-    file
+    text,
+    context_list
 });
 
 // Store implementation

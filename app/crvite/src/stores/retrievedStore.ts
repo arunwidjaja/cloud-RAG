@@ -2,9 +2,8 @@ import { FileData } from "@/types/types";
 import { create } from "zustand";
 
 interface ContextData {
-    context: string;
-    source: string;
-    hash: string;
+    file: FileData;
+    text: string;
 }
 
 interface RetrievedState {

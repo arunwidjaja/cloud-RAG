@@ -5,16 +5,16 @@ export interface FileData {
 }
 
 export interface ContextData {
-    context: string;
-    source: string;
-    hash: string;
+    file: FileData;
+    text: string;
 }
+
 
 // Base Message interface with common properties
 export interface BaseMessage {
     type: string;
     text: string;
-    file?: FileData
+    context_list?: ContextData[]
 }
 
 // Specific message types
@@ -30,7 +30,8 @@ export interface AnswerMessage extends BaseMessage {
 
 export interface ContextMessage extends BaseMessage {
     type: 'context';
-    file: FileData;
+    text: string;
+    context_list: ContextData[];
 }
 
 // Union type for all message types

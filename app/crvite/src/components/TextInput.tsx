@@ -32,32 +32,20 @@ export const TextInput = () => {
             set_user_input('')
 
             const ai_reply = await start_submit_query(user_input, 'question');
-            const ai_reply_text: string = ai_reply.message; // The Answer
-            const ai_reply_context: ContextData[] = ai_reply.contexts; // The LIST of contexts used
-            const ai_reply_id: string = ai_reply.id; // The ID (unused for now)
+
+            const ai_reply_text: string = ai_reply.text; // The Answer
+            const ai_reply_context: ContextData[] = ai_reply.context_list; // The LIST of contexts used
 
 
             let sources_string = '\n\nSources used: ';
-            for(const file of ai_reply_context) {
-                sources_string = sources_string + '\n' + file.source;
+            for(const context of ai_reply_context) {
+                sources_string = sources_string + '\n' + context.file.name;
             }
             
             const answer_message = ai_reply_text + sources_string
             add_message(createAnswerMessage(answer_message))
 
             set_retrieved_files(ai_reply_context);
-
-          
-            // For each context, adds a message for the context title and then a message for the context text
-            for (let i = 0; i < ai_reply_context.length; i++) {
-                const context = ai_reply_context[i];
-                const context_file = createFileData(context.source,context.hash)
-                const context_message = createAnswerMessage(context.context)
-                const context_source_message = createContextMessage(context_file)
-
-                add_message(context_source_message);
-                add_message(context_message);
-            }
         }
     };
 
