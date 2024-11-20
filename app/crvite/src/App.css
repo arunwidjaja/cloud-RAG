@@ -3,7 +3,8 @@
   --COLOR_MAIN_1: #000000;
   --COLOR_MAIN_2: #1D1D1D;
   --COLOR_FONT_1: #000000;
-  --COLOR_ACCENT_1: #856107;
+  --COLOR_ACCENT_1: #29affd;
+  --COLOR_FONT_1: rgb(255, 255, 255);
 
   --COLOR_DELETE: #8C0002;
   --COLOR_PUSH: #0b4400;
@@ -29,7 +30,7 @@
 * {
   margin: 0;
   padding: 0;
-  color: var(--COLOR_ACCENT_1);
+  color: var(--COLOR_FONT_1);
 }
 
 html, body, #root {
@@ -61,91 +62,44 @@ html, body, #root {
   flex-direction: row;
   height: 100%;
   width: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
+
+.container_parent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
 
 /* Layer 1 */
 .L1 {
-  background-color: var(--COLOR_MAIN_1);
-  border: 1px solid var(--COLOR_ACCENT_1);
   display: flex;
   flex-direction: column;
-  color: white;
   height: 100%;
-  padding: var(--PADDING_STANDARD);
   box-sizing: border-box;
 }
 #L1S1 {
-  flex: 0 0 20%;
-  max-width: 20%;
-}
-#L1S2 {
-  flex: 1;
+  flex: 0 0 15%;
+  max-width: 15%;
 }
 #L1S3 {
-  flex: 0 0 20%;
-  max-width: 20%;
+  flex: 0 0 35%;
+  max-width: 35%;
 }
 
-/* Layer 2, Left Bar */
-
-#title {
-  padding: var(--PADDING_SMALL);
-  background-color: var(--COLOR_MAIN_2);
-  border: 1px solid var(--COLOR_ACCENT_1);
-  font-size: xx-large;
-}
-#version {
-  padding: var(--PADDING_SMALL);
-  background-color: var(--COLOR_MAIN_2);
-  border: 1px solid var(--COLOR_ACCENT_1);
-}
-#links{
-  padding: var(--PADDING_SMALL);
-  background-color: var(--COLOR_MAIN_2);
-  border: 1px solid var(--COLOR_ACCENT_1);
-}
-#auth {
-  padding: var(--PADDING_SMALL);
-
-  display: flex;
-  flex-direction: column;
-  background-color: var(--COLOR_MAIN_2);
-  border: 1px solid var(--COLOR_ACCENT_1);
-  flex: 1;
-}
-#shortcuts {
-  padding: var(--PADDING_SMALL);
-
-  display: flex;
-  flex-direction: column;
-  background-color: var(--COLOR_MAIN_2);
-  border: 1px solid var(--COLOR_ACCENT_1);
-  flex: 1;
-}
-
-.shortcut_button {
-  padding: 10px 15px;    /* Padding for buttons */
-  font-size: 16px;       /* Font size for buttons */
-  cursor: pointer;        /* Pointer cursor on hover */
-  background-color: var(--COLOR_ACCENT_1);
-  color: var(--COLOR_FONT_1);
-}
-
-#log {
-  padding: var(--PADDING_SMALL);
-  background-color: var(--COLOR_MAIN_1);
-  border: 1px solid var(--COLOR_ACCENT_1);
-  overflow: auto;
-  white-space: nowrap;
-  flex: 1;
-}
 
 
 /* Layer 2, Middle Bar */
+.input {
+  align-self: flex-end;
+  background-color: var(--COLOR_ACCENT_1);
+}
 .output {
   box-sizing: border-box;
   width: 100%;
-  padding: var(--PADDING_STANDARD);
 
   display: flex;
   flex-direction: column;
@@ -155,8 +109,6 @@ html, body, #root {
   text-align: left;
 
   font-size: large;
-  background-color: var(--COLOR_MAIN_1);
-  color: var(--COLOR_ACCENT_1);
 
   overflow-y: auto;
 }
@@ -169,20 +121,16 @@ html, body, #root {
   border-radius: var(--PADDING_STANDARD);
 }
 
-.input {
-  align-self: flex-end; /* Aligns bubble to the right */
-  background-color: var(--COLOR_ACCENT_1);
-  color: var(--COLOR_FONT_1);
-}
+
 .answer {
   display: flex;
-  background-color: var(--COLOR_MAIN_2);
-  color: var(--COLOR_ACCENT_1);
+  background-color: #18181B;
+  color: white;
 }
 .context {
   display: flex;
-  background-color: var(--COLOR_MAIN_2);
-  color: var(--COLOR_ACCENT_1);
+  background-color: #18181B;
+  color: white;
 }
 
 
@@ -190,24 +138,15 @@ html, body, #root {
   display: flex;
   align-items: center;
   margin-left: auto;
-  /* background-color: var(--COLOR_DEBUG); */
   color: var(--COLOR_FONT_1);
   padding: var(--PADDING-SMALL);
   padding-left: var(--PADDING-LARGE);
 }
 
-
-
 #userinput {
   box-sizing: border-box;
   width: 100%;
-  padding: var(--PADDING_STANDARD);
-  margin-top: var(--MARGIN_STANDARD);
   font-size: large;
-
-  border-radius: var(--PADDING_STANDARD);
-  background-color: var(--COLOR_ACCENT_1);
-  color: var(--COLOR_FONT_1);
 }
 
 /* Layer 3, Right Bar */
@@ -219,30 +158,13 @@ html, body, #root {
   height: 50%;
   display: flex;
   flex-direction: column;
-  padding-bottom: var(--PADDING_SMALL);
+
 }
 
 #uploadstitle{
   box-sizing: border-box;
   width: 100%;
-  padding: var(--PADDING_SMALL);
-
   text-align: center;
-  border: 1px solid var(--border-color);
-  background-color: var(--COLOR_ACCENT_1);
-  color: var(--COLOR_FONT_1);
-}
-
-.filelist{
-  box-sizing: border-box;
-  width: 100%;
-  padding: var(--PADDING_STANDARD);
-  flex: 1;
-  white-space: nowrap;
-  overflow: auto;
-
-  background-color: var(--COLOR_MAIN_2);
-  color: var(--COLOR_ACCENT_1);
 }
 
 .uploadsbuttons {
@@ -255,47 +177,22 @@ html, body, #root {
 #databasesection{
   box-sizing: border-box;
   width: 100%;
-  border: 1px solid var(--border-color);
   height: 50%;
   display: flex;
   flex-direction: column;
-  padding-top: var(--PADDING_SMALL);
+
 }
 #databasetitle{
   box-sizing: border-box;
   width: 100%;
-  padding: var(--PADDING_SMALL);
-
   text-align: center;
-  border: 1px solid var(--border-color);
-  background-color: var(--COLOR_ACCENT_1);
-  color: var(--COLOR_FONT_1)
 }
 
 #pushbtn{
-  padding: 10px 15px;    /* Padding for buttons */
-  font-size: 16px;       /* Font size for buttons */
-  cursor: pointer;        /* Pointer cursor on hover */
-  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
   background-color: var(--COLOR_PUSH);
-}
-
-.uploadsbuttons {
-  box-sizing: border-box;
-  width: 100%;
-  display: flex;          /* Use flexbox for horizontal alignment */
-}
-.databasebuttons {
-  box-sizing: border-box;
-  width: 100%;
-  display: flex;          /* Use flexbox for horizontal alignment */
-}
-.btn {
-  padding: 10px 15px;    /* Padding for buttons */
-  font-size: 16px;       /* Font size for buttons */
-  cursor: pointer;        /* Pointer cursor on hover */
-  background-color: var(--COLOR_MAIN_2);
-  flex: 1;
 }
 
 #downloaddbbutton{
@@ -316,51 +213,4 @@ html, body, #root {
   width: var(--WIDTH_ICON_STANDARD);
   height: var(--HEIGHT_ICON_STANDARD);
   cursor: pointer;
-}
-
-/* Dev Elements */
-.devtools{
-  padding: 10px 15px;    /* Padding for buttons */
-  font-size: 16px;       /* Font size for buttons */
-  cursor: pointer;        /* Pointer cursor on hover */
-  background-color: var(--COLOR_DEBUG);
-  color: var(--COLOR_DEBUG_2);
-  margin-top: auto;
-}
-
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-toggle {
-  padding: 10px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  cursor: pointer;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 160px;
-  border: 1px solid #ddd;
-  background-color: #fff;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  z-index: 1000;
-  max-height: 200px; /* Adjust based on desired height */
-  overflow-y: auto;  /* Enables scrollbar if content overflows */
-}
-
-.dropdown-item {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.dropdown-item:hover {
-  background-color: #f0f0f0;
 }

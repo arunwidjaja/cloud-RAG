@@ -4,6 +4,12 @@ export interface FileData {
     word_count?: number;
 }
 
+export interface ContextData {
+    context: string;
+    source: string;
+    hash: string;
+}
+
 // Base Message interface with common properties
 export interface BaseMessage {
     type: string;

@@ -207,9 +207,9 @@ export const start_submit_query = async (user_query: string, query_type: string)
     console.error('There was an error submitting your query:', error);
   }
 }
-export const start_summarization = async (files: FileData[]): Promise<string[]> => {
+export const start_summarization = async (files: FileData[]): Promise<string> => {
   if (!Array.isArray(files) || files.length === 0) {
-    return ['There were no files to summarize']
+    return 'There were no files to summarize'
   }
   try {
     const hashes = files.map(item => item.hash);
@@ -228,7 +228,7 @@ export const start_summarization = async (files: FileData[]): Promise<string[]> 
     }
   } catch (error) {
     console.error('An error occurred while generating a summary: ', error)
-    return []
+    return ''
   }
 }
 

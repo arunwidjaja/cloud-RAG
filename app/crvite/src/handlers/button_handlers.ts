@@ -2,7 +2,8 @@ import {
   refresh_files,
   refresh_uploads,
   get_selected_files,
-  clear_all_selections
+  clear_all_selections,
+  get_uploads
 } from '../handlers/file_handlers';
 import { add_log } from '../handlers/log_handlers';
 import { choose_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './collection_handlers';
@@ -15,7 +16,7 @@ import {
 } from '../api/api';
 import { FileData } from "../types/types";
 import { RefObject } from 'react';
-import { EF } from '../constants/constants';
+import { preset_analyze_sentiment, preset_analyze_themes, preset_summarize_selection } from './preset_handlers';
 
 
 // Accepts user uploads
@@ -47,8 +48,9 @@ export const handle_download_selected_files = async () => {
 };
 
 // Pushes all uploads to the DB
-export const handle_push_uploads = async (uploads: FileData[]) => {
+export const handle_push_uploads = async () => {
   const current_collection = get_current_collection();
+  const uploads = await get_uploads();
   const pushed_uploads = await start_push_to_DB(uploads, current_collection);
   refresh_files(current_collection);
   refresh_uploads();
@@ -71,21 +73,21 @@ export const handle_delete_selected_files = async () => {
 };
 
 // Creates a new collection
-export const handle_create_collection = async () => {
+export const handle_create_collection = async (collection_name: string, embedding_function: string) => {
   const collections = useCollectionsStore.getState().collections;
-  const collection_name = prompt("Enter a collection name");
-
   if (!collection_name) {
     alert("Collection name is required.");
+    return;
+  }
+  if(!embedding_function) {
+    alert("An embedding function is required.")
     return;
   }
   if (collections.includes(collection_name)){
     alert("This collection already exists. Please choose a unique name.")
     return;
   }
-
-  const select_embedding_function = 'openai'
-  create_collection(collection_name, select_embedding_function)
+  create_collection(collection_name, embedding_function)
 };
 
 // Deletes a collection
@@ -101,4 +103,19 @@ export const handle_choose_collection = (selected_collection: string) => {
   choose_collection(selected_collection);
   clear_all_selections();
   refresh_files([selected_collection]);
+};
+
+export const handle_select_preset = (selected_preset: string) => {
+  switch (selected_preset.toUpperCase()) {
+    case 'SUMMARIZE DOCUMENTS':
+      preset_summarize_selection();
+      break;
+    case 'ANALYZE SENTIMENT':
+      preset_analyze_themes();
+      break;
+    case 'EXTRACT THEMES':
+      preset_analyze_sentiment();
+      break;
+  }
+
 };

@@ -1,16 +1,21 @@
 import { clear_all_selections } from './file_handlers';
 import { add_log } from './log_handlers';
-// import { add_bubble } from './conversation_handlers';
+import usePresetsStore from '@/stores/presetsStore';
 import {
     start_summarization,
     start_theme_analysis,
 } from '../api/api'
-import { FileData } from '../types/types';
-import { AnswerMessage, ContextMessage } from '../types/types';
 import { createAnswerMessage } from '../stores/messageStore';
 import { add_message } from './message_handlers';
+import useFilesStore from '@/stores/filesStore';
 
-export const preset_summarize_selection = async (selected_files: FileData[]) => {
+export const use_presets = () => {
+    const presets = usePresetsStore((state) => state.presets);
+    return presets;
+}
+
+export const preset_summarize_selection = async (): Promise<void> => {
+    const selected_files = useFilesStore.getState().selected_files;
     if (selected_files.length === 0) {
         add_log("Please select files to summarize first.")
     } else {
@@ -27,7 +32,8 @@ export const preset_summarize_selection = async (selected_files: FileData[]) => 
         clear_all_selections();
     }
 };
-export const preset_analyze_themes = async (selected_files: FileData[]) => {
+export const preset_analyze_themes = async (): Promise<void> => {
+    const selected_files = useFilesStore.getState().selected_files;
     if (selected_files.length === 0) {
         add_log("Please select files to analyze first.")
     } else {
@@ -51,6 +57,11 @@ export const preset_analyze_themes = async (selected_files: FileData[]) => {
         clear_all_selections();
     }
 };
-export const preset_analyze_sentiment = async (selected_files: FileData[]) => {
-    add_log("Sentiment Analysis is not available yet")
+export const preset_analyze_sentiment = async (): Promise<void> => {
+    const selected_files = useFilesStore.getState().selected_files;
+    if (selected_files.length === 0) {
+        add_log("Please select files to analyze first.")
+    } else {
+        add_log("Sentiment Analysis is not available yet")
+    }
 };

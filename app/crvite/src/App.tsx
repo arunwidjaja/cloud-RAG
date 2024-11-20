@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 // States
-import useFilesStore from './stores/filesStore';
+
 import useLogsStore from './stores/logsStore';
 import useMessageStore from './stores/messageStore';
 import useCollectionsStore from './stores/collectionsStore'
@@ -10,30 +10,22 @@ import useCollectionsStore from './stores/collectionsStore'
 import { refresh_files, refresh_uploads } from './handlers/file_handlers';
 import { refresh_collections } from './handlers/collection_handlers';
 import {
-  handle_push_uploads,
-  handle_remove_selected_uploads,
-  handle_download_selected_files,
-  handle_delete_selected_files,
-  handle_accept_uploads,
-  handle_create_collection,
-  handle_choose_collection,
-  handle_delete_collection
+  handle_select_preset
 } from './handlers/button_handlers';
-import {
-  preset_analyze_sentiment,
-  preset_analyze_themes,
-  preset_summarize_selection
-} from './handlers/preset_handlers';
+import { use_presets } from './handlers/preset_handlers';
 
 
 // Components
-import { FilesList, UploadsList } from './components/FileList';
+import { Tabs_Data } from './components/Tabs_Data';
+
 import { Logs } from './components/Logs';
 import { TextInput } from './components/TextInput';
 import { ChatBubble } from './components/ChatBubble';
-import { DropDownMenu } from './components/DropDownMenu';
+import { DropdownMenu } from './components/Dropdown_Menu';
 
-import { FileUploadWindow } from './components/FileUpload'; // hidden
+
+import { VerticalDivider, HorizontalLine } from './components/Dividers';
+
 // Styling
 import './App.css';
 
@@ -44,12 +36,9 @@ import { Message } from './types/types';
 
 function App() {
 
-  const { files, uploads, selected_files, selected_uploads } = useFilesStore();
   const { logs } = useLogsStore();
   const { messages } = useMessageStore();
-  const { collections, current_collection } = useCollectionsStore();
-
-  const uploadRef = useRef(null);
+  const { current_collection } = useCollectionsStore();
 
   // Refresh files and uploads on start
   useEffect(() => {
@@ -67,82 +56,71 @@ function App() {
   //////////////////////////////////
 
   return (
-    <div className="container max-w-full">
-      <div className="container max-w-full">
-        {/* Left Pane */}
-        <div className="L1" id="L1S1">
-          <div id="title">
-            Cloud RAG
-          </div>
-          <div id="version">v0.3</div>
-          <div id="links"><br />
-            <a href={HREF_REPO} target="_blank">
+    <div className="container_parent max-w-full">
+
+      {/* Title Bar */}
+
+      <header className="flex flex-col w-full bg-black pl-3 pt-3 mb-0">
+        <div className="flex font-bold items-center pb-3">
+          <div className="text-2xl font-bold mr-8">Cloud RAG<sub style={{ color: '#856107' }}>0.3x</sub></div>
+          <nav className='flex gap-4'>
+            <a href={HREF_REPO} target='_blank'>
               <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
             </a>
+          </nav>
+        </div>
+      </header>
+
+      <div className="container max-w-full p-0 border-t border-gray-600 bg-black">
+
+        {/* Left Pane */}
+
+        <div className="L1 text-center" id="L1S1">
+          <div id="auth" className='flex flex-1 flex-col'>
+            Testing Area
           </div>
-          <div id="auth">
-            (WIP) Auth/Collections
+
+          <HorizontalLine></HorizontalLine>
+
+          <div id="shortcuts" className="flex flex-1 flex-col">
+            <DropdownMenu
+              useItemsHook={use_presets}
+              placeholder='Select Preset'
+              searchPlaceholder='Search preset analyses'
+              emptyMessage='No preset sellected'
+              className='flex ml-2 mt-2'
+              onChange={handle_select_preset} />
           </div>
-          <div id="shortcuts">
-            <button className="shortcut_button" id="summarize" onClick={() => preset_summarize_selection(selected_files)}>Summarize Selected Documents</button>
-            <button className="shortcut_button" id="highlights" onClick={() => preset_analyze_themes(selected_files)}>Retrieve Themes</button>
-            <button className="shortcut_button" id="sentiment" onClick={() => preset_analyze_sentiment(selected_files)}>(WIP) Analyze Sentiment</button>
-          </div>
-          <div id="log">
+
+          <HorizontalLine></HorizontalLine>
+
+          <div id="log" className='flex flex-1 flex-col text-left p-1'>
             <Logs logs={logs} />
           </div>
         </div>
+
+
+        <VerticalDivider></VerticalDivider>
+
         {/* Middle Pane */}
-        <div className="L1" id="L1S2">
-          <div id="conversation" className="output">
+
+        <div className="L1 flex-1">
+          <div
+            id="conversation"
+            className="output pl-1 pr-1 pt-2 overflow-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
             {messages.map((msg: Message, index: number) => (<ChatBubble key={index} message={msg} />))}
           </div>
-          <TextInput />
+          <div className='mt-2'>
+            <TextInput/>
+          </div>
         </div>
-        {/* Right Pane */}
-        <div className="L1" id="L1S3">
-          <div id="uploadssection">
-            <div id="uploadstitle">
-              Uploaded Files
-            </div>
-            <div className="filelist" id="uploadslist">
-              <ul id="uploads-list-ul">
-                <UploadsList uploads={uploads} />
-              </ul>
-            </div>
-            <button
-              id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push All Uploads to Collection</button>
-            <div className="uploadsbuttons">
-              <FileUploadWindow ref={uploadRef} />
-              <button id='upload-btn' className="btn" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</button>
-              <button id='deleteuploadsbtn' className="btn" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Selected Uploads</button>
-            </div>
-          </div>
-          <div id="databasesection">
-            <div id="databasetitle">
-              Database Files
-            </div>
-            <div>
-              Current Collection:
-              <DropDownMenu
-                options={collections}
-                onSelect={handle_choose_collection}
-                default_text='Select Collection'
-                default_selection={collections[0]} />
-              <button className="btn" onClick={handle_create_collection}>+</button>
-              <button className="btn" onClick={handle_delete_collection}>Delete Collection</button>
-            </div>
-            <div className="filelist" id="databaselist">
 
-              <ul id="file-list-ul">
-                <FilesList files={files} />
-              </ul>
-            </div>
-            <div className="databasebuttons">
-              <button className="btn" id="downloaddbbutton" onClick={handle_download_selected_files}>Download Selected Files from Collection</button>
-              <button className="btn" id="deletedbbutton" onClick={handle_delete_selected_files}>Delete Selected Files from Collection</button>
-            </div>
-          </div>
+
+        <VerticalDivider></VerticalDivider>
+
+        {/* Right Pane */}
+        <div className='pr-3 pt-3'>
+          <Tabs_Data></Tabs_Data>
         </div>
       </div>
       <script src="../static/UI.js"></script>
