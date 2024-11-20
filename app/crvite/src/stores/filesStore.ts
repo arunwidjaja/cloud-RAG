@@ -32,6 +32,12 @@ export const createFileData = (name: string, hash: string): FileData => ({
   hash
 });
 
+export const createDefaultFileData = (): FileData => ({
+  name: "No files found yet",
+  hash: "",
+  word_count: 0
+})
+
 const useFilesStore = create<FilesState>()((set) => ({
   files: [],
   uploads: [],

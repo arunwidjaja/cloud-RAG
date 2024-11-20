@@ -10,6 +10,7 @@ import { UploadTable } from './Table_Uploads';
 import { SimpleTooltip } from "./SimpleTooltip"
 
 import { DropdownMenu } from "./Dropdown_Menu"
+import { DropdownMenuContext } from './Dropdown_Menu_Context';
 import { CollectionCreationButton } from "./CollectionCreationButton"
 import { CollectionDeletionButton } from "./CollectionDeletionButton"
 
@@ -27,7 +28,8 @@ import { FileUploadWindow } from '@/components/FileUpload';
 import { Button } from "@/components/ui/button"
 import { use_selected_uploads } from '@/handlers/file_handlers';
 import { use_collections } from '@/handlers/collection_handlers';
-import { handle_select_retrieved, use_retrieved_files } from '@/handlers/retrieved_handlers';
+import { use_retrieved_files } from '@/handlers/retrieved_handlers';
+import { FileDisplay } from './FileDisplay';
 
 
 export function Tabs_Data() {
@@ -66,16 +68,17 @@ export function Tabs_Data() {
             <TabsContent value="data" className=' flex-1 border border-slate-400 rounded-lg p-4 mt-2'>
                 <p className='text-xl'>Retrieved Documents</p>
                 <p className='text-sm mt-1 mb-3'>Once you submit a query, any relevant documents will be displayed here.</p>
-                <div className='border border-white'>
-                    Preview of Retrieved Files
+
+                <div className='flex'>
+                    <DropdownMenuContext
+                        useItemsHook={use_retrieved_files}
+                        placeholder='Select document'
+                        searchPlaceholder='Search retrieved documents...'
+                        className='flex-1 mt-1 border-gray-800'>
+                    </DropdownMenuContext>
                 </div>
-                <div className='border border-white'>
-                    <DropdownMenu
-                        useItemsHook={() => {
-                            const retrieved = use_retrieved_files();
-                            return retrieved.map(context => context.file.name);}}
-                        onChange={handle_select_retrieved}>
-                    </DropdownMenu>
+                <div className='border border-white flex-1 mt-4 p-2'>
+                    <FileDisplay></FileDisplay>
                 </div>
             </TabsContent>
 
@@ -111,16 +114,16 @@ export function Tabs_Data() {
                     </div>
                     <UploadTable></UploadTable>
                     <div className='mt-auto'>
-                    <SimpleTooltip content="Pushes all uploads to the current Collection">
-                        <Button id="pushbtn" onClick={handle_push_uploads} className='w-full mt-4 mb-2'>
-                            Push
-                        </Button>
-                    </SimpleTooltip>
-                    <div className='grid grid-cols-2'>
-                        <FileUploadWindow ref={uploadRef} />
-                        <Button className="mr-1" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</Button>
-                        <Button className="ml-1" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Uploads</Button>
-                    </div>
+                        <SimpleTooltip content="Pushes all uploads to the current Collection">
+                            <Button id="pushbtn" onClick={handle_push_uploads} className='w-full mt-4 mb-1'>
+                                Push
+                            </Button>
+                        </SimpleTooltip>
+                        <div className='grid grid-cols-2'>
+                            <FileUploadWindow ref={uploadRef} />
+                            <Button className="mr-1" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</Button>
+                            <Button className="ml-1" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Uploads</Button>
+                        </div>
                     </div>
                 </div>
             </TabsContent>

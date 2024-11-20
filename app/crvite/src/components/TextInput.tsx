@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { start_submit_query } from '../api/api';
 import { add_message } from '../handlers/message_handlers';
-import { createAnswerMessage, createContextMessage, createInputMessage } from '../stores/messageStore';
-import { createFileData } from '../stores/filesStore';
+import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
 import { set_retrieved_files } from '@/handlers/retrieved_handlers';
 
 import { ContextData } from '@/types/types';
