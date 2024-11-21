@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
 
+import { ThemeSwitch } from './components/ThemeSwitch';
+import { ThemeProvider } from './contexts/ThemeContext';
+
 // States
 
 import useLogsStore from './stores/logsStore';
@@ -10,8 +13,8 @@ import useCollectionsStore from './stores/collectionsStore'
 import { refresh_files, refresh_uploads } from './handlers/file_handlers';
 import { refresh_collections } from './handlers/collection_handlers';
 import {
-  handle_select_preset
-} from './handlers/button_handlers';
+  handle_select_preset, handle_run_preset
+} from './handlers/preset_handlers';
 import { use_presets } from './handlers/preset_handlers';
 
 
@@ -33,6 +36,9 @@ import './App.css';
 import { HREF_REPO, SRC_GITHUB_ICON } from './constants/constants';
 
 import { Message } from './types/types';
+import { Button } from './components/ui/button';
+
+
 
 function App() {
 
@@ -56,23 +62,25 @@ function App() {
   //////////////////////////////////
 
   return (
+    <ThemeProvider>
     <div className="container_parent max-w-full">
 
       {/* Title Bar */}
 
-      <header className="flex flex-col w-full bg-purple-300 pl-3 pt-3 mb-0">
+      <header className="flex flex-col w-full bg-primary pl-3 pt-3 mb-0 border">
         <div className="flex font-bold items-center pb-3">
-          <div className="text-2xl font-bold mr-8 text-black">Cloud RAG<sub className='text-blue-400'>0.3x</sub>
+          <div className="text-2xl font-bold mr-8 text-text">Cloud RAG<sub className='text-text'>0.3x</sub>
           </div>
           <nav className='flex gap-4'>
             <a href={HREF_REPO} target='_blank'>
               <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
             </a>
+            <ThemeSwitch></ThemeSwitch>
           </nav>
         </div>
       </header>
 
-      <div className="container max-w-full p-0 border-t border-gray-600 bg-black">
+      <div className="container max-w-full p-0 border-t border-gray-600 bg-gradient-to-t from-secondary to-primary to-70%">
 
         {/* Left Pane */}
 
@@ -91,6 +99,10 @@ function App() {
               emptyMessage='No preset sellected'
               className='flex ml-2 mt-2'
               onChange={handle_select_preset} />
+            <Button
+              className='flex ml-2 mt-2'
+              onClick={handle_run_preset}
+            >Run Selected Preset</Button>
           </div>
 
           <HorizontalLine></HorizontalLine>
@@ -108,7 +120,7 @@ function App() {
         <div className="L1 flex-1">
           <div
             id="conversation"
-            className="bg-gradient-to-t from-blue-400 to-purple-300 output pl-1 pr-1 pt-2 overflow-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
+            className="bg-none output pl-1 pr-1 pt-2 overflow-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
             {messages.map((msg: Message, index: number) => (<ChatBubble key={index} message={msg} />))}
           </div>
           <div className='mt-2'>
@@ -127,6 +139,7 @@ function App() {
       <script src="../static/UI.js"></script>
       <script src="../static/js"></script>
     </div>
+    </ThemeProvider>
   );
 }
 

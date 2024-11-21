@@ -38,12 +38,12 @@ import { use_embeddings_store } from "@/handlers/embeddings_handlers"
               </TooltipTrigger>
             </DialogTrigger>
             <TooltipContent>
-              <p className="text-black">Create a new Collection</p>
+              <p className="text-text">Create a new Collection</p>
             </TooltipContent>
           </Tooltip>
-          <DialogContent className="bg-gray-600">
+          <DialogContent className="bg-primary">
             <DialogHeader>
-            <DialogTitle className="text-black">Create a Collection</DialogTitle>
+            <DialogTitle className="text-text">Create a Collection</DialogTitle>
               <DialogDescription>
                 <p>Names cannot include spaces. Choose an embedding function for your collection and click save when you're done.</p>
               </DialogDescription>
@@ -55,7 +55,7 @@ import { use_embeddings_store } from "@/handlers/embeddings_handlers"
                   id="name"
                   value={collectionName}
                   onChange={(e) => setCollectionName(e.target.value)}
-                  className="col-span-4 bg-[#18181B]"
+                  className="col-span-4 bg-secondary"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">

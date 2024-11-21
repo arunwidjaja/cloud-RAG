@@ -44,6 +44,7 @@ export function DropdownMenu({
   value = "",
   onChange
 }: ComboboxProps) {
+
   const [open, setOpen] = React.useState(false)
   const [selectedValue, setSelectedValue] = React.useState(value)
 
@@ -68,7 +69,7 @@ export function DropdownMenu({
           variant="default"
           role="combobox"
           aria-expanded={open}
-          className={cn("justify-between", className)}
+          className={cn("justify-between bg-secondary text-text", className)}
         >
           {selectedValue
             ? items.find((item) => item.value === selectedValue)?.label
@@ -76,17 +77,18 @@ export function DropdownMenu({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("p-0 bg-[#18181B]", className)}>
-        <Command className="bg-[#18181B]">
-          <CommandInput className="bg-[#18181B]" placeholder={searchPlaceholder} />
-          <CommandList className="bg-[#18181B]">
-            <CommandEmpty className="bg-[#18181B]">{emptyMessage}</CommandEmpty>
-            <CommandGroup className="bg-[#18181B]">
+      <PopoverContent className={cn("p-0", className)}>
+        <Command className="bg-secondary">
+          <CommandInput placeholder={searchPlaceholder} />
+          <CommandList>
+            <CommandEmpty>{emptyMessage}</CommandEmpty>
+            <CommandGroup className="bg-secondary">
               {items.map((item) => (
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={handleSelect}                  
+                  onSelect={handleSelect}
+                  className="text-text"                 
                 >
                   <Check
                     className={cn(

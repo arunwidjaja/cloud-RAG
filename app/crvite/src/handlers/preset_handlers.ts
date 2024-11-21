@@ -1,4 +1,3 @@
-import { clear_all_selections } from './file_handlers';
 import { add_log } from './log_handlers';
 import usePresetsStore from '@/stores/presetsStore';
 import {
@@ -12,6 +11,36 @@ import useFilesStore from '@/stores/filesStore';
 export const use_presets = () => {
     const presets = usePresetsStore((state) => state.presets);
     return presets;
+}
+export const use_selected_preset = () => {
+    const selected_preset = usePresetsStore((state) => state.selected_preset);
+    return selected_preset;
+}
+
+export const handle_select_preset = (selected_preset: string): void => {
+    select_preset(selected_preset);
+    add_log("Selected preset: " + selected_preset);
+};
+
+export const handle_run_preset = (): void => {
+    const selected_preset = usePresetsStore.getState().selected_preset;
+
+    switch (selected_preset.toUpperCase()) {
+        case 'SUMMARIZE DOCUMENTS':
+            preset_summarize_selection();
+            break;
+        case 'ANALYZE SENTIMENT':
+            preset_analyze_themes();
+            break;
+        case 'EXTRACT THEMES':
+            preset_analyze_sentiment();
+            break;
+    }
+}
+
+export const select_preset = (selected_preset: string) => {
+    const selectPreset = usePresetsStore.getState().setSelectedPreset;
+    selectPreset(selected_preset)
 }
 
 export const preset_summarize_selection = async (): Promise<void> => {
@@ -29,7 +58,6 @@ export const preset_summarize_selection = async (): Promise<void> => {
         selected_files.forEach(file => {
             add_log(file.name)
         });
-        clear_all_selections();
     }
 };
 export const preset_analyze_themes = async (): Promise<void> => {
@@ -54,7 +82,6 @@ export const preset_analyze_themes = async (): Promise<void> => {
         selected_files.forEach(file => {
             add_log(file.name)
         });
-        clear_all_selections();
     }
 };
 export const preset_analyze_sentiment = async (): Promise<void> => {

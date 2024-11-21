@@ -37,39 +37,24 @@ export function Tabs_Data() {
     // const retrieved = use_retrieved_files();
     const uploadRef = useRef(null);
     return (
-        <Tabs defaultValue="files" className="w-[500px] flex flex-col h-full pb-2">
-            <TabsList className="grid w-full grid-cols-3 bg-[#18181B]">
+        <Tabs defaultValue="data" className="w-[500px] flex flex-col h-full pb-2">
+            <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger
                     value="data"
-                    className="
-                        data-[state=active]:bg-black
-                        data-[state=active]:text-white
-                        data-[state=inactive]:bg-[#18181B]
-                        mr-1"
                 >Retrieval</TabsTrigger>
                 <TabsTrigger
                     value="files"
-                    className="
-                        data-[state=active]:bg-black
-                        data-[state=active]:text-white
-                        data-[state=inactive]:bg-[#18181B]
-                        mr-1"
                 >Database</TabsTrigger>
                 <TabsTrigger
                     value="uploads"
-                    className="
-                        data-[state=active]:bg-black
-                        data-[state=active]:text-white
-                        data-[state=inactive]:bg-[#18181B]
-                        ml-1"
                 >Uploads</TabsTrigger>
             </TabsList>
 
             <TabsContent id="retrieval_tab_content" value="data" className='flex-1 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
                 <div id="contentdiv" className='h-full overflow-auto flex flex-col'>
                     <div id='tab_header'>
-                        <p className='text-xl'>Retrieved Documents</p>
-                        <p className='text-sm mt-1 mb-3'>Once you submit a query, any relevant documents will be displayed here.</p>
+                        <p className='text-xl text-text'>Retrieved Documents</p>
+                        <p className='text-sm mt-1 mb-3 text-text'>Once you submit a query, any relevant documents will be displayed here.</p>
                     </div>
                     <div className='flex'>
                         <DropdownMenuContext
@@ -86,8 +71,8 @@ export function Tabs_Data() {
             <TabsContent value="files" className='flex-1 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
                 <div id="contentdiv" className='h-full overflow-auto flex flex-col'>
                     <div id='tab_header'>
-                        <p className='text-xl'>Your Database</p>
-                        <p className='text-sm mt-1 mb-3'>Manage your Collections and files here. Create a new Collection to begin.</p>
+                        <p className='text-xl text-text'>Your Database</p>
+                        <p className='text-sm mt-1 mb-3 text-text'>Manage your Collections and files here. Create a new Collection to begin.</p>
                     </div>
                     <div className="flex">
                         <DropdownMenu
@@ -107,8 +92,8 @@ export function Tabs_Data() {
             <TabsContent value="uploads" className='flex-1 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
                 <div id="contentdiv" className='h-full overflow-auto flex flex-col'>
                     <div id='tab_header'>
-                        <div className='text-xl'>Uploads</div>
-                        <div className='text-sm mt-1 mb-3'>Upload files here. Select a collection to push your files to. For best performance, keep thematically distinct files in different collections.</div>
+                        <div className='text-xl text-black'>Uploads</div>
+                        <div className='text-sm mt-1 mb-3 text-black'>Upload files here. Select a collection to push your files to. For best performance, keep thematically distinct files in different collections.</div>
                     </div>
                     <div className="flex">
                         <DropdownMenu

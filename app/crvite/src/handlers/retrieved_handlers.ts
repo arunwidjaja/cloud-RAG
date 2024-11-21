@@ -1,3 +1,5 @@
+import { start_file_download } from "@/api/api";
+import useCollectionsStore from "@/stores/collectionsStore";
 import useRetrievedStore from "@/stores/retrievedStore";
 import { ContextData } from "@/types/types";
 
@@ -24,4 +26,10 @@ export const use_current_retrieved = (): ContextData => {
 
 export const handle_select_retrieved = (retrieved_context: ContextData): void => {
     set_current_retrieved(retrieved_context)
+}
+
+export const handle_download_retrieved_file = (): void => {
+    const current_retrieved = useRetrievedStore.getState().current_retrieved;
+    const current_collection = useCollectionsStore.getState().current_collection;
+    start_file_download([current_retrieved.file], current_collection);
 }

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { start_submit_query } from '../api/api';
 import { add_message } from '../handlers/message_handlers';
 import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
-import { set_retrieved_files } from '@/handlers/retrieved_handlers';
+import { set_current_retrieved, set_retrieved_files } from '@/handlers/retrieved_handlers';
 
 import { ContextData } from '@/types/types';
 
@@ -45,6 +45,7 @@ export const TextInput = () => {
             add_message(createAnswerMessage(answer_message))
 
             set_retrieved_files(ai_reply_context);
+            set_current_retrieved(ai_reply_context[0]);
         }
     };
 
@@ -55,7 +56,7 @@ export const TextInput = () => {
             value={user_input}
             onChange={(e) => set_user_input(e.target.value)}
             onKeyDown={handle_key_down}
-            className="bg-[#18181B] p-4 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+            className="bg-primary p-4 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
         />
     )
 };

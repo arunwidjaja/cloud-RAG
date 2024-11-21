@@ -9,7 +9,7 @@ interface LogProps {
 
 export const Logs: React.FC<LogsProps> = ({ logs }) => {
   return (
-    <div>
+    <div className='text-text font-mono text-xs'>
       {logs.map((log, index) => (
         <Log
           key={index}
@@ -22,7 +22,7 @@ export const Logs: React.FC<LogsProps> = ({ logs }) => {
 
 export const Log: React.FC<LogProps> = ({ log }) => {
   return (
-    <div style={{ fontSize: '12px', fontFamily: 'monospace' }}>
+    <div>
       {log}
     </div>
   )

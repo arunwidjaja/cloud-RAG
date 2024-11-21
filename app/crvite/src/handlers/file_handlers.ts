@@ -60,11 +60,6 @@ export const clear_selected_uploads = () => {
     clearSelectedUploads();
 };
 
-export const clear_all_selections = () => {
-    clear_selected_uploads();
-    clear_selected_files();
-}
-
 export const get_uploads = async () => {
     const uploads = useFilesStore.getState().uploads;
     return uploads;

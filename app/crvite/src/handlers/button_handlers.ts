@@ -2,7 +2,6 @@ import {
   refresh_files,
   refresh_uploads,
   get_selected_files,
-  clear_all_selections,
   get_uploads
 } from '../handlers/file_handlers';
 import { add_log } from '../handlers/log_handlers';
@@ -28,7 +27,7 @@ export const handle_accept_uploads = (uploadRef: RefObject<HTMLInputElement>): v
 export const handle_remove_selected_uploads = async (uploads_to_remove: FileData[]) => {
   const removed_uploads = await start_upload_deletion(uploads_to_remove);
   refresh_uploads();
-  clear_all_selections();
+  
   removed_uploads.forEach(element => {
     add_log("Removed upload: " + element)
   });
@@ -41,7 +40,7 @@ export const handle_download_selected_files = async () => {
   const files_to_download = get_selected_files();
   const current_collection = get_current_collection();
   const downloaded_files = await start_file_download(files_to_download, current_collection);
-  clear_all_selections();
+  
   downloaded_files.forEach(element => {
     add_log("Downloaded file: " + element)
   });
@@ -54,7 +53,7 @@ export const handle_push_uploads = async () => {
   const pushed_uploads = await start_push_to_DB(uploads, current_collection);
   refresh_files(current_collection);
   refresh_uploads();
-  clear_all_selections();
+  
   pushed_uploads.forEach(element => {
     add_log("Pushed upload: " + element)
   });
@@ -66,7 +65,7 @@ export const handle_delete_selected_files = async () => {
   const current_collection = get_current_collection();
   const delete_files = await start_file_deletion(files_to_delete, current_collection)
   refresh_files(current_collection);
-  clear_all_selections();
+  
   delete_files.forEach(element => {
     add_log("Deleted file from DB: " + element)
   });
@@ -101,21 +100,6 @@ export const handle_delete_collection = async() => {
 // Chooses a collection from the drop down menu
 export const handle_choose_collection = (selected_collection: string) => {
   choose_collection(selected_collection);
-  clear_all_selections();
   refresh_files([selected_collection]);
 };
 
-export const handle_select_preset = (selected_preset: string) => {
-  switch (selected_preset.toUpperCase()) {
-    case 'SUMMARIZE DOCUMENTS':
-      preset_summarize_selection();
-      break;
-    case 'ANALYZE SENTIMENT':
-      preset_analyze_themes();
-      break;
-    case 'EXTRACT THEMES':
-      preset_analyze_sentiment();
-      break;
-  }
-
-};
