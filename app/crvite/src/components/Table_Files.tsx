@@ -41,15 +41,11 @@ import {
 } from "@/components/ui/table"
 import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
 
-
-
-
-
-
 export function FileTable() {
   const collection = use_current_collection()
   const files = use_files()
   const selected_files = use_selected_files()
+
   const [data, setData] = React.useState<FileData[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -78,10 +74,10 @@ export function FileTable() {
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(!!value);
-            if (value) {
-              set_selected_files([...table.getRowModel().rows.map(row => row.original)]);
+          onCheckedChange={(checked) => {
+            table.toggleAllPageRowsSelected(!!checked);
+            if (checked) {
+              set_selected_files(table.getRowModel().rows.map(row => row.original));
             } else {
               set_selected_files([]);
             }
@@ -164,6 +160,7 @@ export function FileTable() {
   ]
 
 
+
   const table = useReactTable({
     data,
     columns,
@@ -184,9 +181,9 @@ export function FileTable() {
   })
 
   return (
-    <div className="flex-1 w-full flex-col">
+    <div id="file_table_component" className="mt-2 flex flex-col flex-1 overflow-auto min-h-0">
       {/* Search and Filter */}
-      <div id='searchandfilter' className="grid grid-cols-4 mt-2 mb-3">
+      <div id='searchandfilter' className="grid grid-cols-4 mb-3">
         <Input
           placeholder="Search files..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}

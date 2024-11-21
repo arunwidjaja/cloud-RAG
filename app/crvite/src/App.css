@@ -41,21 +41,6 @@ html, body, #root {
   font-family: 'Lucida Sans';
 }
 
-.banner {
-  background-color: rgba(97, 197, 255, 0.25); /* Green with 70% opacity */
-  color: rgb(0, 0, 0); /* White text color */
-  font-size: x-large;
-  text-align: center; /* Centered text */
-  padding: 10px; /* Padding for spacing */
-  position: fixed; /* Fixed positioning */
-  top: 0; /* Stick to the top */
-  left: 0; /* Align to the left */
-  width: 100%; /* Full width */
-  z-index: 1000; /* Higher z-index to sit above other elements */
-  backdrop-filter: blur(5px); /* Optional: adds a blur effect behind the banner */
-}
-
-
 /* Layer 0 */
 .container {
   display: flex;
@@ -95,7 +80,6 @@ html, body, #root {
 /* Layer 2, Middle Bar */
 .input {
   align-self: flex-end;
-  background-color: var(--COLOR_ACCENT_1);
 }
 .output {
   box-sizing: border-box;
@@ -121,7 +105,10 @@ html, body, #root {
   border-radius: var(--PADDING_STANDARD);
 }
 
-
+.input {
+  background-color: #BFDBFE;
+  color: black;
+}
 .answer {
   display: flex;
   background-color: #18181B;
@@ -195,7 +182,7 @@ html, body, #root {
   background-color: var(--COLOR_PUSH);
 }
 
-#downloaddbbutton{
+/* #downloaddbbutton{
   flex: 1;
   background-color: var(--COLOR_DOWNLOAD);
   color: white;
@@ -205,7 +192,7 @@ html, body, #root {
   flex: 1;
   background-color: var(--COLOR_DELETE);
   color: white;
-}
+} */
 
 /* Embedded Images */
 

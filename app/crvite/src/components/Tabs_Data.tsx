@@ -65,10 +65,12 @@ export function Tabs_Data() {
                 >Uploads</TabsTrigger>
             </TabsList>
 
-            <TabsContent id="retrieval_tab_content" value="data" className='flex-1 border border-pink-400 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
-                <div id="contentdiv" className='border border-blue-600 h-full overflow-auto flex flex-col'>
-                    <p className='text-xl'>Retrieved Documents</p>
-                    <p className='text-sm mt-1 mb-3'>Once you submit a query, any relevant documents will be displayed here.</p>
+            <TabsContent id="retrieval_tab_content" value="data" className='flex-1 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
+                <div id="contentdiv" className='h-full overflow-auto flex flex-col'>
+                    <div id='tab_header'>
+                        <p className='text-xl'>Retrieved Documents</p>
+                        <p className='text-sm mt-1 mb-3'>Once you submit a query, any relevant documents will be displayed here.</p>
+                    </div>
                     <div className='flex'>
                         <DropdownMenuContext
                             useItemsHook={use_retrieved_files}
@@ -81,27 +83,33 @@ export function Tabs_Data() {
                 </div>
             </TabsContent>
 
-            <TabsContent value="files" className=' flex-1 border border-slate-400 rounded-lg p-4 mt-2'>
-                <p className='text-xl'>Your Database</p>
-                <p className='text-sm mt-1 mb-3'>Manage your Collections and files here. Create a new Collection to begin.</p>
-                <div className="flex">
-                    <DropdownMenu
-                        useItemsHook={use_collections}
-                        placeholder='Select a Collection...'
-                        searchPlaceholder='Search Collections...'
-                        emptyMessage='No Collections found.'
-                        onChange={handle_choose_collection}
-                        className='flex-1 mt-1 border-gray-800' />
-                    <CollectionCreationButton />
-                    <CollectionDeletionButton />
+            <TabsContent value="files" className='flex-1 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
+                <div id="contentdiv" className='h-full overflow-auto flex flex-col'>
+                    <div id='tab_header'>
+                        <p className='text-xl'>Your Database</p>
+                        <p className='text-sm mt-1 mb-3'>Manage your Collections and files here. Create a new Collection to begin.</p>
+                    </div>
+                    <div className="flex">
+                        <DropdownMenu
+                            useItemsHook={use_collections}
+                            placeholder='Select a Collection...'
+                            searchPlaceholder='Search Collections...'
+                            emptyMessage='No Collections found.'
+                            onChange={handle_choose_collection}
+                            className='flex-1 mt-1 border-gray-800' />
+                        <CollectionCreationButton />
+                        <CollectionDeletionButton />
+                    </div>
+                    <FileTable></FileTable>
                 </div>
-                <FileTable></FileTable>
             </TabsContent>
 
-            <TabsContent value="uploads" className=' flex-1 border border-slate-400 rounded-lg p-4 mt-2'>
-                <div className='flex flex-col h-full'>
-                    <div className='text-xl'>Uploads</div>
-                    <div className='text-sm mt-1 mb-3'>Upload files here. Select a collection to push your files to. For best performance, keep thematically distinct files in different collections.</div>
+            <TabsContent value="uploads" className='flex-1 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
+                <div id="contentdiv" className='h-full overflow-auto flex flex-col'>
+                    <div id='tab_header'>
+                        <div className='text-xl'>Uploads</div>
+                        <div className='text-sm mt-1 mb-3'>Upload files here. Select a collection to push your files to. For best performance, keep thematically distinct files in different collections.</div>
+                    </div>
                     <div className="flex">
                         <DropdownMenu
                             useItemsHook={use_collections}

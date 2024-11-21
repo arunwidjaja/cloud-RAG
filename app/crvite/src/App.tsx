@@ -60,9 +60,10 @@ function App() {
 
       {/* Title Bar */}
 
-      <header className="flex flex-col w-full bg-black pl-3 pt-3 mb-0">
+      <header className="flex flex-col w-full bg-purple-300 pl-3 pt-3 mb-0">
         <div className="flex font-bold items-center pb-3">
-          <div className="text-2xl font-bold mr-8">Cloud RAG<sub style={{ color: '#856107' }}>0.3x</sub></div>
+          <div className="text-2xl font-bold mr-8 text-black">Cloud RAG<sub className='text-blue-400'>0.3x</sub>
+          </div>
           <nav className='flex gap-4'>
             <a href={HREF_REPO} target='_blank'>
               <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
@@ -107,7 +108,7 @@ function App() {
         <div className="L1 flex-1">
           <div
             id="conversation"
-            className="output pl-1 pr-1 pt-2 overflow-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
+            className="bg-gradient-to-t from-blue-400 to-purple-300 output pl-1 pr-1 pt-2 overflow-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
             {messages.map((msg: Message, index: number) => (<ChatBubble key={index} message={msg} />))}
           </div>
           <div className='mt-2'>
