@@ -35,7 +35,7 @@ export const ThemeSwitch = () => {
           <button
             key={theme}
             onClick={() => handleClick(theme, index)}
-            className={`relative z-10 flex items-center justify-center w-14 h-8 rounded-full transition-colors text-sm font-medium
+            className={`text-text relative z-10 flex items-center justify-center w-14 h-8 rounded-full transition-colors text-sm font-medium
             ${position === index ? 'text-background' : 'text-text hover:text-primary'}`}
           >
             {theme.charAt(0).toUpperCase() + theme.slice(1)}

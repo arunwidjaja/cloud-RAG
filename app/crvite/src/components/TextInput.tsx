@@ -56,7 +56,7 @@ export const TextInput = () => {
             value={user_input}
             onChange={(e) => set_user_input(e.target.value)}
             onKeyDown={handle_key_down}
-            className="bg-primary p-4 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+            className="text-text bg-primary p-4 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
         />
     )
 };

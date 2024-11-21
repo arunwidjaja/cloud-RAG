@@ -11,7 +11,7 @@ interface DividerProps {
 export const HorizontalLine = () => {
   return (
     <div className="relative">
-      <div className="right-0 -mr-4 left-[-100%] border-t border-accent" />
+      <div className="right-0 -mr-4 left-[-100%] border border-black" />
     </div>
   );
 };

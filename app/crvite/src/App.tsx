@@ -67,7 +67,7 @@ function App() {
 
       {/* Title Bar */}
 
-      <header className="flex flex-col w-full bg-primary pl-3 pt-3 mb-0 border">
+      <header className="flex flex-col w-full bg-primary pl-3 pt-3 mb-0">
         <div className="flex font-bold items-center pb-3">
           <div className="text-2xl font-bold mr-8 text-text">Cloud RAG<sub className='text-text'>0.3x</sub>
           </div>
@@ -80,11 +80,11 @@ function App() {
         </div>
       </header>
 
-      <div className="container max-w-full p-0 border-t border-gray-600 bg-gradient-to-t from-secondary to-primary to-70%">
+      <div className="container max-w-full p-0 bg-gradient-to-t from-secondary to-primary to-50%">
 
         {/* Left Pane */}
 
-        <div className="L1 text-center" id="L1S1">
+        <div className="L1 text-center bg-secondary" id="L1S1">
           <div id="auth" className='flex flex-1 flex-col'>
             Testing Area
           </div>
@@ -129,7 +129,7 @@ function App() {
         </div>
 
 
-        <VerticalDivider></VerticalDivider>
+        {/* <VerticalDivider></VerticalDivider> */}
 
         {/* Right Pane */}
         <div className='pr-3 pt-3'>

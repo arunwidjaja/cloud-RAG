@@ -92,8 +92,8 @@ export function Tabs_Data() {
             <TabsContent value="uploads" className='flex-1 rounded-lg p-4 mt-2 min-h-0 overflow-hidden'>
                 <div id="contentdiv" className='h-full overflow-auto flex flex-col'>
                     <div id='tab_header'>
-                        <div className='text-xl text-black'>Uploads</div>
-                        <div className='text-sm mt-1 mb-3 text-black'>Upload files here. Select a collection to push your files to. For best performance, keep thematically distinct files in different collections.</div>
+                        <div className='text-xl text-text'>Uploads</div>
+                        <div className='text-sm mt-1 mb-3 text-text'>Upload files here. Select a collection to push your files to. For best performance, keep thematically distinct files in different collections.</div>
                     </div>
                     <div className="flex">
                         <DropdownMenu

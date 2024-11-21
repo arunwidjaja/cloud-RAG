@@ -18,17 +18,17 @@ export const themes: Record<ThemeName,ThemeColors> = {
         accent: '#9AD1FF',
     },
     Dark: {
-        primary: '#60a5fa',
-        secondary: '#9ca3af',
-        background: '#1f2937',
-        text: '#f9fafb',
-        accent: '#a78bfa',
+        primary: '#111111',
+        secondary: '#000000',
+        background: '#FFFFFF',
+        text: '#FFFFFF',
+        accent: '#585858',
     },
     DEHR: {
-        primary: '#60a5fa',
-        secondary: '#9ca3af',
-        background: '#1f2937',
-        text: '#f9fafb',
-        accent: '#a78bfa',
+        primary: '#111111',
+        secondary: '#000000',
+        background: '#000000',
+        text: '#6A4C02',
+        accent: '#000000',
     }
 }
