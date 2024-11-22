@@ -1,9 +1,7 @@
 # Cloud RAG
 
-Cloud RAG is a web-based RAG GenAI client that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
+Cloud RAG is a Retrieval-Augmented Generation client that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
 Text transformation, embedding, and generation is currently powered primarily by DistilBERT, ADA, and GPT-4.
-
-Currently, Cloud RAG does not support local LLMs.
 
 ## Getting Started
 
@@ -23,18 +21,26 @@ Cloud RAG can be compiled and run locally, but requires OpenAI API keys:
   - HuggingFace - Transformers
   - Chroma - Vector DB
   - FastAPI
-- ReactJS, Docker, Amazon AWS - Deployment
-- HTML, CSS, JavaScript - Frontend
+- ReactJS, Vite, Docker, Amazon AWS - Deployment
+- TypeScript, Tailwind CSS - Frontend
 
 ## Release Notes
 
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.2.PNG" />
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_2.PNG" />
+
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_1.PNG" />
+
+### 2024.11.21 - v0.4
+- UI overhaul
+  - Theme switcher
+  - Tab panel for RAG, database, and uploads
+  - Navbar and sidebar
+- Migration to TypeScript, Tailwind CSS, and Vite
 
 ### 2024.11.13 - v0.3
-- Migrated to React.JS
+- Migration to React.JS
 
 ### 2024.11.04 - v0.2
-
 #### Feature Summary
 - Document summary shortcut
 - Theme analysis shortcut
