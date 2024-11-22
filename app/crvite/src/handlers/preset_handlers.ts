@@ -1,16 +1,50 @@
-import { clear_all_selections } from './file_handlers';
 import { add_log } from './log_handlers';
-// import { add_bubble } from './conversation_handlers';
+import usePresetsStore from '@/stores/presetsStore';
 import {
     start_summarization,
     start_theme_analysis,
 } from '../api/api'
-import { FileData } from '../types/types';
-import { AnswerMessage, ContextMessage } from '../types/types';
 import { createAnswerMessage } from '../stores/messageStore';
 import { add_message } from './message_handlers';
+import useFilesStore from '@/stores/filesStore';
 
-export const preset_summarize_selection = async (selected_files: FileData[]) => {
+export const use_presets = () => {
+    const presets = usePresetsStore((state) => state.presets);
+    return presets;
+}
+export const use_selected_preset = () => {
+    const selected_preset = usePresetsStore((state) => state.selected_preset);
+    return selected_preset;
+}
+
+export const handle_select_preset = (selected_preset: string): void => {
+    select_preset(selected_preset);
+    add_log("Selected preset: " + selected_preset);
+};
+
+export const handle_run_preset = (): void => {
+    const selected_preset = usePresetsStore.getState().selected_preset;
+
+    switch (selected_preset.toUpperCase()) {
+        case 'SUMMARIZE DOCUMENTS':
+            preset_summarize_selection();
+            break;
+        case 'ANALYZE SENTIMENT':
+            preset_analyze_themes();
+            break;
+        case 'EXTRACT THEMES':
+            preset_analyze_sentiment();
+            break;
+    }
+}
+
+export const select_preset = (selected_preset: string) => {
+    const selectPreset = usePresetsStore.getState().setSelectedPreset;
+    selectPreset(selected_preset)
+}
+
+export const preset_summarize_selection = async (): Promise<void> => {
+    const selected_files = useFilesStore.getState().selected_files;
     if (selected_files.length === 0) {
         add_log("Please select files to summarize first.")
     } else {
@@ -24,10 +58,10 @@ export const preset_summarize_selection = async (selected_files: FileData[]) => 
         selected_files.forEach(file => {
             add_log(file.name)
         });
-        clear_all_selections();
     }
 };
-export const preset_analyze_themes = async (selected_files: FileData[]) => {
+export const preset_analyze_themes = async (): Promise<void> => {
+    const selected_files = useFilesStore.getState().selected_files;
     if (selected_files.length === 0) {
         add_log("Please select files to analyze first.")
     } else {
@@ -48,9 +82,13 @@ export const preset_analyze_themes = async (selected_files: FileData[]) => {
         selected_files.forEach(file => {
             add_log(file.name)
         });
-        clear_all_selections();
     }
 };
-export const preset_analyze_sentiment = async (selected_files: FileData[]) => {
-    add_log("Sentiment Analysis is not available yet")
+export const preset_analyze_sentiment = async (): Promise<void> => {
+    const selected_files = useFilesStore.getState().selected_files;
+    if (selected_files.length === 0) {
+        add_log("Please select files to analyze first.")
+    } else {
+        add_log("Sentiment Analysis is not available yet")
+    }
 };

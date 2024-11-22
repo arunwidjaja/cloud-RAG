@@ -14,7 +14,7 @@ interface CollectionsState {
 const useCollectionsStore = create < CollectionsState > ()((set) => ({
     collections: [],
     selected_collections: [],
-    current_collection: ['langchain'],
+    current_collection: [''],
 
     setCollections: (newCollections) => set({ collections: newCollections }),
     addCollection: (collection) => set((state) => ({

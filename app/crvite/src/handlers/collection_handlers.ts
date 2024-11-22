@@ -18,6 +18,15 @@ export const get_current_collection = () => {
     return currentCollection;
 };
 
+export const use_current_collection = () => {
+    const currentCollection = useCollectionsStore((state) => state.current_collection);
+    return currentCollection;
+};
+export const use_collections = () => {
+    const allCollections = useCollectionsStore((state) => state.collections);
+    return allCollections;
+};
+
 export const choose_collection = (selected_collection: string) => {
     const setCurrentCollection = useCollectionsStore.getState().setCurrentCollection;
     setCurrentCollection(selected_collection);

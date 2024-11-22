@@ -19,16 +19,20 @@ class CollectionModel(BaseModel):
     embedding_function: str
 
 
-class ContextModel(BaseModel):
-    context: str
-    source: str
+class FileModel(BaseModel):
+    name: str
     hash: str
 
 
+class ContextModel(BaseModel):
+    file: FileModel
+    text: str
+
+
 class MessageModel(BaseModel):
-    message: str
+    text: str
     id: str
-    contexts: List[ContextModel]
+    context_list: List[ContextModel]
 
 
 @router.post("/create_collection")
@@ -63,7 +67,25 @@ async def submit_query(request: QueryModel):
     message = query_response.message
     id = query_response.id
     contexts = query_response.contexts
-    message_model = MessageModel(message=message, id=id, contexts=contexts)
+
+    context_list = []
+
+    for context in contexts:
+        file_model = FileModel(
+            name=context['source'],
+            hash=context['hash']
+        )
+        context_model = ContextModel(
+            file=file_model,
+            text=context['context']
+        )
+        context_list.append(context_model)
+
+    message_model = MessageModel(
+        text=message,
+        id=id,
+        context_list=context_list
+    )
 
     return {"message_model": message_model}
 

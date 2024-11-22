@@ -51,6 +51,8 @@ def summarize_map_reduce(db: Chroma, doc_list: List, identifier='hash', preset='
     if isinstance(doc_list, str):
         doc_list = [doc_list]
 
+    print(f"Hashes: {doc_list}")
+
     templates_preset = prompt_templates.PT_PRESETS[preset.upper()]
 
     map_template = templates_preset[0]

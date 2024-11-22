@@ -1,4 +1,5 @@
 import { FileData } from '../types/types';
+import { ContextMessage } from '../types/types';
 
 export const fetch_db_collections = async (): Promise<string[]> => {
   try {
@@ -184,7 +185,7 @@ export const start_delete_collection = async (collection: string[]): Promise<str
     return ''
   }
 }
-export const start_submit_query = async (user_query: string, query_type: string) => {
+export const start_submit_query = async (user_query: string, query_type: string): Promise<ContextMessage> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/submit_query`
     const response = await fetch(url, {
@@ -205,11 +206,12 @@ export const start_submit_query = async (user_query: string, query_type: string)
     }
   } catch (error) {
     console.error('There was an error submitting your query:', error);
+    throw error;
   }
 }
-export const start_summarization = async (files: FileData[]): Promise<string[]> => {
+export const start_summarization = async (files: FileData[]): Promise<string> => {
   if (!Array.isArray(files) || files.length === 0) {
-    return ['There were no files to summarize']
+    return 'There were no files to summarize'
   }
   try {
     const hashes = files.map(item => item.hash);
@@ -228,7 +230,7 @@ export const start_summarization = async (files: FileData[]): Promise<string[]> 
     }
   } catch (error) {
     console.error('An error occurred while generating a summary: ', error)
-    return []
+    return ''
   }
 }
 

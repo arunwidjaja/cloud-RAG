@@ -1,7 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+
+import { ThemeSwitch } from './components/ThemeSwitch';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // States
-import useFilesStore from './stores/filesStore';
+
 import useLogsStore from './stores/logsStore';
 import useMessageStore from './stores/messageStore';
 import useCollectionsStore from './stores/collectionsStore'
@@ -10,46 +13,45 @@ import useCollectionsStore from './stores/collectionsStore'
 import { refresh_files, refresh_uploads } from './handlers/file_handlers';
 import { refresh_collections } from './handlers/collection_handlers';
 import {
-  handle_push_uploads,
-  handle_remove_selected_uploads,
-  handle_download_selected_files,
-  handle_delete_selected_files,
-  handle_accept_uploads,
-  handle_create_collection,
-  handle_choose_collection,
-  handle_delete_collection
-} from './handlers/button_handlers';
-import {
-  preset_analyze_sentiment,
-  preset_analyze_themes,
-  preset_summarize_selection
+  handle_select_preset, handle_run_preset
 } from './handlers/preset_handlers';
+import { use_presets } from './handlers/preset_handlers';
 
 
 // Components
-import { FilesList, UploadsList } from './components/FileList';
+import { Tabs_Data } from './components/Tabs_Data';
+
 import { Logs } from './components/Logs';
 import { TextInput } from './components/TextInput';
 import { ChatBubble } from './components/ChatBubble';
-import { DropDownMenu } from './components/DropDownMenu';
+import { DropdownMenu } from './components/Dropdown_Menu';
 
-import { FileUploadWindow } from './components/FileUpload'; // hidden
+
+import { ChatHistory } from './components/ChatHistory';
+
 // Styling
 import './App.css';
 
 // Constants
-import { HREF_REPO, SRC_GITHUB_ICON } from './constants/constants';
+import { HREF_REPO, ICON_GITHUB } from './constants/constants';
 
 import { Message } from './types/types';
+import { Button } from './components/ui/button';
+
+import { LoremIpsum } from 'lorem-ipsum';
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+
+
 
 function App() {
+  const lorem = new LoremIpsum();
+  const filler_text = lorem.generateWords(600);
 
-  const { files, uploads, selected_files, selected_uploads } = useFilesStore();
   const { logs } = useLogsStore();
   const { messages } = useMessageStore();
-  const { collections, current_collection } = useCollectionsStore();
-
-  const uploadRef = useRef(null);
+  const { current_collection } = useCollectionsStore();
 
   // Refresh files and uploads on start
   useEffect(() => {
@@ -67,87 +69,113 @@ function App() {
   //////////////////////////////////
 
   return (
-    <div className="container max-w-full">
-      <div className="container max-w-full">
+    <ThemeProvider>
+      <div className="container_parent max-w-full max-h-full flex flex-row">
         {/* Left Pane */}
-        <div className="L1" id="L1S1">
-          <div id="title">
-            Cloud RAG
+        <div className='min-h-full max-h-full w-64 flex flex-col bg-accent'>
+          <div id="fillerdiv" className="h-14"></div>
+          {/* Chat History Section */}
+          <div className='ml-4 font-bold text-text'>Recent Chats</div>
+          <div id="chathistory" className="flex-1 min-h-0 w-full mb-2">
+            {/* Chat History */}
+            <div className='h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+              <ChatHistory></ChatHistory>
+              {/* {filler_text} */}
+            </div>
+
+
           </div>
-          <div id="version">v0.3</div>
-          <div id="links"><br />
-            <a href={HREF_REPO} target="_blank">
-              <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
-            </a>
+          {/* Presets and LLM settings */}
+          <div id="llmpanel" className='p-2'>
+            {/* Presets section */}
+            <div id="presets" className="flex flex-1 flex-col">
+              <DropdownMenu
+                useItemsHook={use_presets}
+                placeholder='Select Preset'
+                searchPlaceholder='Search preset analyses'
+                emptyMessage='No preset sellected'
+                className='flex'
+                onChange={handle_select_preset} />
+              <Button
+                className='flex mt-2'
+                onClick={handle_run_preset}
+              >Run Selected Preset</Button>
+            </div>
           </div>
-          <div id="auth">
-            (WIP) Auth/Collections
-          </div>
-          <div id="shortcuts">
-            <button className="shortcut_button" id="summarize" onClick={() => preset_summarize_selection(selected_files)}>Summarize Selected Documents</button>
-            <button className="shortcut_button" id="highlights" onClick={() => preset_analyze_themes(selected_files)}>Retrieve Themes</button>
-            <button className="shortcut_button" id="sentiment" onClick={() => preset_analyze_sentiment(selected_files)}>(WIP) Analyze Sentiment</button>
-          </div>
-          <div id="log">
+
+          <div className='flex flex-1 flex-col text-left p-1 bg-text m-2 rounded-sm'>
             <Logs logs={logs} />
           </div>
-        </div>
-        {/* Middle Pane */}
-        <div className="L1" id="L1S2">
-          <div id="conversation" className="output">
-            {messages.map((msg: Message, index: number) => (<ChatBubble key={index} message={msg} />))}
-          </div>
-          <TextInput />
-        </div>
-        {/* Right Pane */}
-        <div className="L1" id="L1S3">
-          <div id="uploadssection">
-            <div id="uploadstitle">
-              Uploaded Files
-            </div>
-            <div className="filelist" id="uploadslist">
-              <ul id="uploads-list-ul">
-                <UploadsList uploads={uploads} />
-              </ul>
-            </div>
-            <button
-              id="pushbtn" onClick={() => handle_push_uploads(uploads)}>Push All Uploads to Collection</button>
-            <div className="uploadsbuttons">
-              <FileUploadWindow ref={uploadRef} />
-              <button id='upload-btn' className="btn" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</button>
-              <button id='deleteuploadsbtn' className="btn" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Selected Uploads</button>
-            </div>
-          </div>
-          <div id="databasesection">
-            <div id="databasetitle">
-              Database Files
-            </div>
-            <div>
-              Current Collection:
-              <DropDownMenu
-                options={collections}
-                onSelect={handle_choose_collection}
-                default_text='Select Collection'
-                default_selection={collections[0]} />
-              <button className="btn" onClick={handle_create_collection}>+</button>
-              <button className="btn" onClick={handle_delete_collection}>Delete Collection</button>
-            </div>
-            <div className="filelist" id="databaselist">
 
-              <ul id="file-list-ul">
-                <FilesList files={files} />
-              </ul>
+          <ThemeSwitch></ThemeSwitch>
+
+        </div>
+
+        {/* Title Bar + Main Content */}
+        <div className='flex flex-col flex-1'>
+          {/* Title Bar */}
+          <header className="w-full bg-primary pl-3 pt-3 mb-0 flex flex-row h-20">
+            {/* App Title */}
+            <div className="flex flex-1 flex-row font-bold items-center">
+              <div className="text-2xl font-bold text-text">
+                Cloud RAG<sub className='text-text'>0.4</sub>
+              </div>
+              {/* <nav className='flex gap-4'>
+                <a href={HREF_REPO} target='_blank'>
+                  <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
+                </a>
+              </nav> */}
+              {/* Profile Badge */}
+              <div className='justify-end flex flex-1 items-center mr-6'>
+                <div className='flex flex-row text-text items-center'>
+                  <div className='p-2'>awidjaja</div>
+                  <div>
+                    <Avatar>
+                      <AvatarImage src="" />
+                      <AvatarFallback className='bg-secondary'>AW</AvatarFallback>
+                    </Avatar>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="databasebuttons">
-              <button className="btn" id="downloaddbbutton" onClick={handle_download_selected_files}>Download Selected Files from Collection</button>
-              <button className="btn" id="deletedbbutton" onClick={handle_delete_selected_files}>Delete Selected Files from Collection</button>
+          </header>
+
+          {/* Main Content */}
+          <div className="container flex flex-row max-w-full p-0 bg-gradient-to-t from-secondary to-primary to-50%">
+            {/* Conversation Pane */}
+            <div id="conversationarea" className="flex flex-col flex-1 p-3">
+              {/* Gradient for overflow */}
+              <div className="relative">
+                <div className="max-h-24 overflow-hidden">
+                  <div className="absolute top-0 bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-transparent to-primary from-0 to-80%"></div>
+                </div>
+              </div>
+              {/* Conversation */}
+              <div
+                id="conversation"
+                className="flex flex-1 flex-col-reverse text-text bg-none output p-2 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full">
+
+                {messages.map((msg: Message, index: number) => (<ChatBubble key={index} message={msg} />))}
+              </div>
+              {/* User Input Field */}
+              <div className='mt-2 flex flex-row justify-center'>
+                <TextInput />
+              </div>
+            </div>
+
+
+            {/* <VerticalDivider></VerticalDivider> */}
+
+            {/* Right Pane */}
+            <div className='p-2'>
+              <Tabs_Data></Tabs_Data>
             </div>
           </div>
+          <script src="../static/UI.js"></script>
+          <script src="../static/js"></script>
         </div>
       </div>
-      <script src="../static/UI.js"></script>
-      <script src="../static/js"></script>
-    </div>
+    </ThemeProvider>
   );
 }
 

@@ -1,8 +1,7 @@
-import { SRC_DL_ICON } from "../constants/constants";
-import { start_file_download } from "../api/api";
 import { Message } from "../types/types";
-import { get_current_collection } from "../handlers/collection_handlers";
 import React from 'react';
+
+import { ICON_COPY, ICON_RETRY } from "../constants/constants";
 
 interface ChatBubbleProps {
     message: Message;
@@ -10,22 +9,41 @@ interface ChatBubbleProps {
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
     return (
-        <div 
-            className={`${message.type} chat-bubble`} 
+        <div
+            className={`${message.type} chat-bubble`}
             style={{ whiteSpace: 'pre-wrap' }}
         >
             {message.text}
-            {(message.type === 'context') && (
+            <div id="message_functions" className={`${message.type}-icon-container mt-1`}>
+                <div className="flex flex-row items-center">
+                    <div className={`${message.type}-icon rounded-md`}>
+                        <img
+                            src={ICON_COPY}
+                            className={`w-6 h-6 hover:cursor-pointer`}
+                            onClick={() => alert("TODO: implement copy")}>
+                        </img>
+                    </div>
+                    <div className={`${message.type}-icon rounded-md`}>
+                        <img
+                            src={ICON_RETRY}
+                            className={`w-6 h-6 hover:cursor-pointer`}
+                            onClick={() => alert("TODO: resend query")}>
+                        </img>
+                    </div>
+                </div>
+            </div>
+
+            {/* {(message.type === 'context') && (
                 <div className="download_context">
                     <img 
                         className="icon" 
                         src={SRC_DL_ICON} 
-                        onClick={() => start_file_download([message.file], get_current_collection())}
+                        onClick={() => start_file_download([message.context_list[0].file], get_current_collection())}
                         alt="Download"
                         role="button"
                     />
                 </div>
-            )}
+            )} */}
         </div>
     );
 };
