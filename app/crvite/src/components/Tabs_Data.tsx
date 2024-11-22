@@ -38,7 +38,7 @@ export function Tabs_Data() {
     const uploadRef = useRef(null);
     return (
         <Tabs defaultValue="data" className="w-[500px] flex flex-col h-full pb-2">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid grid-cols-3 ml-4 mr-4">
                 <TabsTrigger
                     value="data"
                 >Retrieval</TabsTrigger>
@@ -61,7 +61,7 @@ export function Tabs_Data() {
                             useItemsHook={use_retrieved_files}
                             placeholder='Select document'
                             searchPlaceholder='Search retrieved documents...'
-                            className='flex-1 mt-1 border-gray-800'>
+                            className='flex-1 mt-1'>
                         </DropdownMenuContext>
                     </div>
                     <FileDisplay></FileDisplay>
@@ -81,7 +81,7 @@ export function Tabs_Data() {
                             searchPlaceholder='Search Collections...'
                             emptyMessage='No Collections found.'
                             onChange={handle_choose_collection}
-                            className='flex-1 mt-1 border-gray-800' />
+                            className='flex-1 mt-1' />
                         <CollectionCreationButton />
                         <CollectionDeletionButton />
                     </div>
@@ -102,7 +102,7 @@ export function Tabs_Data() {
                             searchPlaceholder='Search Collections...'
                             emptyMessage='No Collections found.'
                             onChange={handle_choose_collection}
-                            className='flex-1 mt-1 border-gray-800' />
+                            className='flex-1 mt-1' />
                     </div>
                     <UploadTable></UploadTable>
                     <div className='mt-auto'>

@@ -189,7 +189,7 @@ export function FileTable() {
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className=" bg-secondary border-text mr-1 col-span-3"
+          className=" bg-secondary mr-1 col-span-3"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

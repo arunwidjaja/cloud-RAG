@@ -50,13 +50,19 @@ export const handle_download_selected_files = async () => {
 export const handle_push_uploads = async () => {
   const current_collection = get_current_collection();
   const uploads = await get_uploads();
-  const pushed_uploads = await start_push_to_DB(uploads, current_collection);
-  refresh_files(current_collection);
-  refresh_uploads();
-  
-  pushed_uploads.forEach(element => {
-    add_log("Pushed upload: " + element)
-  });
+  if (uploads[0].hash){
+    const pushed_uploads = await start_push_to_DB(uploads, current_collection);
+    refresh_files(current_collection);
+    refresh_uploads();
+    
+    pushed_uploads.forEach(element => {
+      add_log("Pushed upload: " + element)
+    });
+  }
+  else {
+    add_log("Upload files first")
+  }
+
 };
 
 // Deletes the selected files from the DB

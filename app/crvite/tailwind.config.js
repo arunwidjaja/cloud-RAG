@@ -11,7 +11,9 @@ export default {
 			},
 			colors: {
 				primary: 'var(--color-primary)',
+				primary_light: 'var(--color-primary_light)',
 				secondary: 'var(--color-secondary)',
+				secondary_light: 'var(--color-secondary_light)',
 				background: 'var(--color-background)',
 				text: 'var(--color-text)',
 				accent: 'var(--color-accent)',

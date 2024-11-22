@@ -20,10 +20,10 @@ export const ThemeSwitch = () => {
   };
 
   return (
-    <div className="relative inline-flex items-center bg-accent rounded-full p-1 h-10 w-32">
+    <div className="relative inline-flex items-center bg-primary rounded-full p-1 h-10 w-32 m-2">
       {/* Background slider */}
       <div
-        className="absolute h-8 w-10 bg-primary rounded-full transition-all duration-200 ease-in-out"
+        className="absolute h-8 w-10 bg-secondary rounded-full transition-all duration-200 ease-in-out"
         style={{
           left: `${position * 40 + 2}px`,
         }}
@@ -35,8 +35,8 @@ export const ThemeSwitch = () => {
           <button
             key={theme}
             onClick={() => handleClick(theme, index)}
-            className={`text-text relative z-10 flex items-center justify-center w-14 h-8 rounded-full transition-colors text-sm font-medium
-            ${position === index ? 'text-background' : 'text-text hover:text-primary'}`}
+            className={`text-text relative z-10 flex items-center justify-center w-14 h-8 rounded-full transition-colors text-xs font-light
+            ${position === index ? 'text-background' : 'text-text hover:bg-secondary_light'}`}
           >
             {theme.charAt(0).toUpperCase() + theme.slice(1)}
           </button>

@@ -63,7 +63,7 @@ const useMessageStore = create<MessageState>()((set) => ({
     messages: [],
     setMessages: (newMessages) => set({ messages: newMessages }),
     addMessage: (message) => set((state) => ({
-        messages: [...state.messages, message]
+        messages: [message, ...state.messages]
     })),
     clearMessages: () => set({ messages: [] })
 }));
