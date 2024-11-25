@@ -6,6 +6,7 @@ from summarize import summarize_map_reduce
 import doc_ops_utils
 import db_ops_utils
 import db_ops
+import utils
 
 
 router = APIRouter()
@@ -24,9 +25,47 @@ async def download_files(hashes: List[str] = Query(...), collection: List[str] =
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        # Collection can only have one element in it
-        download_list = db_ops_utils.download_files(hashes, collection[0])
-        return download_list
+        # Get the hashes of the files in the archive
+        source_location = utils.get_env_paths()['ARCHIVE']
+        archive_hash = utils.get_hash_dir(source_location)
+
+        # Convert hashes to paths
+        file_paths = []
+        for hash in hashes:
+            file_paths.append(archive_hash.get(hash))
+
+        # Validate paths
+        for file_path in file_paths:
+            if not os.path.exists(file_path):
+                raise HTTPException(status_code=404, detail="File not found")
+
+        if len(file_paths) == 1:
+            file_name = os.path.basename(file_paths[0])
+            return FileResponse(
+                path=file_path,
+                media_type='application/octet-stream',
+                headers={
+                    'Content-Disposition': f'attachment; filename={file_name}',
+                    'Access-Control-Expose-Headers': 'Content-Disposition'
+                }
+            )
+
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for file_path in file_paths:
+                zf.write(file_path, os.path.basename(file_path))
+
+        zip_buffer.seek(0)
+        zip_name = os.path.basename(file_paths[0])
+        zip_name = os.path.splitext(zip_name)[0]
+        return StreamingResponse(
+            zip_buffer,
+            media_type='application/zip',
+            headers={
+                'Content-Disposition': f'attachment; filename={zip_name}.zip',
+                'Access-Control-Expose-Headers': 'Content-Disposition'
+            }
+        )
     except Exception as e:
         raise Exception(f"Exception occurred when downloading files: {e}")
 

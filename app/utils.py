@@ -157,7 +157,11 @@ def get_hash(filepath, hash_algorithm="md5", chunk_size=8192):
 
 
 @timer
-def get_hash_dir(directory, hash_algorithm="md5", chunk_size=8192) -> dict:
+def get_hash_dir(directory, hash_algorithm="md5", chunk_size=8192) -> dict[str, str]:
+    """
+    Returns a dictionary containing the hashes and corresponding paths of all files in a directory.
+    Hashes as keys, paths as values.
+    """
     dir_hash = {}
     for item in os.listdir(directory):
         file_path = os.path.join(directory, item)

@@ -28,7 +28,7 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, HTTPException, APIRouter, Query, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from mangum import Mangum
@@ -38,10 +38,13 @@ from starlette.requests import Request
 # General
 import bcrypt
 import boto3
+import io
 import os
 import re
 import shutil
+import zipfile
 from collections import Counter, defaultdict
+from io import BytesIO
 from dotenv import load_dotenv
 from pathlib import Path
 from pprint import pprint

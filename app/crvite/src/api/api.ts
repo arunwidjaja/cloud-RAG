@@ -91,13 +91,32 @@ export const start_file_download = async (file_download_list: FileData[], collec
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Accept': 'application/zip, application/octet-stream'
+      }
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
-      const downloaded_files = await response.json();
-      return downloaded_files;
+      console.log('Raw response', response)
+      const content_disp = response.headers.get('Content-Disposition');
+      let file_name = 'download';
+      if (content_disp) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(content_disp);
+        if (matches != null && matches[1]) {
+          file_name = matches[1].replace(/['"]/g, '');
+        }
+      }
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = file_name;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(link.href);
+
+      return [file_name];
     }
   } catch (error) {
     console.error('An error occurred while download files: ', error);
