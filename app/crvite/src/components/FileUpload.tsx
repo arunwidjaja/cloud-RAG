@@ -18,6 +18,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
     const accept_uploads = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         
+        // Checks if no .txt files were uploaded.
         if(!files || files.length == 0) {
             alert('Please select at least one file');
             return;
