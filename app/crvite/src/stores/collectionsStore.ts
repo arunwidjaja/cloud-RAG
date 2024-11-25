@@ -2,8 +2,8 @@ import { create } from 'zustand';
 
 interface CollectionsState {
     collections: string[];
-    selected_collections: string[];
-    current_collection: string[];
+    selected_collection: string;
+    current_collection: string;
 
     setCollections: (newCollections: string[]) => void;
     addCollection: (collection: string) => void;
@@ -13,17 +13,17 @@ interface CollectionsState {
 
 const useCollectionsStore = create < CollectionsState > ()((set) => ({
     collections: [],
-    selected_collections: [],
-    current_collection: [''],
+    selected_collection: '',
+    current_collection: '',
 
     setCollections: (newCollections) => set({ collections: newCollections }),
     addCollection: (collection) => set((state) => ({
         collections: [...state.collections, collection]
     })),
     setCurrentCollection: (selected_collection) => set({
-        current_collection: [selected_collection]
+        current_collection: selected_collection
     }),
-    clearSelectedCollections: () => set({ selected_collections: [] })
+    clearSelectedCollections: () => set({ selected_collection: '' })
 }));
 
 export default useCollectionsStore;

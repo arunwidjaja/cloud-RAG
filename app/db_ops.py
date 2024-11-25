@@ -193,7 +193,7 @@ def push_to_database(db: Chroma, collection: str) -> List[str]:
     Returns:
         a list of the pushed uploads
     """
-    chunks = doc_ops.process_documents()
+    chunks = doc_ops.process_documents(collection)
     documents_list = save_to_chroma(db, chunks, collection)
     doc_ops_utils.archive_all_uploads()
     return documents_list

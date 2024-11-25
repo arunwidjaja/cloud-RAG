@@ -31,7 +31,6 @@ type ComboboxProps = {
   searchPlaceholder?: string
   emptyMessage?: string
   className?: string
-  value?: string
   onChange?: (value: string) => void
 }
 
@@ -41,12 +40,11 @@ export function DropdownMenu({
   searchPlaceholder = "Search items...",
   emptyMessage = "No item found.",
   className = "w-[200px]",
-  value = "",
   onChange
 }: ComboboxProps) {
 
   const [open, setOpen] = React.useState(false)
-  const [selectedValue, setSelectedValue] = React.useState(value)
+  const [selectedValue, setSelectedValue] = React.useState("")
 
   const hook_items = useHook()
 
@@ -56,7 +54,7 @@ export function DropdownMenu({
   }))
 
   const handleSelect = (currentValue: string) => {
-    const newValue = currentValue === selectedValue ? "" : currentValue
+    const newValue = currentValue === selectedValue ? currentValue : currentValue
     setSelectedValue(newValue)
     onChange?.(newValue)
     setOpen(false)
@@ -88,7 +86,7 @@ export function DropdownMenu({
                   key={item.value}
                   value={item.value}
                   onSelect={handleSelect}
-                  className="text-text"                 
+                  className="text-text"
                 >
                   <Check
                     className={cn(

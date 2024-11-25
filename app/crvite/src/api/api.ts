@@ -1,3 +1,4 @@
+import { get_current_collection } from '@/handlers/collection_handlers';
 import { FileData } from '../types/types';
 import { ContextMessage } from '../types/types';
 
@@ -16,18 +17,25 @@ export const fetch_db_collections = async (): Promise<string[]> => {
   }
 }
 
-export const fetch_db_files_metadata = async (collection_names: string[]): Promise<FileData[]> => {
-  try {
-    const query = collection_names.map(collection => `collections=${encodeURIComponent(collection)}`).join('&');
-    const url = `${import.meta.env.VITE_API_BASE_URL}/db_files_metadata?${query}`
-    const response = await fetch(url);
-    if (!response.ok) { throw new Error('Network response was not ok'); }
-    else {
-      const files = await response.json();
-      return files;
+export const fetch_db_files_metadata = async (): Promise<FileData[]> => {
+  const collection_name = get_current_collection();
+  if (collection_name) {
+    try {
+      const query = [collection_name].map(collection => `collections=${encodeURIComponent(collection)}`).join('&');
+      const url = `${import.meta.env.VITE_API_BASE_URL}/db_files_metadata?${query}`
+      const response = await fetch(url);
+      if (!response.ok) { throw new Error('Network response was not ok'); }
+      else {
+        const files = await response.json();
+        return files;
+      }
+    } catch (error) {
+      console.error('Error fetching files:', error);
+      return [];
     }
-  } catch (error) {
-    console.error('Error fetching files:', error);
+  }
+  else {
+    console.log("No collection is selected. Cancelling fetching files.");
     return [];
   }
 }
@@ -70,13 +78,13 @@ export const start_upload_deletion = async (upload_deletion_list: FileData[]): P
   }
 }
 
-export const start_file_download = async (file_download_list: FileData[], collection: string[]): Promise<string[]> => {
+export const start_file_download = async (file_download_list: FileData[], collection: string): Promise<string[]> => {
   if (!Array.isArray(file_download_list) || file_download_list.length === 0) {
     return ['No files were downloaded']
   }
   try {
     const hashes = file_download_list.map(item => item.hash);
-    const query_collection = collection.map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
+    const query_collection = [collection].map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
     const query_hashes = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`).join('&');
     const query = `${query_hashes}&${query_collection}`;
     const url = `${import.meta.env.VITE_API_BASE_URL}/download_files?${query}`
@@ -96,12 +104,12 @@ export const start_file_download = async (file_download_list: FileData[], collec
     return [];
   }
 }
-export const start_push_to_DB = async (uploads: FileData[], collection: string[]): Promise<string[]> => {
+export const start_push_to_DB = async (uploads: FileData[], collection: string): Promise<string[]> => {
   if (!Array.isArray(uploads) || uploads.length === 0) {
     return ['No uploads to push']
   }
   try {
-    const query_collection = collection.map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
+    const query_collection = [collection].map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
     const query = query_collection
     const url = `${import.meta.env.VITE_API_BASE_URL}/initiate_push_to_db?${query}`
     const response = await fetch(url);
@@ -115,13 +123,13 @@ export const start_push_to_DB = async (uploads: FileData[], collection: string[]
     return [];
   }
 }
-export const start_file_deletion = async (file_deletion_list: FileData[], collection: string[]): Promise<string[]> => {
+export const start_file_deletion = async (file_deletion_list: FileData[], collection: string): Promise<string[]> => {
   if (!Array.isArray(file_deletion_list) || file_deletion_list.length === 0) {
     return ['No files were deleted']
   }
   try {
     const hashes = file_deletion_list.map(item => item.hash);
-    const query_collection = collection.map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
+    const query_collection = [collection].map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
     const query_hashes = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`).join('&');
     const query = `${query_hashes}&${query_collection}`;
     const url = `${import.meta.env.VITE_API_BASE_URL}/delete_files?${query}`
@@ -164,9 +172,9 @@ export const start_create_collection = async (collection_name: string, embedding
     return ''
   }
 }
-export const start_delete_collection = async (collection: string[]): Promise<string> => {
+export const start_delete_collection = async (collection: string): Promise<string> => {
   try {
-    const query_collection = collection.map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
+    const query_collection = [collection].map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
     const query = query_collection
     const url = `${import.meta.env.VITE_API_BASE_URL}/delete_collection?${query}`
     const response = await fetch(url, {

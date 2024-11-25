@@ -7,7 +7,6 @@ import { ThemeProvider } from './contexts/ThemeContext';
 
 import useLogsStore from './stores/logsStore';
 import useMessageStore from './stores/messageStore';
-import useCollectionsStore from './stores/collectionsStore'
 
 // Handlers
 import { refresh_files, refresh_uploads } from './handlers/file_handlers';
@@ -19,7 +18,7 @@ import { use_presets } from './handlers/preset_handlers';
 
 
 // Components
-import { Tabs_Data } from './components/Tabs_Data';
+import { Tabs_Data } from './components/Tabs';
 
 import { Logs } from './components/Logs';
 import { TextInput } from './components/TextInput';
@@ -51,12 +50,12 @@ function App() {
 
   const { logs } = useLogsStore();
   const { messages } = useMessageStore();
-  const { current_collection } = useCollectionsStore();
+
 
   // Refresh files and uploads on start
   useEffect(() => {
     refresh_collections();
-    refresh_files(current_collection);
+    refresh_files();
     refresh_uploads();
   }, []);
 

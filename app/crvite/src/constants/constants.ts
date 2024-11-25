@@ -4,6 +4,7 @@ export const SRC_DL_ICON = '/download_light.svg'
 
 export const ICON_RETRY = '/icon_retry.svg'
 export const ICON_COPY = '/icon_copy.svg'
+export const ICON_CHAT = '/icon_chat.svg'
 
 export const EF = ['openai']
 

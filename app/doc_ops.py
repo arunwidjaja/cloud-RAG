@@ -137,10 +137,25 @@ def add_sentiment(chunks):
         chunk.metadata['sentiment_score'] = sentiment['score']
 
 
-def process_documents() -> List[Document]:
+def add_collection(chunks, collection: str):
+    """
+    Modifies chunks
+
+    Adds the collection name to the chunk.
+    This makes it easier to reference the collection name later.
+    """
+
+    for chunk in chunks:
+        chunk.metadata['collection'] = collection
+
+
+def process_documents(collection: str) -> List[Document]:
     """
     Runs the document processing pipeline.
     Returns a list of chunks that will be added to the DB.
+
+    Args:
+        collection: The collection that the documents will be added to
     """
     documents = load_documents()
     chunks = chunk_text(documents)
@@ -149,6 +164,7 @@ def process_documents() -> List[Document]:
     add_source_base_name(chunks)
     add_word_count(chunks)
     add_sentiment(chunks)
+    add_collection(chunks, collection)
     return chunks
 
 

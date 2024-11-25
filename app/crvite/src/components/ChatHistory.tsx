@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { use_chats } from '@/handlers/chats_handlers';
+import { ICON_CHAT } from '@/constants/constants';
 
 
 interface Chat {
@@ -23,8 +24,12 @@ export const ChatHistory= () => {
 
 export const Chat: React.FC<Chat> = ({ chat_headline }) => {
     return (
-        <div className='truncate hover:bg-secondary hover:cursor-pointer p-1 text-text text-sm rounded-md font-sans ml-3'>
+        <div className='flex flex-row items-center hover:bg-secondary hover:cursor-pointer p-1 text-text text-sm rounded-md font-sans ml-3'>
+            <img src={ICON_CHAT} className='w-6 h-6 mr-1'></img>
+            <div className='min-w-0 truncate'>
             {chat_headline}
+            </div>
+            
         </div>
     )
 };

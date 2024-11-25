@@ -106,33 +106,32 @@ def query_rag(
     )
     retrieved_docs = retrieved_docs[:config.LLM_K]
 
-    # retrieved_docs = db.similarity_search_with_relevance_scores(
-    #     query_text, k=config.LLM_K)
-
     # aggregate context
     contexts = []
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
         LLM_message = "Unable to find matching results."
         LLM_message_id = config.DEFAULT_MESSAGE_ID
-        context = dict.fromkeys(['context', 'source', 'hash'], None)
+        context = dict.fromkeys(['context', 'source', 'source_hash'], None)
     else:
         for doc in retrieved_docs:
             # store source and context in dictionary
-            context = dict.fromkeys(['context', 'source', 'hash'], None)
+            context = dict.fromkeys(['context', 'source', 'source_hash'], None)
 
+            doc_source_hash = doc[0].metadata['source_hash']
             doc_source = doc[0].metadata['source_base_name']
-            doc_hash = doc[0].metadata['source_hash']
+            doc_collection = doc[0].metadata['collection']
             doc_context = doc[0].page_content
 
+            context['source_hash'] = doc_source_hash
             context['source'] = doc_source
-            context['hash'] = doc_hash
+            context['collection'] = doc_collection
             context['context'] = doc_context
 
             # merge contexts from sources that have already been added
             source_is_duplicate = False
             for entry in contexts:
-                hash_existing = entry['hash']
-                if hash_existing == doc_hash:
+                hash_existing = entry['source_hash']
+                if hash_existing == doc_source_hash:
                     entry['context'] = (
                         entry['context'] +
                         '\n...\n' +

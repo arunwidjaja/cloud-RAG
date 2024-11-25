@@ -4,7 +4,8 @@ import { create } from 'zustand';
 interface FileData {
   name: string;
   hash: string;
-  word_count?: number;
+  collection: string;
+  word_count: number;
 }
 
 interface FilesState {
@@ -25,16 +26,10 @@ interface FilesState {
   clearSelectedUploads: () => void;
 }
 
-export const createFileData = (name: string, hash: string): FileData => ({
-  // will implement word count later
-  word_count: 0,
-  name,
-  hash
-});
-
 export const createDefaultFileData = (): FileData => ({
   name: "No files found yet",
   hash: "",
+  collection: "",
   word_count: 0
 })
 

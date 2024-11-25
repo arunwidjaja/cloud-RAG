@@ -18,9 +18,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ContextData } from "@/types/types"
-import { createFileData } from "@/stores/filesStore"
+import { createDefaultFileData } from "@/stores/filesStore"
 import { handle_select_retrieved } from "@/handlers/retrieved_handlers"
 import { createContextData } from "@/stores/retrievedStore"
+import { get_file_data } from "@/handlers/retrieved_handlers"
 
 export type ComboboxItem = {
   value: string
@@ -63,14 +64,14 @@ export function DropdownMenuContext({
   const defaultOnChange = React.useCallback((value: string) => {
     const selectedItem = items.find(item => item.value === value)
     if (selectedItem) {
-      handle_select_retrieved(createContextData(createFileData(selectedItem.label, selectedItem.value),selectedItem.text))
+      handle_select_retrieved(createContextData(get_file_data(selectedItem.value),selectedItem.text))
     } else {
-      handle_select_retrieved(createContextData(createFileData("", ""),""))
+      handle_select_retrieved(createContextData(createDefaultFileData(),""))
     }
   }, [items])
 
   const handleSelect = (currentValue: string) => {
-    const newValue = currentValue === selectedValue ? "" : currentValue
+    const newValue = currentValue === selectedValue ? currentValue : currentValue
     setSelectedValue(newValue)
     if (onChange) {
       onChange(newValue)

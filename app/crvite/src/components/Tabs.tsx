@@ -5,8 +5,8 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import { FileTable } from "./Table_Files"
-import { UploadTable } from './Table_Uploads';
+import { FileTable } from "./Tab_2_Files"
+import { UploadTable } from './Tab_3_Uploads';
 import { SimpleTooltip } from "./SimpleTooltip"
 
 import { DropdownMenu } from "./Dropdown_Menu"

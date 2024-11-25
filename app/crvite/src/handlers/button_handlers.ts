@@ -5,7 +5,7 @@ import {
   get_uploads
 } from '../handlers/file_handlers';
 import { add_log } from '../handlers/log_handlers';
-import { choose_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './collection_handlers';
+import { select_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './collection_handlers';
 import useCollectionsStore from '../stores/collectionsStore';
 import {
   start_file_deletion,
@@ -15,7 +15,6 @@ import {
 } from '../api/api';
 import { FileData } from "../types/types";
 import { RefObject } from 'react';
-import { preset_analyze_sentiment, preset_analyze_themes, preset_summarize_selection } from './preset_handlers';
 
 
 // Accepts user uploads
@@ -52,7 +51,7 @@ export const handle_push_uploads = async () => {
   const uploads = await get_uploads();
   if (uploads[0].hash){
     const pushed_uploads = await start_push_to_DB(uploads, current_collection);
-    refresh_files(current_collection);
+    refresh_files();
     refresh_uploads();
     
     pushed_uploads.forEach(element => {
@@ -70,7 +69,7 @@ export const handle_delete_selected_files = async () => {
   const files_to_delete = get_selected_files();
   const current_collection = get_current_collection();
   const delete_files = await start_file_deletion(files_to_delete, current_collection)
-  refresh_files(current_collection);
+  refresh_files();
   
   delete_files.forEach(element => {
     add_log("Deleted file from DB: " + element)
@@ -100,12 +99,12 @@ export const handle_delete_collection = async() => {
   const current_collection = get_current_collection();
   delete_collection(current_collection)
   const all_collections = await get_all_collections();
-  choose_collection(all_collections[0])
+  select_collection(all_collections[0])
 };
 
 // Chooses a collection from the drop down menu
 export const handle_choose_collection = (selected_collection: string) => {
-  choose_collection(selected_collection);
-  refresh_files([selected_collection]);
+  select_collection(selected_collection);
+  refresh_files();
 };
 

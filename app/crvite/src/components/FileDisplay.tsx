@@ -1,22 +1,27 @@
 import { use_current_retrieved } from "@/handlers/retrieved_handlers";
 import { Button } from "./ui/button";
-import { LoremIpsum } from 'lorem-ipsum';
+// import { LoremIpsum } from 'lorem-ipsum';
 
 import { handle_download_retrieved_file } from "@/handlers/retrieved_handlers";
 
-const lorem = new LoremIpsum();
-const filler_text = lorem.generateWords(500);
+// const lorem = new LoremIpsum();
+// const filler_text = lorem.generateWords(500);
 
 
 export function FileDisplay({ }) {
     const retrieved = use_current_retrieved();
     const retrieved_context = retrieved.text;
-    const retrieved_source = retrieved.file.name;
+
     const retrieved_id = retrieved.file.hash;
+    const retrieved_source = retrieved.file.name;
+    const retrieved_collection = retrieved.file.collection;
+    
     
     let retrieved_subtitle;
     if(retrieved_id) {
-        retrieved_subtitle = retrieved_source + ": " + retrieved_id
+        retrieved_subtitle =
+            retrieved_source +
+            " from collection " + retrieved_collection
     } else {
         retrieved_subtitle = ""
     }

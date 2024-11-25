@@ -2,22 +2,7 @@ import useCollectionsStore from '../stores/collectionsStore';
 import { fetch_db_collections, start_create_collection, start_delete_collection } from "../api/api";
 import { add_log } from './log_handlers';
 
-export const get_all_collections = async() => {
-    const fetched_collections = await fetch_db_collections();
-    return fetched_collections
-};
-
-export const refresh_collections = async () => {
-    const setCollections = useCollectionsStore.getState().setCollections;
-    const all_collections = await get_all_collections();
-    setCollections(all_collections);
-};
-
-export const get_current_collection = () => {
-    const currentCollection = useCollectionsStore.getState().current_collection;
-    return currentCollection;
-};
-
+// Hooks
 export const use_current_collection = () => {
     const currentCollection = useCollectionsStore((state) => state.current_collection);
     return currentCollection;
@@ -27,7 +12,25 @@ export const use_collections = () => {
     return allCollections;
 };
 
-export const choose_collection = (selected_collection: string) => {
+export const get_all_collections = async() => {
+    const fetched_collections = await fetch_db_collections();
+    return fetched_collections
+};
+
+export const refresh_collections = async () => {
+    const setCollections = useCollectionsStore.getState().setCollections;
+    const fetched_collections = await get_all_collections();
+    setCollections(fetched_collections);
+};
+
+export const get_current_collection = () => {
+    const currentCollection = useCollectionsStore.getState().current_collection;
+    return currentCollection;
+};
+
+
+
+export const select_collection = (selected_collection: string) => {
     const setCurrentCollection = useCollectionsStore.getState().setCurrentCollection;
     setCurrentCollection(selected_collection);
     add_log("Current collection is: " + selected_collection);
@@ -40,7 +43,7 @@ export const create_collection = async (collection_name: string, embedding_funct
     add_log("Created collection: " + collection);
 }
 
-export const delete_collection = async(collection_name: string[]) => {
+export const delete_collection = async(collection_name: string) => {
     const setCollections = useCollectionsStore.getState().setCollections;
     const deleted_collection = await start_delete_collection(collection_name);
     const all_collections = await get_all_collections();

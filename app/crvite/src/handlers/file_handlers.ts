@@ -1,13 +1,8 @@
 import useFilesStore from "../stores/filesStore";
+
 import { fetch_db_files_metadata, fetch_uploads_metadata } from "../api/api";
 import { FileData } from "../types/types";
 
-// Files (in the database) Functions
-export const refresh_files = async (collection_name: string[]) => {
-    const setFiles = useFilesStore.getState().setFiles;
-    const fetched_files = await fetch_db_files_metadata(collection_name);
-    setFiles(fetched_files);
-};
 export const use_files = () => {
     const files = useFilesStore((state) => state.files);
     return files;
@@ -16,6 +11,22 @@ export const use_selected_files = () => {
     const currentSelectedFiles = useFilesStore((state) => state.selected_files);
     return currentSelectedFiles;
 }
+export const use_current_uploads = () => {
+    const currentUploads = useFilesStore((state) => state.uploads);
+    return currentUploads
+}
+export const use_selected_uploads = () => {
+    const selectedUploads = useFilesStore((state) => state.selected_uploads);
+    return selectedUploads
+}
+
+
+export const refresh_files = async () => {
+    const setFiles = useFilesStore.getState().setFiles;
+    const fetched_files = await fetch_db_files_metadata();
+    setFiles(fetched_files);
+};
+
 export const get_selected_files = () => {
     const selectedFiles = useFilesStore.getState().selected_files;
     return selectedFiles;
@@ -34,19 +45,13 @@ export const clear_selected_files = () => {
 };
 
 // Uploads Functions
-export const use_current_uploads = () => {
-    const currentUploads = useFilesStore((state) => state.uploads);
-    return currentUploads
-}
+
 export const refresh_uploads = async () => {
     const setUploads = useFilesStore.getState().setUploads;
     const fetched_uploads = await fetch_uploads_metadata();
     setUploads(fetched_uploads);
 };
-export const use_selected_uploads = () => {
-    const selectedUploads = useFilesStore((state) => state.selected_uploads);
-    return selectedUploads
-}
+
 export const set_selected_uploads = (selected_uploads: FileData[]) => {
     const setSelectedUploads = useFilesStore.getState().setSelectedUploads;
     setSelectedUploads(selected_uploads);

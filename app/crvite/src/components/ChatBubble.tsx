@@ -8,6 +8,9 @@ interface ChatBubbleProps {
 }
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
+    const handle_copy = () => {
+        navigator.clipboard.writeText(message.text);
+    }
     return (
         <div
             className={`${message.type} chat-bubble`}
@@ -20,14 +23,14 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
                         <img
                             src={ICON_COPY}
                             className={`w-6 h-6 hover:cursor-pointer`}
-                            onClick={() => alert("TODO: implement copy")}>
+                            onClick={handle_copy}>
                         </img>
                     </div>
                     <div className={`${message.type}-icon rounded-md`}>
                         <img
                             src={ICON_RETRY}
                             className={`w-6 h-6 hover:cursor-pointer`}
-                            onClick={() => alert("TODO: resend query")}>
+                            onClick={handle_copy}>
                         </img>
                     </div>
                 </div>

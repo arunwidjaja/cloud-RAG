@@ -51,7 +51,6 @@ def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[dict]
     Returns:
         A list of dictionaries that list the file name, hash, and word count
     """
-    # all_metadata: Dict[str, any] = {}
     all_chunk_metadata: List[dict] = []
     print(f"Collections currently in db: ")
     print(get_all_collections_names(db))
@@ -64,22 +63,22 @@ def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[dict]
             chunk_metadata = metadata['metadatas']
             all_chunk_metadata.extend(chunk_metadata)
 
-    word_count_dict = defaultdict(int)
-
-    # Sum the word counts of each chunk belonging to a unique file/hash
+    # Merge all chunks with an identical hash
+    # Word count has to be summed
+    chunk_metadata_merged = {}
     for chunk_metadata in all_chunk_metadata:
-        key = (chunk_metadata["source_base_name"],
-               chunk_metadata["source_hash"])
-        word_count_dict[key] += chunk_metadata["word_count"]
+        key = (chunk_metadata["source_hash"])
+        if key not in chunk_metadata_merged:
+            chunk_metadata_merged[key] = {
+                'hash': key,
+                'name': chunk_metadata['source_base_name'],
+                'collection': chunk_metadata['collection'],
+                'word_count': chunk_metadata['word_count']
+            }
+        else:
+            chunk_metadata_merged[key]['word_count'] += chunk_metadata['word_count']
 
-    file_metadata = [
-        {
-            "name": source_base_name,
-            "hash": source_hash,
-            "word_count": word_count
-        }
-        for (source_base_name, source_hash), word_count in word_count_dict.items()
-    ]
+    file_metadata = list(chunk_metadata_merged.values())
     return file_metadata
 
 

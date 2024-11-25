@@ -22,6 +22,7 @@ class CollectionModel(BaseModel):
 class FileModel(BaseModel):
     name: str
     hash: str
+    collection: str
 
 
 class ContextModel(BaseModel):
@@ -73,7 +74,8 @@ async def submit_query(request: QueryModel):
     for context in contexts:
         file_model = FileModel(
             name=context['source'],
-            hash=context['hash']
+            hash=context['source_hash'],
+            collection=context['collection']
         )
         context_model = ContextModel(
             file=file_model,

@@ -27,11 +27,11 @@ export const createDefaultContextData = (): ContextData => ({
 
 
 
-const useRetrievedState = create<RetrievedState>()((set) => ({
+const useRetrievedStore = create<RetrievedState>()((set) => ({
     retrieved: [],
     current_retrieved: createDefaultContextData(),
     setCurrentRetrieved: (newCurrentRetrieved: ContextData) => set({current_retrieved: newCurrentRetrieved}),
     setRetrieved: (newRetrieved: ContextData[]) => set({retrieved: newRetrieved})
 }));
 
-export default useRetrievedState
+export default useRetrievedStore
