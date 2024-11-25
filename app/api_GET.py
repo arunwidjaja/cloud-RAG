@@ -39,6 +39,7 @@ async def download_files(hashes: List[str] = Query(...), collection: List[str] =
             if not os.path.exists(file_path):
                 raise HTTPException(status_code=404, detail="File not found")
 
+        # For single file:
         if len(file_paths) == 1:
             file_name = os.path.basename(file_paths[0])
             return FileResponse(
@@ -50,6 +51,7 @@ async def download_files(hashes: List[str] = Query(...), collection: List[str] =
                 }
             )
 
+        # For multiple files:
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
             for file_path in file_paths:

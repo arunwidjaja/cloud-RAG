@@ -17,29 +17,42 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
 
     const accept_uploads = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
-        if (files && files.length > 0) {
-            const formData = new FormData();
-            for (let i = 0; i < files.length; i++) {
-                formData.append('files', files[i]);
+        
+        if(!files || files.length == 0) {
+            alert('Please select at least one file');
+            return;
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if(!file.name.toLowerCase().endsWith('.txt')) {
+                alert(`File ${file.name} is not a .txt file`);
+                event.target.value='';
+                return;
             }
+        }
 
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/upload_documents`, {
-                    method: 'POST',
-                    body: formData
-                });
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
 
-                const uploaded_files: string[] = await response.json();
-                uploaded_files.forEach((uploaded_file) => {
-                    add_log("Uploaded File: " + uploaded_file);
-                });
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/upload_documents`, {
+                method: 'POST',
+                body: formData
+            });
 
-                if (upload_window.current) {
-                    upload_window.current.value = '';
-                }
-            } catch (error) {
-                console.error('Error uploading files:', error);
+            const uploaded_files: string[] = await response.json();
+            uploaded_files.forEach((uploaded_file) => {
+                add_log("Uploaded File: " + uploaded_file);
+            });
+
+            if (upload_window.current) {
+                upload_window.current.value = '';
             }
+        } catch (error) {
+            console.error('Error uploading files:', error);
         }
         refresh_uploads();
     };
@@ -51,6 +64,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
             onChange={accept_uploads}
             style={{ display: 'none' }}
             multiple
+            accept=".txt"
         />
     );
 });
