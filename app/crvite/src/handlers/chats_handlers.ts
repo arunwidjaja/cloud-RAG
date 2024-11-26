@@ -2,6 +2,7 @@ import { fetch_saved_chats, start_save_chat } from "@/api/api";
 import { Chat } from "@/types/types";
 
 import useChatsStore from "@/stores/chatsStore";
+import { set_messages } from "./message_handlers";
 
 
 export const update_chats = () => {
@@ -37,4 +38,9 @@ export const get_saved_chats = async(): Promise<Chat[]> => {
 export const refresh_chats = async(): Promise<void> => {
     const chat_history = await get_saved_chats();
     set_chats(chat_history);
+}
+
+export const handle_select_chat = (selected_chat: Chat): void => {
+    const messages = selected_chat.messages
+    set_messages(messages)
 }
