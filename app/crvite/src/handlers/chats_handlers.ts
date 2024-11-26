@@ -35,6 +35,9 @@ export const get_saved_chats = async(): Promise<Chat[]> => {
     return saved_chats;
 }
 
+/**
+ * Resets the chat history to whatever is saved
+ */
 export const refresh_chats = async(): Promise<void> => {
     const chat_history = await get_saved_chats();
     set_chats(chat_history);

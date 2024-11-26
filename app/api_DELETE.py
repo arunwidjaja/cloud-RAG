@@ -4,8 +4,27 @@ from imports import *
 from globals import get_database
 import doc_ops_utils
 import db_ops
+import config
 
 router = APIRouter()
+
+
+@router.delete("/delete_chats")
+async def delete_chats():
+    """
+    Deletes stored chats
+    """
+    chats_path = config.PATH_CHATS_LOCAL
+    if not os.path.exists(chats_path):
+        os.makedirs(chats_path)
+        return
+    for item in os.listdir(chats_path):
+        item_path = os.path.join(chats_path, item)
+        # Remove files and directories
+        if os.path.isfile(item_path):
+            os.remove(item_path)
+        elif os.path.isdir(item_path):
+            shutil.rmtree(item_path)
 
 
 @router.delete("/delete_uploads")
@@ -13,7 +32,6 @@ async def delete_uploads(hashes: List[str] = Query(...)):
     """
     Delete the list of uploads from the uploads folder
     """
-    print("API CALL: delete_uploads")
     if hashes is None or not isinstance(hashes, list):
         raise HTTPException(
             status_code=422, detail="Invalid or missing hashes parameter.")
@@ -30,7 +48,6 @@ async def delete_collection(collection: List[str] = Query(...)):
     """
     Deletes the collection from the database
     """
-    print("API CALL: delete_collection")
     if collection is None or len(collection) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
@@ -50,7 +67,6 @@ async def delete_files(hashes: List[str] = Query(...), collection: List[str] = Q
     """
     Delete the list of files from the Chroma DB
     """
-    print("API CALL: /delete_files")
     if collection is None or len(collection) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")

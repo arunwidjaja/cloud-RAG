@@ -75,7 +75,7 @@ function App() {
             {/* App Title */}
             <div className="flex flex-1 flex-row font-bold items-center">
               <div className="text-2xl font-bold text-text">
-                Cloud RAG<sub className='text-text'>0.4</sub>
+                Cloud RAG<sub className='text-text'>0.4.1</sub>
               </div>
               {/* <nav className='flex gap-4'>
                 <a href={HREF_REPO} target='_blank'>

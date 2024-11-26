@@ -89,6 +89,24 @@ export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
     return false
   }
 }
+export const start_delete_chats = async (): Promise<boolean> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/delete_chats`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      return true
+    }
+  } catch (error) {
+    console.error('Error deleting chats: ', error);
+    return false
+  }
+}
 
 export const start_upload_deletion = async (upload_deletion_list: FileData[]): Promise<string[]> => {
   if (!Array.isArray(upload_deletion_list) || upload_deletion_list.length === 0) {

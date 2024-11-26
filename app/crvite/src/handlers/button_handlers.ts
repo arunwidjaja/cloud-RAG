@@ -17,6 +17,7 @@ import { FileData } from "../types/types";
 import { RefObject } from 'react';
 
 
+
 // Accepts user uploads
 export const handle_accept_uploads = (uploadRef: RefObject<HTMLInputElement>): void => {
   if (uploadRef && uploadRef.current) { uploadRef.current.click(); }
