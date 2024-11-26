@@ -9,6 +9,7 @@
 app/_*
 
 # Folders
+chats/
 chroma/
 myenv/
 Sample Documents/

@@ -3,6 +3,18 @@
   "subject": "What is an organic semiconductor?",
   "messages": [
     {
+      "id": "msg_1732662513637_istuwi",
+      "type": "answer",
+      "text": "RAG caching in this context refers to the caching strategy used in a RAG (Retrieval-Augmented Generation) system. Instead of caching raw embeddings, the system caches semantic search results, specifically query-document pairs, to make the system more efficient. This helps in returning the same documents without the need for vector search if the similarity threshold is above a certain value (0.85 in this case). The goal of RAG caching is to optimize the retrieval and generation process in the system.\n\nSources used: \nRAG caching.txt",
+      "context_list": []
+    },
+    {
+      "id": "msg_1732662510465_wjjp5f",
+      "type": "input",
+      "text": "what is rag caching?",
+      "context_list": []
+    },
+    {
       "id": "msg_1732657587224_6bra34",
       "type": "answer",
       "text": "Based on the context provided, Hugging Face is an AI hosting platform that provides AI and ML researchers with access to curated datasets, machine learning models, and AI-powered demo apps. It started as a chatbot app in 2016 and later became an open-source hub for AI models in 2020.\n\nSources used: \nhugging_face_article.txt",
