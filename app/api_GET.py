@@ -7,6 +7,7 @@ import doc_ops_utils
 import db_ops_utils
 import db_ops
 import utils
+import config
 
 
 router = APIRouter()
@@ -139,6 +140,26 @@ async def get_collections():
     except Exception as e:
         raise Exception(
             f"Exception occured when getting collections list: {e}")
+
+
+@router.get("/saved_chats")
+async def get_saved_chats():
+    """
+    Gets the JSON data containing all saved chats
+    """
+    print("API CALL: get_saved_chats")
+    all_chats = []
+    try:
+        chats_dir = config.PATH_CHATS_LOCAL
+        chats_dir.mkdir(parents=True, exist_ok=True)
+        for chat_name in os.listdir(chats_dir):
+            chat_path = Path(chats_dir) / chat_name
+            with open(chat_path, 'r') as chat:
+                json_content = json.load(chat)
+                all_chats.append(json_content)
+        return all_chats
+    except Exception as e:
+        raise Exception(f"Exception occurred when getting chat history: {e}")
 
 
 @router.get("/db_files_metadata")

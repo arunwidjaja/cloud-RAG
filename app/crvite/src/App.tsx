@@ -40,7 +40,8 @@ import { Button } from './components/ui/button';
 import { LoremIpsum } from 'lorem-ipsum';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { save_chat } from './handlers/chats_handlers';
+import { get_saved_chats, save_chat } from './handlers/chats_handlers';
+import { fetch_saved_chats } from './api/api';
 
 
 
@@ -76,6 +77,7 @@ function App() {
           <div id="fillerdiv" className="h-14"></div>
           {/* Chat History Section */}
           <Button onClick={save_chat}>Save chat</Button>
+          <Button onClick={get_saved_chats}>Fetch chat</Button>
           <div className='ml-4 font-bold text-text'>Recent Chats</div>
           <div id="chathistory" className="flex-1 min-h-0 w-full mb-2">
             {/* Chat History */}

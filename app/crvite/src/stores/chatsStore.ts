@@ -10,6 +10,7 @@ interface Chat {
 
 interface ChatsState {
   chats: Chat[];
+  setChats: (chats: Chat[]) => void;
   addChat: (chat: Chat) => void;
 }
 
@@ -21,6 +22,7 @@ export const createChat = (): Chat => ({
 
 export const useChatsStore = create<ChatsState>()((set) => ({
   chats: [],
+  setChats: (newChats) => set({chats: newChats}), 
   addChat: (chat) => set((state) =>({
     chats: [chat, ...state.chats]
   }))

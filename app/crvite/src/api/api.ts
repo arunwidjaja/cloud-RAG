@@ -49,13 +49,28 @@ export const fetch_uploads_metadata = async (): Promise<FileData[]> => {
       return files;
     }
   } catch (error) {
-    console.error('Error fetching uploads:', error);
+    console.error('Error fetching uploads: ', error);
     return [];
   }
 }
 
-export const start_save_chat = async(current_chat: Chat) => {
-  const test = JSON.stringify(current_chat)
+export const fetch_saved_chats = async (): Promise<Chat[]> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/saved_chats`
+    const response = await fetch(url)
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      const chats = await response.json();
+      return chats;
+    }
+  } catch (error) {
+    console.error('Error fetching chat history: ', error);
+    return []
+  }
+}
+
+export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
+  const chat = JSON.stringify(current_chat)
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/save_chat`
     const response = await fetch(url, {
@@ -63,14 +78,15 @@ export const start_save_chat = async(current_chat: Chat) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: test
+      body: chat
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
-      console.log("Chat saved.")
+      return true
     }
   } catch (error) {
     console.error('Error saving chat: ', error);
+    return false
   }
 }
 

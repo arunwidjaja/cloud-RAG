@@ -49,12 +49,12 @@ class ChatModel(BaseModel):
 async def save_chat(chat: ChatModel):
 
     try:
-        chat_path = config.PATH_CHATS_LOCAL
+        chats_path = config.PATH_CHATS_LOCAL
         # Create storage directory if it doesn't exist
-        chat_path.mkdir(parents=True, exist_ok=True)
+        chats_path.mkdir(parents=True, exist_ok=True)
 
         # Create the file path using the chat ID
-        file_path = chat_path / f"{chat.id}.json"
+        file_path = chats_path / f"{chat.id}.json"
 
         # Convert the chat object to JSON and save it
         with open(file_path, "w", encoding="utf-8") as f:
