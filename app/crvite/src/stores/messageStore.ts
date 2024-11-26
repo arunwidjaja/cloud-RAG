@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { ContextData } from '../types/types';
+import { generate_id } from '@/utils/utils';
 
 // Base Message interface with common properties
 interface BaseMessage {
@@ -36,19 +37,19 @@ interface MessageState {
 
 // Factory functions to create type-safe messages
 export const createInputMessage = (text: string): InputMessage => ({
-    id: text,
+    id: generate_id('msg'),
     type: 'input',
     text
 });
 
 export const createAnswerMessage = (text: string): AnswerMessage => ({
-    id: text,
+    id: generate_id('msg'),
     type: 'answer',
     text
 });
 
 export const createContextMessage = (text: string, context_list: ContextData[]): ContextMessage => ({
-    id: text,
+    id: generate_id('msg'),
     type: 'context',
     text,
     context_list

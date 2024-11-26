@@ -1,0 +1,18 @@
+{
+  "id": "chat_msg_1732657824464_1sp55s",
+  "subject": "what does hugging face do?",
+  "messages": [
+    {
+      "id": "msg_1732657826591_00um6w",
+      "type": "answer",
+      "text": "Hugging Face is an AI hosting platform that provides access to curated datasets, machine learning models, and AI-powered demo apps for AI and ML researchers.\n\nSources used: \nhugging_face_article.txt",
+      "context_list": []
+    },
+    {
+      "id": "msg_1732657824464_1sp55s",
+      "type": "input",
+      "text": "what does hugging face do?",
+      "context_list": []
+    }
+  ]
+}

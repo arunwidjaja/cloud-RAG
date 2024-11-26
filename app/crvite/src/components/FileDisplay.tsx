@@ -1,4 +1,4 @@
-import { use_current_retrieved } from "@/handlers/retrieved_handlers";
+import { use_current_retrieved } from "@/hooks/hooks";
 import { Button } from "./ui/button";
 // import { LoremIpsum } from 'lorem-ipsum';
 

@@ -1,36 +1,39 @@
-import React from 'react';
-
-import { use_chats } from '@/handlers/chats_handlers';
+import { use_chats } from '@/hooks/hooks';
 import { ICON_CHAT } from '@/constants/constants';
 
-
-interface Chat {
-    chat_headline: string;
+interface ChatPreviewProps {
+    subject: string;
 }
 
-export const ChatHistory= () => {
-    const chats = use_chats();
-    return (
-        <div className='mr-1 overflow-auto whitespace-nowrap [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full'>
-            {chats.map((chat, index) => (
-                <Chat
-                    key={index}
-                    chat_headline={chat}
-                />
-            ))}
-        </div>
-    )
-};
-
-export const Chat: React.FC<Chat> = ({ chat_headline }) => {
+export const ChatPreview = ({ subject }: ChatPreviewProps) => {
     return (
         <div className='flex flex-row items-center hover:bg-secondary hover:cursor-pointer p-1 text-text text-sm rounded-md font-sans ml-3'>
             <img src={ICON_CHAT} className='w-6 h-6 mr-1'></img>
             <div className='min-w-0 truncate'>
-            {chat_headline}
+                {subject}
             </div>
-            
+
         </div>
     )
 };
+
+export const ChatHistory = () => {
+    const chat_history = use_chats();
+    return (
+        <div id="chathistory" className="flex-1 min-h-0 w-full mb-2">
+            <div className='h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+                <div className='mr-1 overflow-auto whitespace-nowrap [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full'>
+                    {chat_history.map((chat, index) => (
+                        <ChatPreview
+                            key={index}
+                            subject={chat.subject}
+                        />
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+};
+
+
 

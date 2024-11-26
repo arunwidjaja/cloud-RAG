@@ -1,30 +1,30 @@
-import React from 'react';
+import useLogsStore from '@/stores/logsStore';
 
-interface LogsProps {
-  logs: string[];
-}
-interface LogProps {
+
+type LogProps = {
   log: string;
 }
 
-export const Logs: React.FC<LogsProps> = ({ logs }) => {
-  return (
-    <div className='text-accent font-mono text-xs overflow-auto h-full whitespace-nowrap [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full'>
-      {logs.map((log, index) => (
-        <Log
-          key={index}
-          log={log}
-        />
-      ))}
-    </div>
-  )
-};
-
-export const Log: React.FC<LogProps> = ({ log }) => {
+export function Log({ log }: LogProps) {
   return (
     <div>
       {log}
     </div>
+  );
+}
+
+export function Logs() {
+  const { logs } = useLogsStore();
+  return (
+    <div className='flex flex-1 flex-col text-left p-1 bg-text m-2 rounded-sm'>
+      <div className='text-accent font-mono text-xs overflow-auto h-full whitespace-nowrap [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full'>
+        {logs.map((log, index) => (
+          <Log
+            key={index}
+            log={log}
+          />
+        ))}
+      </div>
+    </div>
   )
 };
-

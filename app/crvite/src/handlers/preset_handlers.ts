@@ -8,14 +8,7 @@ import { createAnswerMessage } from '../stores/messageStore';
 import { add_message } from './message_handlers';
 import useFilesStore from '@/stores/filesStore';
 
-export const use_presets = () => {
-    const presets = usePresetsStore((state) => state.presets);
-    return presets;
-}
-export const use_selected_preset = () => {
-    const selected_preset = usePresetsStore((state) => state.selected_preset);
-    return selected_preset;
-}
+
 
 export const handle_select_preset = (selected_preset: string): void => {
     select_preset(selected_preset);

@@ -3,24 +3,6 @@ import useFilesStore from "../stores/filesStore";
 import { fetch_db_files_metadata, fetch_uploads_metadata } from "../api/api";
 import { FileData } from "../types/types";
 
-export const use_files = () => {
-    const files = useFilesStore((state) => state.files);
-    return files;
-}
-export const use_selected_files = () => {
-    const currentSelectedFiles = useFilesStore((state) => state.selected_files);
-    return currentSelectedFiles;
-}
-export const use_current_uploads = () => {
-    const currentUploads = useFilesStore((state) => state.uploads);
-    return currentUploads
-}
-export const use_selected_uploads = () => {
-    const selectedUploads = useFilesStore((state) => state.selected_uploads);
-    return selectedUploads
-}
-
-
 export const refresh_files = async () => {
     const setFiles = useFilesStore.getState().setFiles;
     const fetched_files = await fetch_db_files_metadata();

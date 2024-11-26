@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { fetch_db_files_metadata } from "@/api/api"
-import { use_current_collection } from "@/handlers/collection_handlers"
-import { use_selected_files, set_selected_files, use_files } from "@/handlers/file_handlers"
+import { use_current_collection, use_selected_files, use_files } from "@/hooks/hooks"
+import { set_selected_files } from "@/handlers/file_handlers"
 import { FileData } from "@/types/types"
 import {
   ColumnDef,

@@ -28,7 +28,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { use_current_uploads, set_selected_uploads, use_selected_uploads } from "@/handlers/file_handlers"
+import { use_current_uploads, use_selected_uploads } from "@/hooks/hooks";
+import { set_selected_uploads } from "@/handlers/file_handlers"
 import { handle_remove_selected_uploads } from "@/handlers/button_handlers";
 
 

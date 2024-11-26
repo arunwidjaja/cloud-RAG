@@ -50,14 +50,16 @@ export const TextInput = () => {
     };
 
     return (
-        <textarea
-            id='userinput'
-            ref={textAreaRef}
-            value={user_input}
-            onChange={(e) => set_user_input(e.target.value)}
-            onKeyDown={handle_key_down}
-            className="w-3/4 text-text bg-accent p-4 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
-        />
+        <div className='mt-2 flex flex-row justify-center'>
+            <textarea
+                id='userinput'
+                ref={textAreaRef}
+                value={user_input}
+                onChange={(e) => set_user_input(e.target.value)}
+                onKeyDown={handle_key_down}
+                className="w-3/4 text-text bg-accent p-4 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+            />
+        </div>
     )
 };
 

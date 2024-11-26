@@ -1,0 +1,18 @@
+{
+  "id": "chat_msg_1732660206158_pbks0m",
+  "subject": "What is a semiconductor",
+  "messages": [
+    {
+      "id": "msg_1732660208296_cfc6o3",
+      "type": "answer",
+      "text": "A semiconductor is a material that has the ability to conduct electricity under certain conditions, typically used in electronic devices.\n\nSources used: \norganic_semiconductor.txt",
+      "context_list": []
+    },
+    {
+      "id": "msg_1732660206158_pbks0m",
+      "type": "input",
+      "text": "What is a semiconductor",
+      "context_list": []
+    }
+  ]
+}

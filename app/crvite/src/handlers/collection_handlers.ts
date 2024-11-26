@@ -2,15 +2,7 @@ import useCollectionsStore from '../stores/collectionsStore';
 import { fetch_db_collections, start_create_collection, start_delete_collection } from "../api/api";
 import { add_log } from './log_handlers';
 
-// Hooks
-export const use_current_collection = () => {
-    const currentCollection = useCollectionsStore((state) => state.current_collection);
-    return currentCollection;
-};
-export const use_collections = () => {
-    const allCollections = useCollectionsStore((state) => state.collections);
-    return allCollections;
-};
+
 
 export const get_all_collections = async() => {
     const fetched_collections = await fetch_db_collections();

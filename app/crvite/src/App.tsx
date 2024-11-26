@@ -1,73 +1,42 @@
+// import { LoremIpsum } from 'lorem-ipsum';
 import { useEffect } from 'react';
-
-import { ThemeSwitch } from './components/ThemeSwitch';
 import { ThemeProvider } from './contexts/ThemeContext';
 
-// States
-
-import useLogsStore from './stores/logsStore';
-import useMessageStore from './stores/messageStore';
-
 // Handlers
-import { refresh_files, refresh_uploads } from './handlers/file_handlers';
-import { refresh_collections } from './handlers/collection_handlers';
-import {
-  handle_select_preset, handle_run_preset
-} from './handlers/preset_handlers';
-import { use_presets } from './handlers/preset_handlers';
+import { refresh_files, refresh_uploads } from '@/handlers/file_handlers';
+import { refresh_collections } from '@/handlers/collection_handlers';
+import { handle_select_preset, handle_run_preset } from '@/handlers/preset_handlers';
+import { refresh_chats } from '@/handlers/chats_handlers';
 
 
 // Components
-import { Tabs_Data } from './components/Tabs';
-
-import { Logs } from './components/Logs';
-import { TextInput } from './components/TextInput';
-import { ChatBubble } from './components/ChatBubble';
-import { DropdownMenu } from './components/Dropdown_Menu';
-
-
-import { ChatHistory } from './components/ChatHistory';
+import { Tabs_Section } from '@/components/Tabs_Section';
+import { Logs } from '@/components/Logs';
+import { TextInput } from '@/components/TextInput';
+import { DropdownMenu } from '@/components/Dropdown_Menu';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Conversation } from '@/components/Conversation';
+import { ChatHistory } from '@/components/ChatHistory';
+import { Button } from '@/components/ui/button';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 // Styling
 import './App.css';
 
-// Constants
-import { HREF_REPO, ICON_GITHUB } from './constants/constants';
-
-import { Message } from './types/types';
-import { Button } from './components/ui/button';
-
-import { LoremIpsum } from 'lorem-ipsum';
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { get_saved_chats, save_chat } from './handlers/chats_handlers';
-import { fetch_saved_chats } from './api/api';
-
-
-
+// Hooks
+import { use_presets } from '@/hooks/hooks';
 
 function App() {
-  const lorem = new LoremIpsum();
-  const filler_text = lorem.generateWords(600);
+  // const lorem = new LoremIpsum();
+  // const filler_text = lorem.generateWords(600);
 
-  const { logs } = useLogsStore();
-  const { messages } = useMessageStore();
-
-
-  // Refresh files and uploads on start
+  // Sets the initial state of state variables on start
   useEffect(() => {
     refresh_collections();
     refresh_files();
     refresh_uploads();
+    refresh_chats();
   }, []);
-
-  //////////////////////////////////
-  //////////////////////////////////
-  //////////////////////////////////
-  // Start of HTML
-  //////////////////////////////////
-  //////////////////////////////////
-  //////////////////////////////////
 
   return (
     <ThemeProvider>
@@ -76,18 +45,8 @@ function App() {
         <div className='min-h-full max-h-full w-64 flex flex-col bg-accent'>
           <div id="fillerdiv" className="h-14"></div>
           {/* Chat History Section */}
-          <Button onClick={save_chat}>Save chat</Button>
-          <Button onClick={get_saved_chats}>Fetch chat</Button>
           <div className='ml-4 font-bold text-text'>Recent Chats</div>
-          <div id="chathistory" className="flex-1 min-h-0 w-full mb-2">
-            {/* Chat History */}
-            <div className='h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
-              <ChatHistory></ChatHistory>
-              {/* {filler_text} */}
-            </div>
-
-
-          </div>
+          <ChatHistory></ChatHistory>
           {/* Presets and LLM settings */}
           <div id="llmpanel" className='p-2'>
             {/* Presets section */}
@@ -105,13 +64,8 @@ function App() {
               >Run Selected Preset</Button>
             </div>
           </div>
-
-          <div className='flex flex-1 flex-col text-left p-1 bg-text m-2 rounded-sm'>
-            <Logs logs={logs} />
-          </div>
-
-          <ThemeSwitch></ThemeSwitch>
-
+          <Logs></Logs>
+          <ThemeSwitcher></ThemeSwitcher>
         </div>
 
         {/* Title Bar + Main Content */}
@@ -153,25 +107,12 @@ function App() {
                   <div className="absolute top-0 bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-transparent to-primary from-0 to-80%"></div>
                 </div>
               </div>
-              {/* Conversation */}
-              <div
-                id="conversation"
-                className="flex flex-1 flex-col-reverse text-text bg-none output p-2 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full">
-
-                {messages.map((msg: Message, index: number) => (<ChatBubble key={index} message={msg} />))}
-              </div>
-              {/* User Input Field */}
-              <div className='mt-2 flex flex-row justify-center'>
-                <TextInput />
-              </div>
+              <Conversation></Conversation>
+              <TextInput></TextInput>
             </div>
-
-
-            {/* <VerticalDivider></VerticalDivider> */}
-
             {/* Right Pane */}
             <div className='p-2'>
-              <Tabs_Data></Tabs_Data>
+              <Tabs_Section></Tabs_Section>
             </div>
           </div>
           <script src="../static/UI.js"></script>

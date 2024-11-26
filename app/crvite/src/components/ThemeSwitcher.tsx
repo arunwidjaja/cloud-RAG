@@ -1,9 +1,8 @@
-// src/components/ThemeSwitch.tsx
 import { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import type { ThemeName } from '../types/theme';
 
-export const ThemeSwitch = () => {
+export const ThemeSwitcher = () => {
   const { currentTheme, setTheme } = useTheme();
   const [position, setPosition] = useState(0);
 
