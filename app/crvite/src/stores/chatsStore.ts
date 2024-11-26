@@ -1,18 +1,27 @@
 import { create } from 'zustand';
+import { Message } from '@/types/types';
+import useMessageStore from './messageStore';
 
-interface ChatsState {
-  chats: string[];
-  setChats: (newLogs: string[]) => void;
-  addChat: (log: string) => void;
-  clearChats: () => void;
+interface Chat {
+  id: string;
+  subject: string;
+  messages: Message[]
 }
 
-export const useChatsStore = create<ChatsState>()((set) => ({
-  chats: ["Retrieval-Augmented Generation and Large Language Models","Hugging Face and Python transformers"],
+interface ChatsState {
+  chats: Chat[];
+  addChat: (chat: Chat) => void;
+}
 
-  setChats: (newChats) => set({ chats: newChats }),
-  addChat: (chat) => set((state) => ({ 
-    chats: [...state.chats, chat] 
-  })),
-  clearChats: () => set({ chats: [] })
+export const createChat = (): Chat => ({
+  id: 'testchatid',
+  subject: 'testchatsubject',
+  messages: useMessageStore.getState().messages
+});
+
+export const useChatsStore = create<ChatsState>()((set) => ({
+  chats: [],
+  addChat: (chat) => set((state) =>({
+    chats: [chat, ...state.chats]
+  }))
 }));

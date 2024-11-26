@@ -1,0 +1,18 @@
+{
+  "id": "testchatid",
+  "subject": "testchatsubject",
+  "messages": [
+    {
+      "id": "An organic semiconductor is a type of electronic material that bridges traditional electronics with the versatility of organic materials, making flexible, wearable devices and next-generation displays possible.\n\nSources used: \norganic_semiconductor.txt",
+      "type": "answer",
+      "text": "An organic semiconductor is a type of electronic material that bridges traditional electronics with the versatility of organic materials, making flexible, wearable devices and next-generation displays possible.\n\nSources used: \norganic_semiconductor.txt",
+      "context_list": []
+    },
+    {
+      "id": "What is an organic semiconductor?",
+      "type": "input",
+      "text": "What is an organic semiconductor?",
+      "context_list": []
+    }
+  ]
+}

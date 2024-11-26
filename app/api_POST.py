@@ -3,6 +3,7 @@ from imports import *
 # Local Modules
 from globals import get_database
 from query_data import query_rag
+import config
 import db_ops
 import utils
 
@@ -20,20 +21,60 @@ class CollectionModel(BaseModel):
 
 
 class FileModel(BaseModel):
-    name: str
     hash: str
+    name: str
     collection: str
+    word_countL: int = 0
 
 
 class ContextModel(BaseModel):
-    file: FileModel
     text: str
+    file: FileModel
 
 
 class MessageModel(BaseModel):
-    text: str
     id: str
-    context_list: List[ContextModel]
+    type: str = ""
+    text: str
+    context_list: List[ContextModel] = []
+
+
+class ChatModel(BaseModel):
+    id: str
+    subject: str
+    messages: List[MessageModel]
+
+
+@router.post("/save_chat")
+async def save_chat(chat: ChatModel):
+
+    try:
+        chat_path = config.PATH_CHATS_LOCAL
+        # Create storage directory if it doesn't exist
+        chat_path.mkdir(parents=True, exist_ok=True)
+
+        # Create the file path using the chat ID
+        file_path = chat_path / f"{chat.id}.json"
+
+        # Convert the chat object to JSON and save it
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(
+                chat.model_dump(),
+                f,
+                ensure_ascii=False,
+                indent=2
+            )
+
+        return {
+            "status": "success",
+            "message": f"Chat saved successfully with ID: {chat.id}",
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save chat: {str(e)}"
+        )
 
 
 @router.post("/create_collection")
@@ -84,8 +125,8 @@ async def submit_query(request: QueryModel):
         context_list.append(context_model)
 
     message_model = MessageModel(
-        text=message,
         id=id,
+        text=message,
         context_list=context_list
     )
 

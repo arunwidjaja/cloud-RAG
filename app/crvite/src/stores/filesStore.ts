@@ -2,8 +2,8 @@ import { create } from 'zustand';
 
 // Define the structure of a file object
 interface FileData {
-  name: string;
   hash: string;
+  name: string;
   collection: string;
   word_count: number;
 }

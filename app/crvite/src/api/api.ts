@@ -1,6 +1,6 @@
 import { get_current_collection } from '@/handlers/collection_handlers';
-import { FileData } from '../types/types';
-import { ContextMessage } from '../types/types';
+import { FileData, ContextMessage, Chat } from '../types/types';
+
 
 export const fetch_db_collections = async (): Promise<string[]> => {
   try {
@@ -53,6 +53,27 @@ export const fetch_uploads_metadata = async (): Promise<FileData[]> => {
     return [];
   }
 }
+
+export const start_save_chat = async(current_chat: Chat) => {
+  const test = JSON.stringify(current_chat)
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/save_chat`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: test
+    });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      console.log("Chat saved.")
+    }
+  } catch (error) {
+    console.error('Error saving chat: ', error);
+  }
+}
+
 export const start_upload_deletion = async (upload_deletion_list: FileData[]): Promise<string[]> => {
   if (!Array.isArray(upload_deletion_list) || upload_deletion_list.length === 0) {
     return ['No uploads were removed']

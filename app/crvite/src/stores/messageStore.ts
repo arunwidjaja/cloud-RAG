@@ -3,30 +3,23 @@ import { ContextData } from '../types/types';
 
 // Base Message interface with common properties
 interface BaseMessage {
-    type: string;
+    id: string;
     text: string;
-    context_list?: ContextData[]
 }
 
 // InputMessage is for user inputs
-// Contains type and text
 interface InputMessage extends BaseMessage {
-    type: 'input';
-    text: string;
+    type: string;
 }
 
 // AnswerMessage is for any responses not containing context information
-// Contains type and text
 interface AnswerMessage extends BaseMessage {
-    type: 'answer';
-    text: string;
+    type: string;
 }
 
 // ContextMessage is for RAG responses with associated context information
-// In addition to type and text (the answer), contains an array of ContextData objects
 interface ContextMessage extends BaseMessage {
-    type: 'context';
-    text: string;
+    type: string;
     context_list: ContextData[];
 }
 
@@ -43,16 +36,19 @@ interface MessageState {
 
 // Factory functions to create type-safe messages
 export const createInputMessage = (text: string): InputMessage => ({
+    id: text,
     type: 'input',
     text
 });
 
 export const createAnswerMessage = (text: string): AnswerMessage => ({
+    id: text,
     type: 'answer',
     text
 });
 
 export const createContextMessage = (text: string, context_list: ContextData[]): ContextMessage => ({
+    id: text,
     type: 'context',
     text,
     context_list

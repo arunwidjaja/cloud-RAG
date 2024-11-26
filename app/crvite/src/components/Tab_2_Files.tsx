@@ -39,6 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
 
 export function FileTable() {
   const collection = use_current_collection()
@@ -150,8 +151,8 @@ export function FileTable() {
                 Copy ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => alert("implement this")}>Download File</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => alert("implement this")}>Delete File</DropdownMenuItem>
+              <DropdownMenuItem onClick={handle_download_selected_files}>Download File</DropdownMenuItem>
+              <DropdownMenuItem onClick={handle_delete_selected_files}>Delete File</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )

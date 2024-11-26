@@ -3,8 +3,8 @@ import { create } from "zustand";
 import { createDefaultFileData } from "./filesStore";
 
 interface ContextData {
-    file: FileData;
     text: string;
+    file: FileData;
 }
 
 interface RetrievedState {
@@ -21,8 +21,8 @@ export const createContextData = (file: FileData, text: string): ContextData => 
 });
 
 export const createDefaultContextData = (): ContextData => ({
-    file: createDefaultFileData(),
-    text: "No documents have been retrieved yet."
+    text: "No documents have been retrieved yet.",
+    file: createDefaultFileData()
 })
 
 

@@ -1,6 +1,6 @@
 export interface FileData {
-    name: string;
     hash: string;
+    name: string;
     collection: string;
     word_count: number;
 }
@@ -13,27 +13,36 @@ export interface ContextData {
 
 // Base Message interface with common properties
 export interface BaseMessage {
-    type: string;
+    id: string;
     text: string;
-    context_list?: ContextData[]
 }
 
-// Specific message types
+// InputMessage is for user inputs
 export interface InputMessage extends BaseMessage {
-    type: 'input';
-    text: string;
+    type: string;
 }
 
+// AnswerMessage is for any responses not containing context information
 export interface AnswerMessage extends BaseMessage {
-    type: 'answer';
-    text: string;
+    type: string;
 }
 
+// ContextMessage is for RAG responses with associated context information
 export interface ContextMessage extends BaseMessage {
-    type: 'context';
-    text: string;
+    type: string;
     context_list: ContextData[];
 }
 
 // Union type for all message types
 export type Message = InputMessage | AnswerMessage | ContextMessage;
+
+export interface Chat {
+    id: string;
+    subject: string;
+    messages: Message[];
+}
+
+export interface ChatsState {
+    chats: Chat[];
+    addChat: (chat: Chat) => void;
+}
