@@ -5,6 +5,7 @@ from globals import get_database
 import doc_ops_utils
 import db_ops
 import config
+import utils
 
 router = APIRouter()
 
@@ -14,7 +15,7 @@ async def delete_chats():
     """
     Deletes stored chats
     """
-    chats_path = config.PATH_CHATS_LOCAL
+    chats_path = utils.get_env_paths()['CHATS']
     if not os.path.exists(chats_path):
         os.makedirs(chats_path)
         return

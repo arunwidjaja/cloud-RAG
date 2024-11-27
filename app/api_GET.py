@@ -150,7 +150,7 @@ async def get_saved_chats():
     print("API CALL: get_saved_chats")
     all_chats = []
     try:
-        chats_dir = config.PATH_CHATS_LOCAL
+        chats_dir = utils.get_env_paths()['CHATS']
         chats_dir.mkdir(parents=True, exist_ok=True)
         for chat_name in os.listdir(chats_dir):
             chat_path = Path(chats_dir) / chat_name

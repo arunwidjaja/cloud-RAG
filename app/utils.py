@@ -55,28 +55,36 @@ def get_env_paths() -> dict[str, Path]:
     Sets environment-sensitive paths/values and returns them in a dictionary.
 
     """
-    keys = ['DB', 'DOCS', 'ARCHIVE']
+    keys = ['DB', 'DOCS', 'ARCHIVE', 'CHATS']
     dynamic_env_values = dict.fromkeys(keys, None)
 
     document_paths = {
         "LOCAL": config.PATH_DOCUMENTS_LOCAL,
-        "TEMP": config.PATH_DOCUMENTS_TEMP
+        "EFS": config.PATH_DOCUMENTS_EFS
     }
     chroma_paths = {
         "LOCAL": config.PATH_CHROMA_LOCAL,
-        "TEMP": config.PATH_CHROMA_TEMP
+        "EFS": config.PATH_CHROMA_EFS
     }
     archive_paths = {
-        "LOCAL": config.PATH_ARCHIVE_LOCAL
+        "LOCAL": config.PATH_ARCHIVE_LOCAL,
+        "EFS": config.PATH_ARCHIVE_EFS
+    }
+    chat_paths = {
+        "LOCAL": config.PATH_CHATS_LOCAL,
+        "EFS": config.PATH_CHATS_EFS
     }
 
     if 'var' in str(config.CURRENT_PATH):
-        dynamic_env_values['DB'] = chroma_paths['TEMP']
-        dynamic_env_values['DOCS'] = document_paths['TEMP']
+        dynamic_env_values['DB'] = chroma_paths['EFS']
+        dynamic_env_values['DOCS'] = document_paths['EFS']
+        dynamic_env_values['ARCHIVE'] = archive_paths['EFS']
+        dynamic_env_values['CHATS'] = document_paths['EFS']
     else:
         dynamic_env_values['DB'] = chroma_paths['LOCAL']
         dynamic_env_values['DOCS'] = document_paths['LOCAL']
         dynamic_env_values['ARCHIVE'] = archive_paths['LOCAL']
+        dynamic_env_values['CHATS'] = document_paths['LOCAL']
 
     return dynamic_env_values
 
