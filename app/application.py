@@ -30,13 +30,13 @@ async def lifespan(app: FastAPI):
         raise
     yield
 
-app = FastAPI(lifespan=lifespan)
+application = FastAPI(lifespan=lifespan)
 
-app.include_router(api_GET)
-app.include_router(api_DELETE)
-app.include_router(api_POST)
+application.include_router(api_GET)
+application.include_router(api_DELETE)
+application.include_router(api_POST)
 
-app.add_middleware(
+application.add_middleware(
     CORSMiddleware,
     # React.JS urls (Create, Vite)
     allow_origins=["http://localhost:3000", "http://localhost:5173"],
@@ -51,4 +51,5 @@ app.add_middleware(
 # Run main to test locally on localhost:8000
 if __name__ == "__main__":
     print(f"Running the FastAPI server locally on port {config.PORT_APP}")
-    uvicorn.run("api_handler:app", host=config.HOST, port=config.PORT_APP)
+    uvicorn.run("application:application",
+                host=config.HOST, port=config.PORT_APP)
