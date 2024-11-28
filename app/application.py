@@ -13,13 +13,14 @@ from api_POST import router as api_POST
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(application: FastAPI):
     """
     Starting point for the app. Runs on startup.
     """
     print("FastAPI lifespan is starting")
 
     try:
+        init_db.init_paths()
         database = init_db.init_db()
         # database = init_db.init_http_db()
 
