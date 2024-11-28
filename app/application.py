@@ -39,7 +39,15 @@ application.include_router(api_POST)
 application.add_middleware(
     CORSMiddleware,
     # React.JS urls (Create, Vite)
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://ragbase.cloud",
+        "http://www.ragbase.cloud",
+        "https://ragbase.cloud",
+        "https://www.ragbase.cloud",
+    ],
+
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
