@@ -79,12 +79,12 @@ def get_env_paths() -> dict[str, Path]:
         dynamic_env_values['DB'] = chroma_paths['EFS']
         dynamic_env_values['DOCS'] = document_paths['EFS']
         dynamic_env_values['ARCHIVE'] = archive_paths['EFS']
-        dynamic_env_values['CHATS'] = document_paths['EFS']
+        dynamic_env_values['CHATS'] = chat_paths['EFS']
     else:
         dynamic_env_values['DB'] = chroma_paths['LOCAL']
         dynamic_env_values['DOCS'] = document_paths['LOCAL']
         dynamic_env_values['ARCHIVE'] = archive_paths['LOCAL']
-        dynamic_env_values['CHATS'] = document_paths['LOCAL']
+        dynamic_env_values['CHATS'] = chat_paths['LOCAL']
 
     return dynamic_env_values
 

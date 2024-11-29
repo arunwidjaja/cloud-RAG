@@ -33,10 +33,6 @@ async def lifespan(application: FastAPI):
 
 application = FastAPI(lifespan=lifespan)
 
-application.include_router(api_GET)
-application.include_router(api_DELETE)
-application.include_router(api_POST)
-
 application.add_middleware(
     CORSMiddleware,
     # React.JS urls (Create, Vite)
@@ -44,15 +40,21 @@ application.add_middleware(
         "http://localhost:3000",
         "http://localhost:5173",
         "http://ragbase.cloud",
-        "http://www.ragbase.cloud",
         "https://ragbase.cloud",
+        "http://www.ragbase.cloud",
         "https://www.ragbase.cloud",
+        "http://api.ragbase.cloud",
+        "https://api.ragbase.cloud"
     ],
-
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
+application.include_router(api_GET)
+application.include_router(api_DELETE)
+application.include_router(api_POST)
+
 
 # handler = Mangum(app)
 
