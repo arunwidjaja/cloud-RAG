@@ -1,6 +1,7 @@
 from imports import *
 
 # Local Modules
+from api_MODELS import *
 from globals import get_database
 from query_data import query_rag
 import config
@@ -11,51 +12,11 @@ import authentication
 router = APIRouter()
 
 
-class QueryModel(BaseModel):
-    query_text: str
-    query_type: str
-
-
-class CollectionModel(BaseModel):
-    collection_name: str
-    embedding_function: str
-
-
-class FileModel(BaseModel):
-    hash: str
-    name: str
-    collection: str
-    word_countL: int = 0
-
-
-class ContextModel(BaseModel):
-    text: str
-    file: FileModel
-
-
-class MessageModel(BaseModel):
-    id: str
-    type: str = ""
-    text: str
-    context_list: List[ContextModel] = []
-
-
-class ChatModel(BaseModel):
-    id: str
-    subject: str
-    messages: List[MessageModel]
-
-
-class CredentialsModel(BaseModel):
-    email: str
-    pwd: str
-
-
 @router.post("/login")
 async def login(credentials: CredentialsModel):
     try:
         auth = authentication.UserAuth()
-        return auth.validate_login(username=credentials.email, password=credentials.pwd)
+        return auth.validate_user(username=credentials.email, password=credentials.pwd)
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -66,9 +27,7 @@ async def login(credentials: CredentialsModel):
 @router.post("/register")
 async def register(credentials: CredentialsModel):
     try:
-        print("Attempting to create UserAuth object")
         auth = authentication.UserAuth()
-        print("Attempting to register user")
         return auth.register_user(username=credentials.email, password=credentials.pwd)
     except Exception as e:
         raise HTTPException(

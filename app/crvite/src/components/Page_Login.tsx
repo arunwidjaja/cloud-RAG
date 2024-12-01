@@ -8,7 +8,7 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const { login, register, isAuthenticated } = useAuth();
+    const { login, register, delete_account, isAuthenticated } = useAuth();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,6 +24,14 @@ function LoginPage() {
             await register(email, password);
         } catch (err) {
             setError('Error occurred while registering user');
+        }
+    }
+    const handleDeleteAccount = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await delete_account(email, password);
+        } catch (err) {
+            setError('Error occurred while deleting user');
         }
     }
 
@@ -75,6 +83,13 @@ function LoginPage() {
                     className='p-2 border border-blue-500'
                 >
                     Register
+                </button>
+                <button
+                    type="button"
+                    onClick={handleDeleteAccount}
+                    className='p-2 border border-blue-500'
+                >
+                    Delete Account
                 </button>
             </form>
         </div>

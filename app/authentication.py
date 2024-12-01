@@ -26,6 +26,31 @@ class UserAuth:
             print(f"SQLite error: {str(e)}")
             raise
 
+    def validate_user(self, username: str, password: str) -> bool:
+        """
+        Validate a login attempt.
+        Returns True if credentials are valid, False otherwise.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute(
+                    "SELECT password_hash FROM users WHERE username = ?",
+                    (username,)
+                )
+                row = cursor.fetchone()
+
+                if not row:
+                    return False  # Username not found
+
+                # Convert string back to bytes
+                stored_hash = row[0].encode('utf-8')
+
+                # bcrypt.checkpw handles all the salt extraction and comparison
+                return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
+        except sqlite3.Error as e:
+            print(f"Auth DB error: {str(e)}")
+            raise
+
     def register_user(self, username: str, password: str) -> bool:
         """
         Register a new user with the given username and password.
@@ -49,23 +74,21 @@ class UserAuth:
         except sqlite3.IntegrityError:
             return False  # Username already exists
 
-    def validate_login(self, username: str, password: str) -> bool:
+    def delete_user(self, username: str, password: str) -> bool:
         """
-        Validate a login attempt.
-        Returns True if credentials are valid, False otherwise.
+        Deletes the user if the username and password match
         """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.execute(
-                "SELECT password_hash FROM users WHERE username = ?",
-                (username,)
-            )
-            row = cursor.fetchone()
-
-            if not row:
-                return False  # Username not found
-
-            # Convert string back to bytes
-            stored_hash = row[0].encode('utf-8')
-
-            # bcrypt.checkpw handles all the salt extraction and comparison
-            return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
+        validated = self.validate_user(username, password)
+        if (validated):
+            try:
+                with sqlite3.connect(self.db_path) as conn:
+                    cursor = conn.execute(
+                        "DELETE FROM users WHERE username = ?",
+                        (username,)
+                    )
+                    return cursor.rowcount > 0
+            except sqlite3.Error as e:
+                print(f"Auth DB error: {e}")
+                return False
+        else:
+            return False

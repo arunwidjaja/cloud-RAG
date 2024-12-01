@@ -1,13 +1,27 @@
 from imports import *
 
 # Local Modules
+from api_MODELS import *
 from globals import get_database
 import doc_ops_utils
 import db_ops
 import config
 import utils
+import authentication
 
 router = APIRouter()
+
+
+@router.delete("/delete_account")
+async def delete_account(credentials: CredentialsModel):
+    try:
+        auth = authentication.UserAuth()
+        return auth.delete_user(username=credentials.email, password=credentials.pwd)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to register user: {str(e)}"
+        )
 
 
 @router.delete("/delete_chats")
