@@ -46,11 +46,16 @@ class ChatModel(BaseModel):
     messages: List[MessageModel]
 
 
+class CredentialsModel(BaseModel):
+    email: str
+    pwd: str
+
+
 @router.post("/login")
-async def login(email: str, pwd: str):
+async def login(credentials: CredentialsModel):
     try:
         auth = authentication.UserAuth()
-        return auth.validate_login(username=email, password=pwd)
+        return auth.validate_login(username=credentials.email, password=credentials.pwd)
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -59,10 +64,12 @@ async def login(email: str, pwd: str):
 
 
 @router.post("/register")
-async def register(email: str, pwd: str):
+async def register(credentials: CredentialsModel):
     try:
+        print("Attempting to create UserAuth object")
         auth = authentication.UserAuth()
-        return auth.register_user(username=email, password=pwd)
+        print("Attempting to register user")
+        return auth.register_user(username=credentials.email, password=credentials.pwd)
     except Exception as e:
         raise HTTPException(
             status_code=500,

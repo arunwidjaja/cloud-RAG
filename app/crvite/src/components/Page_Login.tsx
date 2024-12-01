@@ -8,9 +8,9 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const { login, isAuthenticated } = useAuth();
+    const { login, register, isAuthenticated } = useAuth();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             await login(email, password);
@@ -18,6 +18,14 @@ function LoginPage() {
             setError('Invalid credentials');
         }
     };
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await register(email, password);
+        } catch (err) {
+            setError('Error occurred while registering user');
+        }
+    }
 
     // If already logged in, redirect to main app
     if (isAuthenticated) {
@@ -27,7 +35,7 @@ function LoginPage() {
     return (
         <div>
             <h1>Login</h1>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleLogin}>
                 {error && (
                     <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
                 )}
@@ -60,6 +68,13 @@ function LoginPage() {
                     className='p-2 border border-blue-500'
                 >
                     Login
+                </button>
+                <button
+                    type="button"
+                    onClick={handleRegister}
+                    className='p-2 border border-blue-500'
+                >
+                    Register
                 </button>
             </form>
         </div>

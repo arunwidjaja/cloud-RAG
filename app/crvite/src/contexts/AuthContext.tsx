@@ -1,24 +1,47 @@
 import React, { createContext, useContext, useState } from 'react';
 import { User, AuthContextType } from '@/types/types';
 
+import { start_login, start_register } from '@/api/api';
+
 const AuthContext = createContext<AuthContextType | null>(null);
+
+export const createUser = (email: string): User => {
+    // TODO: implement logic for id and name
+    const user: User = {
+        id: email,
+        email: email,
+        name: email
+    };
+    return user
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
 
     const login = async (email: string, password: string) => {
         try {
-            // This is where you'd make your API call
-            // For now, let's simulate a successful login
-            const mockUser = {
-                id: '1',
-                email: email,
-                name: 'FirstName LastName',
-            };
-
-            setUser(mockUser);
+            const success = await start_login(email, password);
+            if (success) {
+                const user = createUser(email)
+                setUser(user);
+            } else {
+                alert("The username or password are incorrect. Please try again.")
+            }
         } catch (error) {
             console.error('Login error:', error);
+            throw error;
+        }
+    };
+
+    const register = async(email: string, password: string) => {
+        try {
+            const success = await start_register(email, password);
+            if (success) {
+                const user = createUser(email)
+                setUser(user)
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
             throw error;
         }
     };
@@ -32,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             value={{
                 user,
                 login,
+                register,
                 logout,
                 isAuthenticated: !!user
             }}

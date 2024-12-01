@@ -55,7 +55,7 @@ def get_env_paths() -> dict[str, Path]:
     Sets environment-sensitive paths/values and returns them in a dictionary.
 
     """
-    keys = ['DB', 'DOCS', 'ARCHIVE', 'CHATS']
+    keys = ['DB', 'DOCS', 'ARCHIVE', 'CHATS', 'AUTH']
     dynamic_env_values = dict.fromkeys(keys, None)
 
     document_paths = {
