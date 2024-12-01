@@ -6,6 +6,7 @@ from query_data import query_rag
 import config
 import db_ops
 import utils
+import authentication
 
 router = APIRouter()
 
@@ -43,6 +44,30 @@ class ChatModel(BaseModel):
     id: str
     subject: str
     messages: List[MessageModel]
+
+
+@router.post("/login")
+async def login(email: str, pwd: str):
+    try:
+        auth = authentication.UserAuth()
+        return auth.validate_login(username=email, password=pwd)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to login: {str(e)}"
+        )
+
+
+@router.post("/register")
+async def register(email: str, pwd: str):
+    try:
+        auth = authentication.UserAuth()
+        return auth.register_user(username=email, password=pwd)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to register user: {str(e)}"
+        )
 
 
 @router.post("/save_chat")

@@ -74,17 +74,23 @@ def get_env_paths() -> dict[str, Path]:
         "LOCAL": config.PATH_CHATS_LOCAL,
         "EFS": config.PATH_CHATS_EFS
     }
+    auth_paths = {
+        "LOCAL": config.PATH_AUTH_LOCAL,
+        "EFS": config.PATH_AUTH_EFS
+    }
 
     if 'var' in str(config.CURRENT_PATH):
         dynamic_env_values['DB'] = chroma_paths['EFS']
         dynamic_env_values['DOCS'] = document_paths['EFS']
         dynamic_env_values['ARCHIVE'] = archive_paths['EFS']
         dynamic_env_values['CHATS'] = chat_paths['EFS']
+        dynamic_env_values['AUTH'] = auth_paths['EFS']
     else:
         dynamic_env_values['DB'] = chroma_paths['LOCAL']
         dynamic_env_values['DOCS'] = document_paths['LOCAL']
         dynamic_env_values['ARCHIVE'] = archive_paths['LOCAL']
         dynamic_env_values['CHATS'] = chat_paths['LOCAL']
+        dynamic_env_values['AUTH'] = auth_paths['LOCAL']
 
     return dynamic_env_values
 
