@@ -21,15 +21,9 @@ uploads/
 # React.JS (Frontend Files)
 
 # dependencies
-app/cr_vite/node_modules
-app/cr_vite/.pnp
 .pnp.js
 
-# testing
-app/cr_vite/coverage
 
-# production
-app/cr_vite/build
 
 # misc
 .DS_Store

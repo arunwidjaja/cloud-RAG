@@ -13,13 +13,14 @@ from api_POST import router as api_POST
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(application: FastAPI):
     """
     Starting point for the app. Runs on startup.
     """
     print("FastAPI lifespan is starting")
 
     try:
+        init_db.init_paths()
         database = init_db.init_db()
         # database = init_db.init_http_db()
 
@@ -30,20 +31,30 @@ async def lifespan(app: FastAPI):
         raise
     yield
 
-app = FastAPI(lifespan=lifespan)
+application = FastAPI(lifespan=lifespan)
 
-app.include_router(api_GET)
-app.include_router(api_DELETE)
-app.include_router(api_POST)
-
-app.add_middleware(
+application.add_middleware(
     CORSMiddleware,
     # React.JS urls (Create, Vite)
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://ragbase.cloud",
+        "https://ragbase.cloud",
+        "http://www.ragbase.cloud",
+        "https://www.ragbase.cloud",
+        "http://api.ragbase.cloud",
+        "https://api.ragbase.cloud"
+    ],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
+application.include_router(api_GET)
+application.include_router(api_DELETE)
+application.include_router(api_POST)
+
 
 # handler = Mangum(app)
 
@@ -51,4 +62,5 @@ app.add_middleware(
 # Run main to test locally on localhost:8000
 if __name__ == "__main__":
     print(f"Running the FastAPI server locally on port {config.PORT_APP}")
-    uvicorn.run("api_handler:app", host=config.HOST, port=config.PORT_APP)
+    uvicorn.run("application:application",
+                host=config.HOST, port=config.PORT_APP)

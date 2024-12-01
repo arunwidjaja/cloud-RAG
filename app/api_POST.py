@@ -49,7 +49,7 @@ class ChatModel(BaseModel):
 async def save_chat(chat: ChatModel):
 
     try:
-        chats_path = config.PATH_CHATS_LOCAL
+        chats_path = utils.get_env_paths()['CHATS']
         # Create storage directory if it doesn't exist
         chats_path.mkdir(parents=True, exist_ok=True)
 

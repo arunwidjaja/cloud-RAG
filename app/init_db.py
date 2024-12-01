@@ -62,6 +62,26 @@ def init_http_db(collection_name=config.DEFAULT_COLLECTION_NAME, embedding_funct
         raise
 
 
+def init_paths() -> None:
+    """
+    Initializes necessary directories
+    """
+    paths = []
+    paths.append(utils.get_env_paths()['DOCS'])
+    paths.append(utils.get_env_paths()['ARCHIVE'])
+    paths.append(utils.get_env_paths()['CHATS'])
+
+    for path in paths:
+        if not os.path.exists(path):
+            try:
+                print(f"Creating directory: {path}")
+                os.makedirs(path)
+            except Exception as e:
+                print(f"Error creating {path}: {e}")
+        else:
+            print(f"Found path: {path}")
+
+
 def main():
     return
 

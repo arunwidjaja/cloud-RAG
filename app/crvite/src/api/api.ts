@@ -5,7 +5,12 @@ import { FileData, ContextMessage, Chat } from '../types/types';
 export const fetch_db_collections = async (): Promise<string[]> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/collections`
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
       const collections = await response.json();

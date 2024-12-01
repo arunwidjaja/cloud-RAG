@@ -17,23 +17,23 @@ Path Constants: Local file paths and locations
 # The path of the folder calling the function
 # example: .../app
 CURRENT_PATH = Path(__file__).resolve().parent
+EFS_PATH = Path('/efs')
 
 SEC_DESC_1A = """
 Resource Paths:
 """
 
 PATH_CHROMA_LOCAL = CURRENT_PATH / Path('chroma')
-PATH_CHROMA_TEMP = Path('/tmp/chroma')
-PATH_CHROMA_S3 = PATH_CHROMA_TEMP
-PATH_CHROMA_SERVER = CURRENT_PATH / Path('chroma_server')
+PATH_CHROMA_EFS = EFS_PATH / Path('chroma')
 
 PATH_DOCUMENTS_LOCAL = CURRENT_PATH / Path('uploads')
-PATH_DOCUMENTS_TEMP = Path('/tmp/uploads')
-PATH_DOCUMENTS_S3 = PATH_DOCUMENTS_TEMP
+PATH_DOCUMENTS_EFS = EFS_PATH / Path('uploads')
 
 PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('archive')
+PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
 
 PATH_CHATS_LOCAL = CURRENT_PATH / Path('chats')
+PATH_CHATS_EFS = EFS_PATH / Path('chats')
 
 PATH_TEMPLATES = CURRENT_PATH / Path('templates')
 PATH_STATIC = CURRENT_PATH / Path('static')
@@ -76,10 +76,10 @@ PORT_APP = 8000
 PORT_DB = 8001
 load_dotenv()
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
-AWS_LAMBDA_SECRET_KEY = os.environ['AWS_LAMBDA_SECRET_KEY']
-AWS_LAMBDA_ACCESS_KEY = os.environ['AWS_LAMBDA_ACCESS_KEY']
-AWS_LAMBDA_ACCESS_KEY_ROOT = os.environ['AWS_LAMBDA_ACCESS_KEY_ROOT']
-AWS_LAMBDA_SECRET_KEY_ROOT = os.environ['AWS_LAMBDA_SECRET_KEY_ROOT']
+# AWS_LAMBDA_SECRET_KEY = os.environ['AWS_LAMBDA_SECRET_KEY']
+# AWS_LAMBDA_ACCESS_KEY = os.environ['AWS_LAMBDA_ACCESS_KEY']
+# AWS_LAMBDA_ACCESS_KEY_ROOT = os.environ['AWS_LAMBDA_ACCESS_KEY_ROOT']
+# AWS_LAMBDA_SECRET_KEY_ROOT = os.environ['AWS_LAMBDA_SECRET_KEY_ROOT']
 
 SEC_DESC_END = """
 
