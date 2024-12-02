@@ -43,31 +43,6 @@ function MainApp() {
         <ThemeProvider>
             <div className="container_parent max-w-full max-h-full flex flex-row">
                 {/* Left Pane */}
-
-
-
-
-                <div id="LOGIN_TEST" className='bg-pink-400'>
-                    <div>
-                        <pre>
-                            {user ? `Logged in as: ${JSON.stringify(user, null, 2)}` : 'Not logged in'}
-                        </pre>
-                    </div>
-
-                    <div>
-                        <button
-                            onClick={logout}
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-
-
-
-
-
-
                 <div className='min-h-full max-h-full w-64 flex flex-col bg-accent'>
                     <div id="fillerdiv" className="h-14"></div>
                     {/* Chat History Section */}
@@ -111,11 +86,17 @@ function MainApp() {
                             {/* Profile Badge */}
                             <div className='justify-end flex flex-1 items-center mr-6'>
                                 <div className='flex flex-row text-text items-center'>
-                                    <div className='p-2'>awidjaja</div>
+                                    <Button
+                                        onClick={logout}>
+                                        Log Out
+                                    </Button>
+                                    <div className='p-2'>
+                                        {user?.email}
+                                    </div>
                                     <div>
                                         <Avatar>
                                             <AvatarImage src="" />
-                                            <AvatarFallback className='bg-secondary'>AW</AvatarFallback>
+                                            <AvatarFallback className='bg-secondary'>{user?.email.substring(0, 2)}</AvatarFallback>
                                         </Avatar>
                                     </div>
                                 </div>

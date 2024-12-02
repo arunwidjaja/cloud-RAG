@@ -1,0 +1,19 @@
+/* src/components/LandingPage.css */
+/* We only keep the animation-specific CSS that Tailwind doesn't provide */
+.background-path {
+    opacity: 0.2;
+  }
+  
+.animated-path {
+    opacity: 0.6;
+    stroke-dasharray: 30 1000 ;
+    stroke-dashoffset: 1000;
+    animation: drawLine 4s linear infinite;
+}
+
+@keyframes drawLine {
+
+    from {
+        stroke-dashoffset: 0;
+    }
+}

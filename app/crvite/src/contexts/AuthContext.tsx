@@ -8,9 +8,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const createUser = (email: string): User => {
     // TODO: implement logic for id and name
     const user: User = {
-        id: email,
         email: email,
-        name: email
     };
     return user
 }
@@ -40,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 const user = createUser(email)
                 setUser(user)
             } else {
-                alert("This username already exists. Please choose a differet one.")
+                alert("This username already exists. Please choose a different one.")
             }
         } catch (error) {
             console.error('Registration error: ', error);

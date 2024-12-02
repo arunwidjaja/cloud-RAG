@@ -3,21 +3,20 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
-
-function LoginPage() {
+import { Button } from './ui/button';
+function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const { login, isAuthenticated } = useAuth();
+    const { register, isAuthenticated } = useAuth();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await login(email, password);
+            await register(email, password);
         } catch (err) {
-            console.log('Error occurred while logging in');
+            console.log('Error occurred while registering user');
         }
     }
 
@@ -33,9 +32,9 @@ function LoginPage() {
                     <img src={LOGO_PLACEHOLDER} className="w-[50px] h-[50px]"></img>
                     <div className='p-2'>RAGbase</div>
                 </div>
-                <div className='m-1'>Log in to your database</div>
+                <div className='m-1'>Register to set up your database</div>
                 <form
-                    onSubmit={handleLogin}>
+                    onSubmit={handleRegister}>
                     <Input
                         required
                         value={email}
@@ -53,7 +52,7 @@ function LoginPage() {
                         className='bg-gray-200 m-1'>
                     </Input>
                     <Button
-                        className='bg-purple-500 text-white m-1'>Log In</Button>
+                        className='bg-purple-500 text-white m-1'>Register</Button>
                 </form>
             </div>
         </div>
@@ -61,4 +60,4 @@ function LoginPage() {
     );
 }
 
-export default LoginPage;
+export default RegisterPage;
