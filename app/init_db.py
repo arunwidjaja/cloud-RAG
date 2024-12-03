@@ -70,6 +70,7 @@ def init_paths() -> None:
     paths.append(utils.get_env_paths()['DOCS'])
     paths.append(utils.get_env_paths()['ARCHIVE'])
     paths.append(utils.get_env_paths()['CHATS'])
+    paths.append(utils.get_env_paths()['AUTH'])
 
     for path in paths:
         if not os.path.exists(path):

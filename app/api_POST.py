@@ -1,48 +1,39 @@
 from imports import *
 
 # Local Modules
+from api_MODELS import *
 from globals import get_database
 from query_data import query_rag
 import config
 import db_ops
 import utils
+import authentication
 
 router = APIRouter()
 
 
-class QueryModel(BaseModel):
-    query_text: str
-    query_type: str
+@router.post("/login")
+async def login(credentials: CredentialsModel):
+    try:
+        auth = authentication.UserAuth()
+        return auth.validate_user(username=credentials.email, password=credentials.pwd)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to login: {str(e)}"
+        )
 
 
-class CollectionModel(BaseModel):
-    collection_name: str
-    embedding_function: str
-
-
-class FileModel(BaseModel):
-    hash: str
-    name: str
-    collection: str
-    word_countL: int = 0
-
-
-class ContextModel(BaseModel):
-    text: str
-    file: FileModel
-
-
-class MessageModel(BaseModel):
-    id: str
-    type: str = ""
-    text: str
-    context_list: List[ContextModel] = []
-
-
-class ChatModel(BaseModel):
-    id: str
-    subject: str
-    messages: List[MessageModel]
+@router.post("/register")
+async def register(credentials: CredentialsModel):
+    try:
+        auth = authentication.UserAuth()
+        return auth.register_user(username=credentials.email, password=credentials.pwd)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to register user: {str(e)}"
+        )
 
 
 @router.post("/save_chat")

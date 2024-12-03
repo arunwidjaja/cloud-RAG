@@ -37,6 +37,7 @@ from starlette.requests import Request
 
 # General
 import bcrypt
+import sqlite3
 import boto3
 import json
 import io
@@ -44,9 +45,10 @@ import os
 import re
 import shutil
 import zipfile
+import uuid
 from collections import Counter, defaultdict
 from io import BytesIO
 from dotenv import load_dotenv
 from pathlib import Path
 from pprint import pprint
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple

@@ -6,6 +6,8 @@ export const ICON_RETRY = '/icon_retry.svg'
 export const ICON_COPY = '/icon_copy.svg'
 export const ICON_CHAT = '/icon_chat.svg'
 
+export const LOGO_PLACEHOLDER = '/logo_placeholder.svg'
+
 export const EF = ['openai']
 
 // If you change PRESETS, you need to change switch/case block in handle_select_presets

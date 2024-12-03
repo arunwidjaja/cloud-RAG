@@ -1,4 +1,4 @@
-export const generate_id = (prefix: string): string => {
+export const generate_message_id = (prefix: string): string => {
     // Get current timestamp in milliseconds
     const timestamp = Date.now();
 

@@ -35,10 +35,8 @@ PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
 PATH_CHATS_LOCAL = CURRENT_PATH / Path('chats')
 PATH_CHATS_EFS = EFS_PATH / Path('chats')
 
-PATH_TEMPLATES = CURRENT_PATH / Path('templates')
-PATH_STATIC = CURRENT_PATH / Path('static')
-
-BUCKET_NAME = "chroma--use1-az4--x-s3"
+PATH_AUTH_LOCAL = CURRENT_PATH / Path("auth")
+PATH_AUTH_EFS = EFS_PATH / Path("auth")
 
 SEC_DESC_2 = """
 =========================

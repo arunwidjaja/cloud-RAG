@@ -74,6 +74,69 @@ export const fetch_saved_chats = async (): Promise<Chat[]> => {
   }
 }
 
+export const start_login = async (email: string, password: string): Promise<string> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/login`
+    const data = {
+      'email': email,
+      'pwd': password
+    };
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error validating user: ', error);
+    return "";
+  }
+}
+export const start_register = async (email: string, password: string): Promise<string> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/register`
+    const data = {
+      'email': email,
+      'pwd': password
+    };
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error registering user: ', error);
+    return "";
+  }
+}
+export const start_delete_account = async (email: string, password: string): Promise<boolean> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/delete_account`
+    const data = {
+      'email': email,
+      'pwd': password
+    };
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers:  { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error deleting user: ', error);
+    return false;
+  }
+}
 export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
   const chat = JSON.stringify(current_chat)
   try {
