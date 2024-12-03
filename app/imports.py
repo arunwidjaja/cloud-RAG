@@ -45,6 +45,7 @@ import os
 import re
 import shutil
 import zipfile
+import uuid
 from collections import Counter, defaultdict
 from io import BytesIO
 from dotenv import load_dotenv

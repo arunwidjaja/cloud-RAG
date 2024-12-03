@@ -74,7 +74,7 @@ export const fetch_saved_chats = async (): Promise<Chat[]> => {
   }
 }
 
-export const start_login = async (email: string, password: string): Promise<boolean> => {
+export const start_login = async (email: string, password: string): Promise<string> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/login`
     const data = {
@@ -92,10 +92,10 @@ export const start_login = async (email: string, password: string): Promise<bool
     }
   } catch (error) {
     console.error('Error validating user: ', error);
-    return false;
+    return "";
   }
 }
-export const start_register = async (email: string, password: string): Promise<boolean> => {
+export const start_register = async (email: string, password: string): Promise<string> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/register`
     const data = {
@@ -113,7 +113,7 @@ export const start_register = async (email: string, password: string): Promise<b
     }
   } catch (error) {
     console.error('Error registering user: ', error);
-    return false;
+    return "";
   }
 }
 export const start_delete_account = async (email: string, password: string): Promise<boolean> => {

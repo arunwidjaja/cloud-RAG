@@ -18,7 +18,8 @@ class UserAuth:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute("""
                     CREATE TABLE IF NOT EXISTS users (
-                        username TEXT PRIMARY KEY,
+                        id TEXT PRIMARY KEY,
+                        username TEXT NOT NULL,
                         password_hash TEXT NOT NULL
                     )
                 """)
@@ -26,32 +27,37 @@ class UserAuth:
             print(f"SQLite error: {str(e)}")
             raise
 
-    def validate_user(self, username: str, password: str) -> bool:
+    def validate_user(self, username: str, password: str) -> str:
         """
         Validate a login attempt.
-        Returns True if credentials are valid, False otherwise.
+        Returns user id if credentials are valid, False otherwise.
         """
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.execute(
-                    "SELECT password_hash FROM users WHERE username = ?",
+                    "SELECT id, password_hash FROM users WHERE username = ?",
                     (username,)
                 )
                 row = cursor.fetchone()
 
                 if not row:
-                    return False  # Username not found
+                    return None  # Username not found
+
+                user_id, stored_hash = row
 
                 # Convert string back to bytes
-                stored_hash = row[0].encode('utf-8')
+                stored_hash = stored_hash.encode('utf-8')
 
                 # bcrypt.checkpw handles all the salt extraction and comparison
-                return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
+                if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
+                    return user_id
+                return None
+
         except sqlite3.Error as e:
             print(f"Auth DB error: {str(e)}")
             raise
 
-    def register_user(self, username: str, password: str) -> bool:
+    def register_user(self, username: str, password: str) -> str:
         """
         Register a new user with the given username and password.
         Returns True if successful, False if username already exists.
@@ -63,16 +69,19 @@ class UserAuth:
                 # Work factor of 12 is a good default
                 bcrypt.gensalt(rounds=12)
             )
+            # Generate UUID
+            user_id = str(uuid.uuid4())
 
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute(
-                    "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+                    "INSERT INTO users (id, username, password_hash) VALUES (?, ?, ?)",
                     # Store hash as string
-                    (username, password_hash.decode('utf-8'))
+                    (user_id, username, password_hash.decode('utf-8'))
                 )
-            return True
-        except sqlite3.IntegrityError:
-            return False  # Username already exists
+            return user_id
+        except sqlite3.Error as e:
+            print(f"Auth DB error: {str(e)}")
+            return None  # Username already exists
 
     def delete_user(self, username: str, password: str) -> bool:
         """

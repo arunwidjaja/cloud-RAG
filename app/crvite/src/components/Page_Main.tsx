@@ -91,7 +91,7 @@ function MainApp() {
                                         Log Out
                                     </Button>
                                     <div className='p-2'>
-                                        {user?.email}
+                                        {user?.id}
                                     </div>
                                     <div>
                                         <Avatar>

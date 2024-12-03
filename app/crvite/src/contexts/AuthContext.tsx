@@ -5,10 +5,11 @@ import { start_login, start_register, start_delete_account } from '@/api/api';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const createUser = (email: string): User => {
-    // TODO: implement logic for id and name
+export const createUser = (id: string, email: string): User => {
     const user: User = {
+        id: id,
         email: email,
+
     };
     return user
 }
@@ -18,12 +19,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = async (email: string, password: string) => {
         try {
-            const success = await start_login(email, password);
-            if (success) {
-                const user = createUser(email)
+            const user_id = await start_login(email, password);
+            if (user_id) {
+                const user = createUser(user_id, email)
                 setUser(user);
             } else {
-                alert("The username or password are incorrect. Please try again.")
+                alert("The email or password are incorrect. Please try again.")
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -33,12 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const register = async(email: string, password: string) => {
         try {
-            const success = await start_register(email, password);
-            if (success) {
-                const user = createUser(email)
+            const user_id = await start_register(email, password);
+            if (user_id) {
+                const user = createUser(user_id, email)
                 setUser(user)
             } else {
-                alert("This username already exists. Please choose a different one.")
+                alert("This email already exists. Please choose a different one.")
             }
         } catch (error) {
             console.error('Registration error: ', error);
