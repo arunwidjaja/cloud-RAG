@@ -39,11 +39,8 @@ application.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173",
-        "http://ragbase.cloud",
         "https://ragbase.cloud",
-        "http://www.ragbase.cloud",
         "https://www.ragbase.cloud",
-        "http://api.ragbase.cloud",
         "https://api.ragbase.cloud"
     ],
     allow_credentials=True,

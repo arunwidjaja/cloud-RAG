@@ -101,3 +101,34 @@ class UserAuth:
                 return False
         else:
             return False
+
+    def query_user_data(id: str, value: str) -> str:
+        """
+        Get the requested value from the user table based on the id
+
+        Args:
+            id (str): The user ID to look up
+            value (str): The column name to retrieve
+
+        Returns:
+            Optional[str]: The requested value if found, None if not found
+        """
+
+        try:
+            with sqlite3.connect('users.db') as conn:
+                cursor = conn.cursor()
+
+                cursor.execute("SELECT name FROM pragma_table_info('users')")
+                valid_columns = [row[0] for row in cursor.fetchall()]
+
+                if value not in valid_columns:
+                    raise ValueError(f"Invalid column name: {value}")
+
+                query = f"SELECT {value} FROM users WHERE id = ?"
+                cursor.execute(query, (id,))
+
+                result = cursor.fetchone()
+            return result[0] if result else None
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            raise
