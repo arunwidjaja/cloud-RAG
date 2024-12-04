@@ -36,8 +36,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             const user_id = await start_register(email, password);
             if (user_id) {
-                const user = createUser(user_id, email)
-                setUser(user)
+                // const user = createUser(user_id, email)
+                // setUser(user)
+
+                alert("Thank you for your interest! Your account has been created and you will be notified when registrations re-open.")
             } else {
                 alert("This email already exists. Please choose a different one.")
             }

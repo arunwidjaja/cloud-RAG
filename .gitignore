@@ -5,6 +5,7 @@
 *.notes
 *.log
 *.htpasswd
+*.db
 
 # Utility or temporary files not necessary for the app
 app/_*
