@@ -3,6 +3,8 @@ from imports import *
 # Local Modules
 import config
 import init_db
+import authentication
+import utils
 
 
 from globals import set_database
@@ -21,7 +23,14 @@ async def lifespan(application: FastAPI):
 
     try:
         init_db.init_paths()
-        database = init_db.init_db()
+        auth = authentication.UserAuth()
+        test_id = "80b5187d-4c56-4d5a-b287-df083449849a"
+        test_email = auth.query_user_data(user_id=test_id, value="username")
+        database = init_db.init_db(
+            user_id=utils.strip_text(test_id),
+            collection_name=utils.strip_email(test_email)
+        )
+
         # database = init_db.init_http_db()
 
         set_database(database)

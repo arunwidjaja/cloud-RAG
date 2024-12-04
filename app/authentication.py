@@ -7,8 +7,7 @@ import utils
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        path = utils.get_env_paths()['AUTH']
-        self.db_path = path / 'users.db'
+        self.db_path = utils.get_env_paths()['AUTH']
         self._init_db()
 
     def _init_db(self) -> None:
@@ -102,12 +101,12 @@ class UserAuth:
         else:
             return False
 
-    def query_user_data(id: str, value: str) -> str:
+    def query_user_data(self, user_id: str, value: str) -> str:
         """
         Get the requested value from the user table based on the id
 
         Args:
-            id (str): The user ID to look up
+            user_id (str): The UUID to look up
             value (str): The column name to retrieve
 
         Returns:
@@ -115,17 +114,11 @@ class UserAuth:
         """
 
         try:
-            with sqlite3.connect('users.db') as conn:
+            with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
 
-                cursor.execute("SELECT name FROM pragma_table_info('users')")
-                valid_columns = [row[0] for row in cursor.fetchall()]
-
-                if value not in valid_columns:
-                    raise ValueError(f"Invalid column name: {value}")
-
                 query = f"SELECT {value} FROM users WHERE id = ?"
-                cursor.execute(query, (id,))
+                cursor.execute(query, (user_id,))
 
                 result = cursor.fetchone()
             return result[0] if result else None

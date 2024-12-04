@@ -6,11 +6,18 @@ import utils
 from get_embedding_function import get_embedding_function
 
 
-def init_db(collection_name=config.DEFAULT_COLLECTION_NAME, embedding_function='openai') -> Chroma:
+def init_db(user_id: str, collection_name: str, embedding_function='openai') -> Chroma:
     """
-    Creates a Chroma (LangChain) instance that connects to a local Chroma DB.
+    Creates a Chroma (LangChain) instance that connects to a Chroma DB.
+
+    Args:
+        user: UUID of user
+        collection_name: the name of the default collection. Chroma DB requires at least one collection
+
+    Returns:
+        The LangChain Chroma object pointing to the DB
     """
-    chroma_path = utils.get_env_paths()['DB']
+    chroma_path = utils.get_env_paths()['DB'] / user_id
     ef = get_embedding_function(embedding_function)
 
     try:
