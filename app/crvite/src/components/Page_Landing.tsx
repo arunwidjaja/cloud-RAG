@@ -70,9 +70,9 @@ export function LandingPage() {
                 </div>
                 <div className="text-center mx-auto m-12 w-2/5">
                     <h2 className="m-4">
-                        RAGbase is the AI-powered base that empowers your to extract valuable insights from your documents.
+                        RAGbase is the AI-powered dashboard that empowers you to extract valuable insights from your documents.
                         Upload your files, query them with ease, and leverage analytical techniques like summarization and thematic analysis.
-                        With support for multimodal data and multiple generative models, adapt RAGbase to fit your needs.
+                        With support for multimodal data and multiple generative models, you can adapt it to fit your needs.
                     </h2>
                 </div>
             </div>
