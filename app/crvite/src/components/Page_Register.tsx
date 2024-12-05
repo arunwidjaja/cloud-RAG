@@ -52,7 +52,7 @@ function RegisterPage() {
                         className='bg-gray-200 m-1'>
                     </Input>
                     <Button
-                        className='bg-purple-500 text-white m-1'>Register</Button>
+                        className='bg-purple-500 text-white m-1'>Request an Account</Button>
                 </form>
             </div>
         </div>

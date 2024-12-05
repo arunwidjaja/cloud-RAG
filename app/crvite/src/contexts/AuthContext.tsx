@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 // const user = createUser(user_id, email)
                 // setUser(user)
 
-                alert("Thank you for your interest! Your account has been created and you will be notified when registrations re-open.")
+                alert("Thank you for your interest! Your information has been saved and you will be notified when registrations are open.")
             } else {
                 alert("This email already exists. Please choose a different one.")
             }
