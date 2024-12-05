@@ -40,8 +40,9 @@ application = FastAPI(lifespan=lifespan)
 
 @application.post("/start_session")
 async def start_session(request: StartSessionModel, request2: Request):
+    # TODO: do not access dictionary directly
     init_db.init_paths()
-    db_manager = request2.app.state._state['db_manager']
+    db_manager = request2.app.state.db_manager
     db_manager.initialize_db(request.user_id)
     return {"status": "success", "user_id": request.user_id}
 

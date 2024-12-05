@@ -67,7 +67,7 @@ async def get_current_user_id(request: Request) -> str:
 
 
 async def get_db(request: Request, user_id: str = Depends(get_current_user_id)) -> Chroma:
-    db_manager = request.app.state._state['db_manager']
+    db_manager = request.app.state.db_manager
     current_user_id = db_manager.uuid
     if user_id == current_user_id:
         return db_manager.db
