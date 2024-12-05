@@ -195,6 +195,14 @@ def get_word_count(file_path) -> int:
     return len(words)  # Count the number of words
 
 
+def strip_text(uuid: str) -> str:
+    return ''.join(char for char in uuid if char.isalnum())
+
+
+def strip_email(email: str) -> str:
+    return strip_text(email.split('@')[0])
+
+
 def main():
     print("running utils.py")
 

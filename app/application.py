@@ -3,9 +3,11 @@ from imports import *
 # Local Modules
 import config
 import init_db
+import authentication
+import utils
 
-
-from globals import set_database
+from api_MODELS import StartSessionModel
+from api_dependencies import DatabaseManager
 
 from api_GET import router as api_GET
 from api_DELETE import router as api_DELETE
@@ -20,18 +22,29 @@ async def lifespan(application: FastAPI):
     print("FastAPI lifespan is starting")
 
     try:
-        init_db.init_paths()
-        database = init_db.init_db()
+        db_manager = DatabaseManager()
+        application.state.db_manager = db_manager
+        yield
+
         # database = init_db.init_http_db()
-
-        set_database(database)
-
     except Exception as e:
         print(f"FastAPI startup error: {e}")
         raise
-    yield
+    finally:
+        # TODO: check if Chroma DB has a cleanup function
+        print("Need to add a cleanup function")
+
 
 application = FastAPI(lifespan=lifespan)
+
+
+@application.post("/start_session")
+async def start_session(request: StartSessionModel, request2: Request):
+    # TODO: do not access dictionary directly
+    init_db.init_paths()
+    db_manager = request2.app.state.db_manager
+    db_manager.initialize_db(request.user_id)
+    return {"status": "success", "user_id": request.user_id}
 
 application.add_middleware(
     CORSMiddleware,
@@ -39,17 +52,15 @@ application.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173",
-        "http://ragbase.cloud",
         "https://ragbase.cloud",
-        "http://www.ragbase.cloud",
         "https://www.ragbase.cloud",
-        "http://api.ragbase.cloud",
         "https://api.ragbase.cloud"
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
 
 application.include_router(api_GET)
 application.include_router(api_DELETE)

@@ -1,6 +1,7 @@
 from imports import *
 
 # Local Modules
+from api_dependencies import get_db
 from globals import get_database
 from summarize import summarize_map_reduce
 import doc_ops_utils
@@ -14,7 +15,9 @@ router = APIRouter()
 
 
 @router.get("/download_files")
-async def download_files(hashes: List[str] = Query(...), collection: List[str] = Query(...)):
+async def download_files(
+        hashes: List[str] = Query(...),
+        collection: List[str] = Query(...), db=Depends(get_db)):
     """
     Downloads the specified files and returns a list of the downloaded files.
     """
@@ -74,7 +77,7 @@ async def download_files(hashes: List[str] = Query(...), collection: List[str] =
 
 
 @router.get("/initiate_push_to_db")
-async def initiate_push_to_db(collection: List[str] = Query(...)):
+async def initiate_push_to_db(collection: List[str] = Query(...), db=Depends(get_db)):
     """
     Updates the database with all the uploaded documents
     """
@@ -83,7 +86,8 @@ async def initiate_push_to_db(collection: List[str] = Query(...)):
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        database = get_database()
+        # database = get_database()
+        database = db
         # Collection can only have one element in it
         pushed_files = db_ops.push_to_database(database, collection[0])
         return pushed_files
@@ -92,13 +96,14 @@ async def initiate_push_to_db(collection: List[str] = Query(...)):
 
 
 @router.get("/summary")
-async def summarize(hashes: List[str] = Query(...)):
+async def summarize(hashes: List[str] = Query(...), db=Depends(get_db)):
     """
     Generates a map-reduce summary of the specified files.
     """
     print("API CALL: summarize_files")
     try:
-        database = get_database()
+        # database = get_database()
+        database = db
         summary = summarize_map_reduce(
             db=database,
             doc_list=hashes,
@@ -110,13 +115,14 @@ async def summarize(hashes: List[str] = Query(...)):
 
 
 @router.get("/theme")
-async def analyze_theme(hashes: List[str] = Query(...)):
+async def analyze_theme(hashes: List[str] = Query(...), db=Depends(get_db)):
     """
     Generates a map-reduce summary of the specified files.
     """
     print("API CALL: summarize_files")
     try:
-        database = get_database()
+        # database = get_database()
+        database = db
         summary = summarize_map_reduce(
             db=database,
             doc_list=hashes,
@@ -128,13 +134,14 @@ async def analyze_theme(hashes: List[str] = Query(...)):
 
 
 @router.get("/collections")
-async def get_collections():
+async def get_collections(db=Depends(get_db)):
     """
     Gets a list of all the collections in the database
     """
     print("API CALL: get_db_files_metadata")
     try:
-        database = get_database()
+        # database = get_database()
+        database = db
         collections = db_ops_utils.get_all_collections_names(database)
         return collections
     except Exception as e:
@@ -143,7 +150,7 @@ async def get_collections():
 
 
 @router.get("/saved_chats")
-async def get_saved_chats():
+async def get_saved_chats(db=Depends(get_db)):
     """
     Gets the JSON data containing all saved chats
     """
@@ -163,13 +170,14 @@ async def get_saved_chats():
 
 
 @router.get("/db_files_metadata")
-async def get_db_files_metadata(collections: List[str] = Query(...)):
+async def get_db_files_metadata(collections: List[str] = Query(...), db=Depends(get_db)):
     """
     Gets the metadata of all unique files in the database for the given collections
     """
     print("API CALL: get_db_files_metadata")
     try:
-        database = get_database()
+        # database = get_database()
+        database = db
         file_metadata = db_ops_utils.get_db_files_metadata(
             database, collections)
         return JSONResponse(content=file_metadata)
@@ -178,7 +186,7 @@ async def get_db_files_metadata(collections: List[str] = Query(...)):
 
 
 @router.get("/uploads_metadata")
-async def get_uploads_metadata():
+async def get_uploads_metadata(db=Depends(get_db)):
     """
     Gets the metadata of all uploads
     """

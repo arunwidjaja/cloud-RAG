@@ -7,8 +7,7 @@ import utils
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        path = utils.get_env_paths()['AUTH']
-        self.db_path = path / 'users.db'
+        self.db_path = utils.get_env_paths()['AUTH']
         self._init_db()
 
     def _init_db(self) -> None:
@@ -101,3 +100,28 @@ class UserAuth:
                 return False
         else:
             return False
+
+    def query_user_data(self, user_id: str, value: str) -> str:
+        """
+        Get the requested value from the user table based on the id
+
+        Args:
+            user_id (str): The UUID to look up
+            value (str): The column name to retrieve
+
+        Returns:
+            Optional[str]: The requested value if found, None if not found
+        """
+
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+
+                query = f"SELECT {value} FROM users WHERE id = ?"
+                cursor.execute(query, (user_id,))
+
+                result = cursor.fetchone()
+            return result[0] if result else None
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            raise

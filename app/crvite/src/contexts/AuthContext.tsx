@@ -3,6 +3,8 @@ import { User, AuthContextType } from '@/types/types';
 
 import { start_login, start_register, start_delete_account } from '@/api/api';
 
+import { initializeApi } from '@/api/api';
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const createUser = (id: string, email: string): User => {
@@ -23,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (user_id) {
                 const user = createUser(user_id, email)
                 setUser(user);
+                initializeApi(user_id)
             } else {
                 alert("The email or password are incorrect. Please try again.")
             }

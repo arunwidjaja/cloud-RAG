@@ -35,8 +35,8 @@ PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
 PATH_CHATS_LOCAL = CURRENT_PATH / Path('chats')
 PATH_CHATS_EFS = EFS_PATH / Path('chats')
 
-PATH_AUTH_LOCAL = CURRENT_PATH / Path("auth")
-PATH_AUTH_EFS = EFS_PATH / Path("auth")
+PATH_AUTH_LOCAL = CURRENT_PATH / Path("auth") / "users.db"
+PATH_AUTH_EFS = EFS_PATH / Path("auth") / "users.db"
 
 SEC_DESC_2 = """
 =========================
@@ -45,6 +45,7 @@ Vector Database Constants
 """
 
 DEFAULT_COLLECTION_NAME = "CloudRag"
+DEFAULT_USER_ID = "0"
 CHUNK_SIZE = 450
 CHUNK_OVERLAP = 100
 MAX_BATCH_SIZE = 5000

@@ -25,6 +25,7 @@ import '@/App.css';
 
 // Hooks
 import { use_presets } from '@/hooks/hooks';
+import { start_session } from '@/api/api';
 
 function MainApp() {
     const { user, logout } = useAuth();
@@ -33,6 +34,7 @@ function MainApp() {
 
     // Sets the initial state of state variables on start
     useEffect(() => {
+        start_session();
         refresh_collections();
         refresh_files();
         refresh_uploads();
@@ -91,7 +93,7 @@ function MainApp() {
                                         Log Out
                                     </Button>
                                     <div className='p-2'>
-                                        {user?.id}
+                                        {user?.email}
                                     </div>
                                     <div>
                                         <Avatar>
