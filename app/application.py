@@ -6,8 +6,8 @@ import init_db
 import authentication
 import utils
 
-
-from globals import set_database
+from api_MODELS import StartSessionModel
+from api_dependencies import DatabaseManager
 
 from api_GET import router as api_GET
 from api_DELETE import router as api_DELETE
@@ -22,27 +22,28 @@ async def lifespan(application: FastAPI):
     print("FastAPI lifespan is starting")
 
     try:
-        init_db.init_paths()
-        auth = authentication.UserAuth()
-
-        test_id = "80b5187d-4c56-4d5a-b287-df083449849a"
-        test_email = auth.query_user_data(user_id=test_id, value="username")
-
-        database = init_db.init_db(
-            user_id=utils.strip_text(test_id),
-            collection_name=utils.strip_email(test_email)
-        )
+        db_manager = DatabaseManager()
+        application.state.db_manager = db_manager
+        yield
 
         # database = init_db.init_http_db()
-
-        set_database(database)
-
     except Exception as e:
         print(f"FastAPI startup error: {e}")
         raise
-    yield
+    finally:
+        # TODO: check if Chroma DB has a cleanup function
+        print("Need to add a cleanup function")
+
 
 application = FastAPI(lifespan=lifespan)
+
+
+@application.post("/start_session")
+async def start_session(request: StartSessionModel, request2: Request):
+    init_db.init_paths()
+    db_manager = request2.app.state._state['db_manager']
+    db_manager.initialize_db(request.user_id)
+    return {"status": "success", "user_id": request.user_id}
 
 application.add_middleware(
     CORSMiddleware,
@@ -58,6 +59,7 @@ application.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
 
 application.include_router(api_GET)
 application.include_router(api_DELETE)

@@ -26,7 +26,7 @@ from chromadb.config import Settings
 # API
 import uvicorn
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, HTTPException, APIRouter, Query, File
+from fastapi import FastAPI, UploadFile, HTTPException, APIRouter, Query, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles

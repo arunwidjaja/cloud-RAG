@@ -39,3 +39,7 @@ class ChatModel(BaseModel):
 class CredentialsModel(BaseModel):
     email: str
     pwd: str
+
+
+class StartSessionModel(BaseModel):
+    user_id: str

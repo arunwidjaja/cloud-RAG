@@ -1,14 +1,40 @@
 import { get_current_collection } from '@/handlers/collection_handlers';
 import { FileData, ContextMessage, Chat } from '../types/types';
 
+// This variable is set on log-in by AuthContext
+let current_user_id: string;
+
+export const initializeApi = (user_id: string) => {
+  current_user_id = user_id;
+}
+
+export const start_session = async(): Promise<void> => {
+  console.log("Starting session")
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/start_session`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ user_id: current_user_id })
+    });
+  if (!response.ok) { throw new Error('Network response was not ok'); }
+  } catch (error) {
+    console.error('Error starting session: ', error);
+  }
+}
+
 
 export const fetch_db_collections = async (): Promise<string[]> => {
+  console.log("attempting to call fetch_db_collection")
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/collections`
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
       },
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -28,7 +54,13 @@ export const fetch_db_files_metadata = async (): Promise<FileData[]> => {
     try {
       const query = [collection_name].map(collection => `collections=${encodeURIComponent(collection)}`).join('&');
       const url = `${import.meta.env.VITE_API_BASE_URL}/db_files_metadata?${query}`
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'uuid': current_user_id
+        },
+      });
       if (!response.ok) { throw new Error('Network response was not ok'); }
       else {
         const files = await response.json();
@@ -47,7 +79,13 @@ export const fetch_db_files_metadata = async (): Promise<FileData[]> => {
 export const fetch_uploads_metadata = async (): Promise<FileData[]> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/uploads_metadata`
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      },
+    });
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
       const files = await response.json();
@@ -62,7 +100,13 @@ export const fetch_uploads_metadata = async (): Promise<FileData[]> => {
 export const fetch_saved_chats = async (): Promise<Chat[]> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/saved_chats`
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      },
+    })
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
       const chats = await response.json();
@@ -83,7 +127,10 @@ export const start_login = async (email: string, password: string): Promise<stri
     };
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      },
       body: JSON.stringify(data)
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -104,7 +151,10 @@ export const start_register = async (email: string, password: string): Promise<s
     };
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      },
       body: JSON.stringify(data)
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -125,7 +175,10 @@ export const start_delete_account = async (email: string, password: string): Pro
     };
     const response = await fetch(url, {
       method: 'DELETE',
-      headers:  { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      },
       body: JSON.stringify(data)
     })
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -144,7 +197,8 @@ export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
       },
       body: chat
     });
@@ -163,7 +217,8 @@ export const start_delete_chats = async (): Promise<boolean> => {
     const response = await fetch(url, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
       }
     })
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -188,6 +243,7 @@ export const start_upload_deletion = async (upload_deletion_list: FileData[]): P
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'uuid': current_user_id
       },
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -214,7 +270,8 @@ export const start_file_download = async (file_download_list: FileData[], collec
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Accept': 'application/zip, application/octet-stream'
+        'Accept': 'application/zip, application/octet-stream',
+        'uuid': current_user_id
       }
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -254,7 +311,13 @@ export const start_push_to_DB = async (uploads: FileData[], collection: string):
     const query_collection = [collection].map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
     const query = query_collection
     const url = `${import.meta.env.VITE_API_BASE_URL}/initiate_push_to_db?${query}`
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      },
+    });
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
       const pushed_files = await response.json();
@@ -279,6 +342,7 @@ export const start_file_deletion = async (file_deletion_list: FileData[], collec
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'uuid': current_user_id
       },
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -297,7 +361,8 @@ export const start_create_collection = async (collection_name: string, embedding
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
       },
       body: JSON.stringify({
         collection_name: collection_name,
@@ -323,6 +388,7 @@ export const start_delete_collection = async (collection: string): Promise<strin
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'uuid': current_user_id
       },
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -341,7 +407,8 @@ export const start_submit_query = async (user_query: string, query_type: string)
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
       },
       body: JSON.stringify({
         query_text: user_query,
@@ -371,6 +438,7 @@ export const start_summarization = async (files: FileData[]): Promise<string> =>
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'uuid': current_user_id
       }
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
@@ -396,6 +464,7 @@ export const start_theme_analysis = async (files: FileData[]) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'uuid': current_user_id
       }
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }

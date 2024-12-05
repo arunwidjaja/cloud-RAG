@@ -1,6 +1,7 @@
 from imports import *
 
 # Local Modules
+from api_dependencies import get_db
 from api_MODELS import *
 from globals import get_database
 from query_data import query_rag
@@ -16,6 +17,9 @@ router = APIRouter()
 async def login(credentials: CredentialsModel):
     try:
         auth = authentication.UserAuth()
+
+        # TODO: add logic for initializing database here
+
         return auth.validate_user(username=credentials.email, password=credentials.pwd)
     except Exception as e:
         raise HTTPException(
@@ -37,8 +41,7 @@ async def register(credentials: CredentialsModel):
 
 
 @router.post("/save_chat")
-async def save_chat(chat: ChatModel):
-
+async def save_chat(chat: ChatModel, db=Depends(get_db)):
     try:
         chats_path = utils.get_env_paths()['CHATS']
         # Create storage directory if it doesn't exist
@@ -69,13 +72,14 @@ async def save_chat(chat: ChatModel):
 
 
 @router.post("/create_collection")
-async def create_collection(request: CollectionModel):
+async def create_collection(request: CollectionModel, db=Depends(get_db)):
     """
     Create a new collection in the database
     """
     print("API CALL: create_collection")
     try:
-        database = get_database()
+        # database = get_database()
+        database = db
         collection_name = request.collection_name
         ef = request.embedding_function
         collection = db_ops.add_persistent_collection(
@@ -86,12 +90,13 @@ async def create_collection(request: CollectionModel):
 
 
 @router.post("/submit_query")
-async def submit_query(request: QueryModel):
+async def submit_query(request: QueryModel, db=Depends(get_db)):
     """
     Send query to LLM and retrieve the response
     """
     print("API CALL: submit_query")
-    database = get_database()
+    # database = get_database()
+    database = db
     query_response = query_rag(
         db=database,
         query_text=request.query_text,
@@ -125,7 +130,7 @@ async def submit_query(request: QueryModel):
 
 
 @router.post("/upload_documents")
-async def upload_documents(files: List[UploadFile] = File(...)):
+async def upload_documents(files: List[UploadFile] = File(...), db=Depends(get_db)):
     print(f"API CALL: upload_documents")
     saved_files = []
     uploads_path = utils.get_env_paths()['DOCS']
