@@ -26,11 +26,9 @@ RAGbase can be compiled and run locally, but requires OpenAI API keys:
 
 ## Release Notes
 
-<!-- <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_2.PNG" />
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_2.PNG" />
 
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_1.PNG" /> -->
-
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.5.PNG" />
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_1.PNG" />
 
 ### 2024.12.05 - v0.5
 - cloud-RAG has a new home and a new name: RAGbase!
