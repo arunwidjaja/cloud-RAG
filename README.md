@@ -1,11 +1,11 @@
-# Cloud RAG
+# RAGBase
 
-Cloud RAG is a Retrieval-Augmented Generation client that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
+[RAGbase](https://www.ragbase.cloud/landing) is a Retrieval-Augmented Generation client that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
 Text transformation, embedding, and generation is currently powered primarily by DistilBERT, ADA, and GPT-4.
 
 ## Getting Started
 
-Cloud RAG can be compiled and run locally, but requires OpenAI API keys:
+RAGbase can be compiled and run locally, but requires OpenAI API keys:
 
 1. Update <code>/app/config.py</code> with local Chroma DB and file upload paths.
 
@@ -31,6 +31,16 @@ Cloud RAG can be compiled and run locally, but requires OpenAI API keys:
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_1.PNG" /> -->
 
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.5.PNG" />
+
+### 2024.12.05 - v0.5
+- cloud-RAG has a new home and a new name: RAGbase!
+    - Deployed to: [ragbase.cloud](https://www.ragbase.cloud/landing)
+- Migrated to AWS:
+    - Amplify Frontend, EB/EC2 Backend 
+- Support for multiple users
+  - Registrations are available on request to limit traffic 
+- Support for chat history
+
 
 ### 2024.11.21 - v0.4
 - UI overhaul
