@@ -103,12 +103,12 @@ export function LandingPage() {
                     <div>
                         <Button
                             onClick={handleClickLogin}
-                            className="p-2 text-xs text-black bg-[#CECECE] hover:bg-[#E6E6E6] m-1">
+                            className="p-2 text-xs text-black bg-[#CECECE] hover:bg-[#F5F5F5] hover:text-black m-1">
                             Log In
                         </Button>
                         <Button
                             onClick={handleClickRegister}
-                            className="p-2 text-xs text-white bg-[#333333] hover:bg-[#4D4D4D] m-1">
+                            className="p-2 text-xs text-white bg-[#333333] hover:bg-[#686868] m-1">
                             Register
                         </Button>
                     </div>
@@ -125,7 +125,9 @@ export function LandingPage() {
                     </h2>
                 </div>
                 <div className="grid place-items-center">
-                    <img src={SCREENSHOT_MAIN} className="w-[1000px] m-22 rounded-xl"></img>
+                    <div className="p-2 border border-white/50">
+                        <img src={SCREENSHOT_MAIN} className="w-[1000px] m-22 rounded-xl"></img>
+                    </div>
                 </div>
             </div>
         </div>

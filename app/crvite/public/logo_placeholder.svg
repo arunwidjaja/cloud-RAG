@@ -6,7 +6,7 @@
         fill: url(#linear-gradient);
         stroke: #000;
         stroke-miterlimit: 10;
-        stroke-width: 0px;
+        stroke-width: 10px;
       }
     </style>
     <linearGradient id="linear-gradient" x1=".38" y1="331.81" x2="664.04" y2="331.81" gradientUnits="userSpaceOnUse">
