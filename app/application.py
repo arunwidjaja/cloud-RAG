@@ -68,7 +68,6 @@ application.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-
 application.include_router(api_GET)
 application.include_router(api_DELETE)
 application.include_router(api_POST)
