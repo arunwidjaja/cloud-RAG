@@ -6,7 +6,7 @@ import {
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
-import { LOGO_PLACEHOLDER, ICON_GITHUB, ICON_LINKEDIN } from "@/constants/constants"
+import { LOGO_PLACEHOLDER, ICON_GITHUB, ICON_LINKEDIN, SCREENSHOT_MAIN } from "@/constants/constants"
 import { Button } from "./ui/button"
 import { useNavigate } from "react-router-dom"
 
@@ -29,7 +29,7 @@ export function LandingPage() {
         <div className="relative">
             <LandingPageAnimation></LandingPageAnimation>
             <div id="landingpagecontent" className="relative z-10 min-h-screen items-center justify-center text-white">
-                <header className="flex justify-between items-center p-2 border-b border-b-white/10">
+                <header className="bg-[#08010C] flex justify-between items-center p-2 border-b border-b-white/10">
                     <img src={LOGO_PLACEHOLDER} className="w-[70px] h-[70px] p-2"></img>
                     <NavigationMenu className="absolute left-1/2 -translate-x-1/2 ">
                         <NavigationMenuList>
@@ -123,6 +123,9 @@ export function LandingPage() {
                         Upload your files, query them with ease, and leverage analytical techniques like summarization and thematic analysis.
                         With support for multimodal data and multiple generative models, you can adapt it to fit your needs.
                     </h2>
+                </div>
+                <div className="grid place-items-center">
+                    <img src={SCREENSHOT_MAIN} className="w-[1000px] m-22 rounded-xl"></img>
                 </div>
             </div>
         </div>
