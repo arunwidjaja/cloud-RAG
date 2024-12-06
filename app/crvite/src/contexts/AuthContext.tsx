@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { User, AuthContextType } from '@/types/types';
 
-import { start_login, start_register, start_delete_account } from '@/api/api';
+import { start_login, start_register, start_delete_account, start_logout } from '@/api/api';
 
 import { initializeApi } from '@/api/api';
 
@@ -66,8 +66,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }
 
-    const logout = () => {
+    const logout = async() => {
         setUser(null);
+        try {
+            await start_logout();
+        } catch (error) {
+            console.error('Error loggging out: ', error);
+            throw error;
+        }
     };
 
     return (

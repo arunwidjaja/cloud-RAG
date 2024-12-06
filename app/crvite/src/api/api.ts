@@ -163,6 +163,26 @@ export const start_login = async (email: string, password: string): Promise<stri
     return "";
   }
 }
+export const start_logout = async (): Promise<boolean> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/logout`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      }
+    })
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error logging out: ', error);
+    return false;
+  }
+}
+
 export const start_register = async (email: string, password: string): Promise<string> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/register`

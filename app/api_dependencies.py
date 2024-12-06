@@ -38,10 +38,16 @@ class DatabaseManager:
             raise HTTPException(
                 status_code=500, detail=f"Failed to initialize database: {str(e)}")
 
-    def get_id(self) -> str:
+    def cleanup_current_connection(self) -> None:
         """
-        Return the 
+        Cleans the current database connection
         """
+        if self.db is not None:
+            # If Chroma has a cleanup method, call it here
+            # self.db.cleanup()  # Uncomment if available
+            self.db = None
+        self.uuid = None
+        print("Database connection cleaned up")
 
     def get_db(self) -> Chroma:
         """

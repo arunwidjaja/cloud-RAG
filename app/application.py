@@ -25,13 +25,12 @@ async def lifespan(application: FastAPI):
         db_manager = DatabaseManager()
         application.state.db_manager = db_manager
         yield
-
-        # database = init_db.init_http_db()
     except Exception as e:
         print(f"FastAPI startup error: {e}")
         raise
     finally:
-        # TODO: check if Chroma DB has a cleanup function
+        if hasattr(application.state, 'db_manager'):
+            application.state.db_manager.cleanup_current_connection()
         print("Need to add a cleanup function")
 
 
@@ -53,6 +52,23 @@ async def start_session(request: StartSessionModel, request2: Request):
     db_manager.initialize_db(user_id)
     return {"status": "success", "user_id": request.user_id}
 
+
+@application.post("/logout")
+async def logout(request: Request):
+    """
+    Handles user logout by cleaning up the database connection
+    """
+    try:
+        db_manager = request.app.state.db_manager
+        db_manager.cleanup_current_connection()
+        # return {"status": "success"}
+        return True
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to logout: {str(e)}"
+        )
+
 application.add_middleware(
     CORSMiddleware,
     # React.JS urls (Create, Vite)
@@ -71,9 +87,6 @@ application.add_middleware(
 application.include_router(api_GET)
 application.include_router(api_DELETE)
 application.include_router(api_POST)
-
-
-# handler = Mangum(app)
 
 
 # Run main to test locally on localhost:8000

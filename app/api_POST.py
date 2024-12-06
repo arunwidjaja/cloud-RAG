@@ -16,9 +16,6 @@ router = APIRouter()
 async def login(credentials: CredentialsModel):
     try:
         auth = authentication.UserAuth()
-
-        # TODO: add logic for initializing database here
-
         return auth.validate_user(username=credentials.email, password=credentials.pwd)
     except Exception as e:
         raise HTTPException(
