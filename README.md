@@ -26,9 +26,11 @@ Cloud RAG can be compiled and run locally, but requires OpenAI API keys:
 
 ## Release Notes
 
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_2.PNG" />
+<!-- <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_2.PNG" />
 
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_1.PNG" />
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_1.PNG" /> -->
+
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.5.PNG" />
 
 ### 2024.11.21 - v0.4
 - UI overhaul
