@@ -6,7 +6,7 @@ import {
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
-import { LOGO_PLACEHOLDER } from "@/constants/constants"
+import { LOGO_PLACEHOLDER, ICON_GITHUB, ICON_LINKEDIN } from "@/constants/constants"
 import { Button } from "./ui/button"
 import { useNavigate } from "react-router-dom"
 
@@ -29,23 +29,72 @@ export function LandingPage() {
         <div className="relative">
             <LandingPageAnimation></LandingPageAnimation>
             <div id="landingpagecontent" className="relative z-10 min-h-screen items-center justify-center text-white">
-                <header className="flex justify-between items-center p-2 bg-[#08010C] border-b border-b-white/10">
+                <header className="flex justify-between items-center p-2 border-b border-b-white/10">
                     <img src={LOGO_PLACEHOLDER} className="w-[70px] h-[70px] p-2"></img>
                     <NavigationMenu className="absolute left-1/2 -translate-x-1/2 ">
                         <NavigationMenuList>
                             <NavigationMenuItem>
                                 <NavigationMenuTrigger>Product</NavigationMenuTrigger>
                                 <NavigationMenuContent>
-                                    <div className="w-[400px] h-[400px] text-white bg-[#0e0e0e]">
-                                        This section will contain information about the features and capabilities of RAGbase.
+                                    <div className="w-[800px] h-[400px] text-white bg-[#0e0e0e] p-2 grid grid-cols-4">
+                                        <div className="col-span-2 p-2 m-2 border border-white/50 rounded-sm">
+                                            <p className="justify-self-center">Retrieval-Augmented Generation</p>
+                                            <p className="p-2 text-s text-gray-200">RAGbase can convert and query your data. Audio and Video transcription is built-in, along with support for text formats such as .txt and .pdf.</p>
+                                            <p className="p-2 text-s text-gray-200">Persistent storage with and user-specific collections and settings make it easy to customize your dashboard to your needs.</p>
+                                        </div>
+                                        <div className="col-span-1 p-2 m-2 border border-white/50 rounded-sm">
+                                            <p className="justify-self-center">Model Selection</p>
+                                            <p className="p-2 text-s text-gray-200">RAGbase supports foundation models from OpenAI, Amazon Bedrock, and Ollama</p>
+                                        </div>
+                                        <div className="col-span-1 p-2 m-2 border border-white/50 rounded-sm">
+                                            <p className="justify-self-center">Document Analysis</p>
+                                            <p className="p-2 text-s text-gray-200">Presets allow you to run sentiment and thematic analysis on document batches, for straightforward results without having to start a chat.</p>
+                                        </div>
                                     </div>
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
                             <NavigationMenuItem>
                                 <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
                                 <NavigationMenuContent>
-                                    <div className="w-[400px] h-[400px] text-white bg-[#0e0e0e]">
-                                        This section will contain links to the GitHub Repo for this project and information on how to contact the developer.
+                                    <div className="w-[400px] h-[400px] text-white bg-[#0e0e0e] p-2 flex flex-col">
+                                        <div className="border-b-2 border-b-white p-2">
+                                            RAGbase is an Open Source project! Visit the repository for more information.
+                                        </div>
+                                        <div id="resourcelinks" className="flex-1 flex flex-col m-2 mt-8">
+                                            <a href="https://github.com/arunwidjaja/cloud-RAG">
+                                                <div className="flex-1 grid grid-cols-6">
+                                                    <div className="p-2 m-1">
+                                                        <img src={ICON_GITHUB} className="w-8 h-8"></img>
+                                                    </div>
+                                                    <div className="m-2 col-span-5">
+                                                        <p>Project Repository</p>
+                                                        <p className="text-xs text-gray-200">Visit the repository for documentation, Q&A, and information on upcoming changes</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="https://github.com/arunwidjaja/cloud-RAG/releases">
+                                                <div className="flex-1 grid grid-cols-6">
+                                                    <div className="p-2 m-1">
+                                                        <img src={ICON_GITHUB} className="w-8 h-8"></img>
+                                                    </div>
+                                                    <div className="m-2 col-span-5">
+                                                        <p>Release History</p>
+                                                        <p className="text-xs text-gray-200">Legacy versions can be downloaded from the releases page</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="https://www.linkedin.com/in/arunwidjaja/">
+                                                <div className="flex-1 grid grid-cols-6">
+                                                    <div className="p-2 m-1">
+                                                        <img src={ICON_LINKEDIN} className="w-8 h-8"></img>
+                                                    </div>
+                                                    <div className="m-2 col-span-5">
+                                                        <p>Contact the Developer</p>
+                                                        <p className="text-xs text-gray-200">Feel free to contact me directly with suggestions or questions</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
                                     </div>
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
