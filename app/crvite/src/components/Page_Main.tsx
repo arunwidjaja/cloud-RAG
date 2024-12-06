@@ -30,18 +30,28 @@ import { start_session } from '@/api/api';
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
 
 function MainApp() {
-    const { user, logout } = useAuth();
+    const { user, logout, isAuthenticated } = useAuth();
     // const lorem = new LoremIpsum();
     // const filler_text = lorem.generateWords(600);
 
     // Sets the initial state of state variables on start
     useEffect(() => {
-        start_session();
-        refresh_collections();
-        refresh_files();
-        refresh_uploads();
-        refresh_chats();
-    }, []);
+        if (isAuthenticated && user) {
+            const initializeApp = async () => {
+                try {
+                    await start_session();
+                    await refresh_collections();
+                    await refresh_files();
+                    await refresh_uploads();
+                    await refresh_chats();
+                } catch (error) {
+                    console.error('Initialization error: ', error);
+                }
+            }
+            initializeApp();
+        }
+
+    }, [isAuthenticated, user]);
 
     return (
         <ThemeProvider>
