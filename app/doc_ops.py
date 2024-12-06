@@ -14,7 +14,7 @@ def load_documents():
     """
     Loads documents from the uploads folder
     """
-    document_path = utils.get_env_paths()['DOCS']
+    document_path = utils.get_env_paths()['UPLOADS']
     documents_list = []
 
     print(f"Searching for documents in: {document_path}")

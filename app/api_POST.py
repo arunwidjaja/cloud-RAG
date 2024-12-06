@@ -3,7 +3,6 @@ from imports import *
 # Local Modules
 from api_dependencies import get_db
 from api_MODELS import *
-from globals import get_database
 from query_data import query_rag
 import config
 import db_ops
@@ -44,8 +43,6 @@ async def register(credentials: CredentialsModel):
 async def save_chat(chat: ChatModel, db=Depends(get_db)):
     try:
         chats_path = utils.get_env_paths()['CHATS']
-        # Create storage directory if it doesn't exist
-        chats_path.mkdir(parents=True, exist_ok=True)
 
         # Create the file path using the chat ID
         file_path = chats_path / f"{chat.id}.json"
@@ -133,7 +130,7 @@ async def submit_query(request: QueryModel, db=Depends(get_db)):
 async def upload_documents(files: List[UploadFile] = File(...), db=Depends(get_db)):
     print(f"API CALL: upload_documents")
     saved_files = []
-    uploads_path = utils.get_env_paths()['DOCS']
+    uploads_path = utils.get_env_paths()['UPLOADS']
 
     print(f"Files received: {files}")
     for file in files:

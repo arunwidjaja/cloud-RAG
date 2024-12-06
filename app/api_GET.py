@@ -2,7 +2,6 @@ from imports import *
 
 # Local Modules
 from api_dependencies import get_db
-from globals import get_database
 from summarize import summarize_map_reduce
 import doc_ops_utils
 import db_ops_utils
@@ -158,7 +157,6 @@ async def get_saved_chats(db=Depends(get_db)):
     all_chats = []
     try:
         chats_dir = utils.get_env_paths()['CHATS']
-        chats_dir.mkdir(parents=True, exist_ok=True)
         for chat_name in os.listdir(chats_dir):
             chat_path = Path(chats_dir) / chat_name
             with open(chat_path, 'r') as chat:

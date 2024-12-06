@@ -3,7 +3,6 @@ from imports import *
 # Local Modules
 from api_dependencies import get_db
 from api_MODELS import *
-from globals import get_database
 import doc_ops_utils
 import db_ops
 import config
@@ -31,9 +30,6 @@ async def delete_chats(db=Depends(get_db)):
     Deletes stored chats
     """
     chats_path = utils.get_env_paths()['CHATS']
-    if not os.path.exists(chats_path):
-        os.makedirs(chats_path)
-        return
     for item in os.listdir(chats_path):
         item_path = os.path.join(chats_path, item)
         # Remove files and directories

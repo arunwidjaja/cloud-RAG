@@ -15,7 +15,7 @@ def delete_uploads(file_hash_list: List) -> List:
     Returns:
         A list of names of deleted uploads
     """
-    document_path = utils.get_env_paths()['DOCS']
+    document_path = utils.get_env_paths()['UPLOADS']
     deleted_uploads = []
 
     uploads_folder_hash = utils.get_hash_dir(document_path)
@@ -39,7 +39,7 @@ def delete_all_uploads() -> List:
     Returns:
         A list of names of deleted uploads
     """
-    document_path = utils.get_env_paths()['DOCS']
+    document_path = utils.get_env_paths()['UPLOADS']
     uploads_folder_hash = utils.get_hash_dir(document_path)
     return delete_uploads(uploads_folder_hash.keys())
 
@@ -78,7 +78,7 @@ def archive_all_uploads() -> List:
     Returns:
         A list of the moved files' names
     """
-    document_path = utils.get_env_paths()['DOCS']
+    document_path = utils.get_env_paths()['UPLOADS']
     all_uploads = [str(file) for file in Path(
         document_path).rglob('*') if file.is_file()]
     return archive_uploads(all_uploads)
@@ -91,7 +91,7 @@ def get_uploads_metadata() -> List[dict]:
     Returns:
         A list of dictionaries containing the file name, hash, and word count
     """
-    uploads_folder_path = utils.get_env_paths()['DOCS']
+    uploads_folder_path = utils.get_env_paths()['UPLOADS']
     uploads_metadata = []
     for f in uploads_folder_path.iterdir():
         if f.is_file():

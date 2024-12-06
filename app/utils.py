@@ -5,6 +5,83 @@ import config
 import hashlib
 import time
 
+_base_paths = {}
+_user_paths = {}
+
+
+def setup_paths():
+    print("Initializing resource paths...")
+    global _base_paths
+    global _user_paths
+
+    keys = ['DB', 'UPLOADS', 'ARCHIVE', 'CHATS', 'AUTH']
+    _base_paths = dict.fromkeys(keys, None)
+
+    _document_paths = {
+        "LOCAL": config.PATH_UPLOADS_LOCAL,
+        "EFS": config.PATH_UPLOADS_EFS
+    }
+    _chroma_paths = {
+        "LOCAL": config.PATH_CHROMA_LOCAL,
+        "EFS": config.PATH_CHROMA_EFS
+    }
+    _archive_paths = {
+        "LOCAL": config.PATH_ARCHIVE_LOCAL,
+        "EFS": config.PATH_ARCHIVE_EFS
+    }
+    _chat_paths = {
+        "LOCAL": config.PATH_CHATS_LOCAL,
+        "EFS": config.PATH_CHATS_EFS
+    }
+    _auth_paths = {
+        "LOCAL": config.PATH_AUTH_LOCAL,
+        "EFS": config.PATH_AUTH_EFS
+    }
+
+    if 'var' in str(config.CURRENT_PATH):
+        _base_paths['DB'] = _chroma_paths['EFS']
+        _base_paths['UPLOADS'] = _document_paths['EFS']
+        _base_paths['ARCHIVE'] = _archive_paths['EFS']
+        _base_paths['CHATS'] = _chat_paths['EFS']
+        _base_paths['AUTH'] = _auth_paths['EFS']
+    else:
+        _base_paths['DB'] = _chroma_paths['LOCAL']
+        _base_paths['UPLOADS'] = _document_paths['LOCAL']
+        _base_paths['ARCHIVE'] = _archive_paths['LOCAL']
+        _base_paths['CHATS'] = _chat_paths['LOCAL']
+        _base_paths['AUTH'] = _auth_paths['LOCAL']
+
+    for key, path, in _base_paths.items():
+        if os.path.exists(path) and os.path.isfile(path):
+            print(f"Verified file exists: {path}")
+            continue
+        os.makedirs(path, exist_ok=True)
+        print(f"Verified path exists: {path}")
+
+    _user_paths = _base_paths
+
+
+setup_paths()
+
+
+def set_env_paths(user_id: str):
+    """
+    Appends path with the user's id and creates it
+    Auth database is shared for all users so it's not modified
+    """
+    global _user_paths
+
+    _user_paths = _base_paths.copy()
+    for key, path in _user_paths.items():
+        if not os.path.isfile(_user_paths[key]):
+            _user_paths[key] = _base_paths[key] / strip_text(user_id)
+            os.makedirs(_user_paths[key], exist_ok=True)
+            print(f"Verified user's path exists: {_user_paths[key]}")
+
+
+def get_env_paths() -> dict[str, Path]:
+    return _user_paths.copy()
+
 
 def format_time(ms: float):
     """
@@ -48,51 +125,6 @@ def timer(function):
               format_time(elapsed_time_ms)}")
         return result
     return wrapper
-
-
-def get_env_paths() -> dict[str, Path]:
-    """
-    Sets environment-sensitive paths/values and returns them in a dictionary.
-
-    """
-    keys = ['DB', 'DOCS', 'ARCHIVE', 'CHATS', 'AUTH']
-    dynamic_env_values = dict.fromkeys(keys, None)
-
-    document_paths = {
-        "LOCAL": config.PATH_DOCUMENTS_LOCAL,
-        "EFS": config.PATH_DOCUMENTS_EFS
-    }
-    chroma_paths = {
-        "LOCAL": config.PATH_CHROMA_LOCAL,
-        "EFS": config.PATH_CHROMA_EFS
-    }
-    archive_paths = {
-        "LOCAL": config.PATH_ARCHIVE_LOCAL,
-        "EFS": config.PATH_ARCHIVE_EFS
-    }
-    chat_paths = {
-        "LOCAL": config.PATH_CHATS_LOCAL,
-        "EFS": config.PATH_CHATS_EFS
-    }
-    auth_paths = {
-        "LOCAL": config.PATH_AUTH_LOCAL,
-        "EFS": config.PATH_AUTH_EFS
-    }
-
-    if 'var' in str(config.CURRENT_PATH):
-        dynamic_env_values['DB'] = chroma_paths['EFS']
-        dynamic_env_values['DOCS'] = document_paths['EFS']
-        dynamic_env_values['ARCHIVE'] = archive_paths['EFS']
-        dynamic_env_values['CHATS'] = chat_paths['EFS']
-        dynamic_env_values['AUTH'] = auth_paths['EFS']
-    else:
-        dynamic_env_values['DB'] = chroma_paths['LOCAL']
-        dynamic_env_values['DOCS'] = document_paths['LOCAL']
-        dynamic_env_values['ARCHIVE'] = archive_paths['LOCAL']
-        dynamic_env_values['CHATS'] = chat_paths['LOCAL']
-        dynamic_env_values['AUTH'] = auth_paths['LOCAL']
-
-    return dynamic_env_values
 
 
 def extract_file_name(paths: List[str] | str) -> List[str] | str:

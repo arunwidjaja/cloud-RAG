@@ -118,6 +118,27 @@ export const fetch_saved_chats = async (): Promise<Chat[]> => {
   }
 }
 
+export const start_upload = async(uploads: FormData): Promise<string[]> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/upload_documents`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'uuid': current_user_id
+      },
+      body: uploads
+    })
+    if(!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      const uploaded_files: string[] = await response.json();
+      return uploaded_files
+    }
+  } catch (error) {
+    console.error("Error uploading file: ", error);
+    return []
+  }
+}
+
 export const start_login = async (email: string, password: string): Promise<string> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/login`

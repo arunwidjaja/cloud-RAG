@@ -26,8 +26,8 @@ Resource Paths:
 PATH_CHROMA_LOCAL = CURRENT_PATH / Path('chroma')
 PATH_CHROMA_EFS = EFS_PATH / Path('chroma')
 
-PATH_DOCUMENTS_LOCAL = CURRENT_PATH / Path('uploads')
-PATH_DOCUMENTS_EFS = EFS_PATH / Path('uploads')
+PATH_UPLOADS_LOCAL = CURRENT_PATH / Path('uploads')
+PATH_UPLOADS_EFS = EFS_PATH / Path('uploads')
 
 PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('archive')
 PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')

@@ -2,6 +2,7 @@ import { forwardRef, useRef, ChangeEvent, ForwardedRef } from "react";
 import { refresh_uploads } from "../handlers/file_handlers";
 import { add_log } from "../handlers/log_handlers";
 import React from 'react';
+import { start_upload } from "@/api/api";
 
 type FileUploadWindowProps = {
     // Add any props if needed
@@ -39,12 +40,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
         }
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/upload_documents`, {
-                method: 'POST',
-                body: formData
-            });
-
-            const uploaded_files: string[] = await response.json();
+            const uploaded_files = await start_upload(formData);
             uploaded_files.forEach((uploaded_file) => {
                 add_log("Uploaded File: " + uploaded_file);
             });

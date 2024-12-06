@@ -40,10 +40,17 @@ application = FastAPI(lifespan=lifespan)
 
 @application.post("/start_session")
 async def start_session(request: StartSessionModel, request2: Request):
-    # TODO: do not access dictionary directly
-    init_db.init_paths()
+    """
+    Starts the user's session. Connects to the database.
+
+    Args:
+        request: the Pydantic request from frontend
+        request2: used to access FastAPI state information
+    """
+    user_id = request.user_id
+    init_db.init_paths(user_id)
     db_manager = request2.app.state.db_manager
-    db_manager.initialize_db(request.user_id)
+    db_manager.initialize_db(user_id)
     return {"status": "success", "user_id": request.user_id}
 
 application.add_middleware(

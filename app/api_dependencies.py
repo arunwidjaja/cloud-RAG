@@ -13,9 +13,7 @@ class DatabaseManager:
         self.uuid = None
         print("DatabaseManager Initialized")
 
-    # TODO: remove default user id value. It's here temporarily for testing.
-    # TODO: make initialize_db async?
-    def initialize_db(self, user_id="80b5187d-4c56-4d5a-b287-df083449849a") -> None:
+    def initialize_db(self, user_id) -> None:
         """
         Initializes the database for the given user
         """

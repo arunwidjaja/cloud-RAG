@@ -17,7 +17,8 @@ def init_db(user_id: str, collection_name: str, embedding_function='openai') -> 
     Returns:
         The LangChain Chroma object pointing to the DB
     """
-    chroma_path = utils.get_env_paths()['DB'] / user_id
+    chroma_path = utils.get_env_paths()['DB']
+    print(f"The current chroma_path is {chroma_path}")
     ef = get_embedding_function(embedding_function)
 
     try:
@@ -26,6 +27,8 @@ def init_db(user_id: str, collection_name: str, embedding_function='openai') -> 
             path=str(chroma_path)
         )
         existing_collections = persistent_client.list_collections()
+        print("Collections currently in the DB: ")
+        print(existing_collections)
         if not existing_collections:
             default_collection = collection_name
         else:
@@ -69,25 +72,11 @@ def init_http_db(collection_name=config.DEFAULT_COLLECTION_NAME, embedding_funct
         raise
 
 
-def init_paths() -> None:
+def init_paths(user_id: str) -> None:
     """
     Initializes necessary directories
     """
-    paths = []
-    paths.append(utils.get_env_paths()['DOCS'])
-    paths.append(utils.get_env_paths()['ARCHIVE'])
-    paths.append(utils.get_env_paths()['CHATS'])
-    paths.append(utils.get_env_paths()['AUTH'])
-
-    for path in paths:
-        if not os.path.exists(path):
-            try:
-                print(f"Creating directory: {path}")
-                os.makedirs(path)
-            except Exception as e:
-                print(f"Error creating {path}: {e}")
-        else:
-            print(f"Found path: {path}")
+    utils.set_env_paths(user_id)
 
 
 def main():
