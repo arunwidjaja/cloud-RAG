@@ -73,11 +73,10 @@ application.add_middleware(
     CORSMiddleware,
     # React.JS urls (Create, Vite)
     allow_origins=[
-        "http://localhost:3000",
         "http://localhost:5173",
         "https://ragbase.cloud",
         "https://www.ragbase.cloud",
-        "https://api.ragbase.cloud"
+        "https://api.ragbase.cloud",
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
