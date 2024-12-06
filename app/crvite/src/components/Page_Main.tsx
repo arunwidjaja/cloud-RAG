@@ -27,6 +27,8 @@ import '@/App.css';
 import { use_presets } from '@/hooks/hooks';
 import { start_session } from '@/api/api';
 
+import { LOGO_PLACEHOLDER } from '@/constants/constants';
+
 function MainApp() {
     const { user, logout } = useAuth();
     // const lorem = new LoremIpsum();
@@ -77,14 +79,10 @@ function MainApp() {
                     <header className="w-full bg-primary pl-3 pt-3 mb-0 flex flex-row h-20">
                         {/* App Title */}
                         <div className="flex flex-1 flex-row font-bold items-center">
+                            <img src={LOGO_PLACEHOLDER} className='w-10 h-10 m-4'></img>
                             <div className="text-2xl font-bold text-text">
                                 Cloud RAG<sub className='text-text text-s font-mono'>0.4.1</sub>
                             </div>
-                            {/* <nav className='flex gap-4'>
-                <a href={HREF_REPO} target='_blank'>
-                  <img className="icon" src={SRC_GITHUB_ICON} alt="Repo Link" />
-                </a>
-              </nav> */}
                             {/* Profile Badge */}
                             <div className='justify-end flex flex-1 items-center mr-6'>
                                 <div className='flex flex-row text-text items-center'>

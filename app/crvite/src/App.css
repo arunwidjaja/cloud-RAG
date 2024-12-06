@@ -60,13 +60,13 @@ html, body, #root {
 .input {
   align-self: flex-end;
   text-align: end;
-  @apply bg-primary;
-  @apply text-text;
+  @apply bg-text;
+  @apply text-text2;
   @apply shadow-md;
 }
 .answer {
-  @apply bg-secondary;
-  @apply text-text;
+  @apply bg-text;
+  @apply text-text2;
   @apply shadow-md;
 }
 .input-icon-container {

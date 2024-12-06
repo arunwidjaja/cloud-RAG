@@ -88,7 +88,7 @@ export function DropdownMenuContext({
           variant="default"
           role="combobox"
           aria-expanded={open}
-          className={cn("justify-between bg-secondary text-text", className)}
+          className={cn("justify-between bg-text text-text2", className)}
         >
           {selectedValue
             ? items.find((item) => item.value === selectedValue)?.label

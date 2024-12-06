@@ -16,8 +16,10 @@ export default {
 				secondary_light: 'var(--color-secondary_light)',
 				background: 'var(--color-background)',
 				text: 'var(--color-text)',
+				text2: 'var(--color-text2)',
 				accent: 'var(--color-accent)',
 				foreground: 'hsl(var(--foreground))',
+				highlight: 'var(--color-highlight)',
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'

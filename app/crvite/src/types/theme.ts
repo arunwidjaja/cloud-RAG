@@ -6,20 +6,24 @@ export type ThemeColors = {
     secondary_light: string;
     background: string;
     text: string;
+    text2: string;
     accent: string;
+    highlight: string;
 }
 
 export type ThemeName = 'Light' | 'Dark' | 'DEHR';
 
 export const themes: Record<ThemeName,ThemeColors> = {
     Light: {
-        primary: '#C7A3FA',
-        primary_light: '#DDCCFF',
-        secondary: '#4DC3FF',
-        secondary_light: '#99DDFF',
-        background: '#000000',
-        text: '#000000',
-        accent: '#9AD1FF',
+        primary: '#1f1f1f',
+        primary_light: '#383838',
+        secondary: '#1f1f1f',
+        secondary_light: '#383838',
+        background: '#CCCCCC',
+        text: '#CCCCCC',
+        text2: '#343434',
+        accent: '#181818',
+        highlight: '#D5C1F3'
     },
     Dark: {
         primary: '#111111',
@@ -28,7 +32,9 @@ export const themes: Record<ThemeName,ThemeColors> = {
         secondary_light: '#262626',
         background: '#FFFFFF',
         text: '#FFFFFF',
+        text2: '#343434',
         accent: '#343434',
+        highlight: '#D5C1F3'
     },
     DEHR: {
         primary: '#111111',
@@ -37,6 +43,8 @@ export const themes: Record<ThemeName,ThemeColors> = {
         secondary_light: '#262626',
         background: '#000000',
         text: '#6A4C02',
+        text2: '#343434',
         accent: '#1E1D1D',
+        highlight: '#D5C1F3'
     }
 }

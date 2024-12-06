@@ -25,7 +25,7 @@ interface ChatPreviewProps {
 export const ChatPreview = ({ subject, chat }: ChatPreviewProps) => {
     return (
         <div
-            className='flex flex-row items-center hover:bg-secondary hover:cursor-pointer p-1 text-text text-sm rounded-md font-sans ml-3'
+            className='flex flex-row items-center hover:bg-highlight hover:text-text2 hover:cursor-pointer p-1 text-text text-sm rounded-md font-sans ml-3'
             onClick={() => handle_select_chat(chat)}>
             <img src={ICON_CHAT} className='w-6 h-6 mr-1'></img>
             <div className='min-w-0 truncate'>
