@@ -37,6 +37,11 @@ async def lifespan(application: FastAPI):
 application = FastAPI(lifespan=lifespan)
 
 
+@application.get("/")
+async def root():
+    return {"message": "RAGbase is running!"}
+
+
 @application.post("/start_session")
 async def start_session(request: StartSessionModel, request2: Request):
     """
