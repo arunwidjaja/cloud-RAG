@@ -69,6 +69,11 @@ async def logout(request: Request):
             detail=f"Failed to logout: {str(e)}"
         )
 
+
+@application.get('/health')
+async def health_check():
+    return {"status": "healthy"}
+
 application.add_middleware(
     CORSMiddleware,
     # React.JS urls (Create, Vite)
