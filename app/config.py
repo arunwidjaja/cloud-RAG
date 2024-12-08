@@ -35,8 +35,8 @@ PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
 PATH_CHATS_LOCAL = CURRENT_PATH / Path('chats')
 PATH_CHATS_EFS = EFS_PATH / Path('chats')
 
-PATH_AUTH_LOCAL = CURRENT_PATH / Path("auth") / "users.db"
-PATH_AUTH_EFS = EFS_PATH / Path("auth") / "users.db"
+PATH_AUTH_LOCAL = CURRENT_PATH / Path("auth")
+PATH_AUTH_EFS = EFS_PATH / Path("auth")
 
 SEC_DESC_2 = """
 =========================

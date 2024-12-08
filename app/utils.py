@@ -52,11 +52,12 @@ def setup_paths():
         _base_paths['AUTH'] = _auth_paths['LOCAL']
 
     for key, path, in _base_paths.items():
-        if os.path.exists(path) and os.path.isfile(path):
-            print(f"Verified file exists: {path}")
-            continue
-        os.makedirs(path, exist_ok=True)
-        print(f"Verified path exists: {path}")
+        if not os.path.exists(path):
+            os.makedirs(path)
+            print(f"Creating directory: {path}")
+        else:
+            print(f"Located directory: {path}")
+    auth_db = _base_paths['AUTH'] / "users.db"
 
     _user_paths = _base_paths
 

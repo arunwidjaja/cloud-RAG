@@ -7,11 +7,16 @@ import utils
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        self.db_path = utils.get_env_paths()['AUTH']
+        self.db_path = utils.get_env_paths()['AUTH'] / "users.db"
         self._init_db()
 
     def _init_db(self) -> None:
-        """Create the users table if it doesn't exist."""
+        # Creating the authentication database if it doesn't exist
+        if not os.path.exists(self.db_path):
+            with open(self.db_path, 'w') as f:
+                print(f"Creating auth database: {self.db_path}")
+                pass
+        # Creating the users table if it doesn't exist
         print(f"Attempting to connect to: {self.db_path}")
         try:
             with sqlite3.connect(self.db_path) as conn:
