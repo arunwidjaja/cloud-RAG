@@ -103,7 +103,7 @@ async def summarize(hashes: List[str] = Query(...), db=Depends(get_db)):
     try:
         # database = get_database()
         database = db
-        summary = summarize_map_reduce(
+        summary = await summarize_map_reduce(
             db=database,
             doc_list=hashes,
             preset='GENERAL'
@@ -122,7 +122,7 @@ async def analyze_theme(hashes: List[str] = Query(...), db=Depends(get_db)):
     try:
         # database = get_database()
         database = db
-        summary = summarize_map_reduce(
+        summary = await summarize_map_reduce(
             db=database,
             doc_list=hashes,
             preset='THEMES_INTERVIEWS_1'

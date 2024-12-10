@@ -133,6 +133,22 @@ def timer(function):
     return wrapper
 
 
+def async_timer(function: Callable) -> Callable:
+    """
+    Wrapper for timing async functions accurately
+    """
+    @functools.wraps(function)
+    async def wrapper(*args, **kwargs) -> Any:
+        start_time = time.perf_counter()
+        result = await function(*args, **kwargs)
+        end_time = time.perf_counter()
+        elapsed_time_ms = (end_time - start_time) * 1000
+        print(f"{function.__name__} completed in: {
+              format_time(elapsed_time_ms)}")
+        return result
+    return wrapper
+
+
 def extract_file_name(paths: List[str] | str) -> List[str] | str:
     """
     Extract the file name from the path or list of paths.

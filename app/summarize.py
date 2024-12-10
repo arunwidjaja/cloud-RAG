@@ -3,7 +3,7 @@ from imports import *
 # Local Modules
 import config
 import prompt_templates
-from utils import timer
+from utils import async_timer
 
 # Flow of data in LLM summarization:
 
@@ -22,13 +22,32 @@ from utils import timer
 
 # corpus -> chunks -> chunk summaries -> reduce -> ... -> reduce -> final summary
 
+
+async def process_chunk_async(map_chain, chunk):
+    """Process a single chunk asynchronously"""
+    return await map_chain.ainvoke({"docs": [chunk]})
+
+
+async def map_chunks_parallel(map_chain, chunks, max_concurrency=config.MAX_CONCURRENCY):
+    """Process chunks in parallel with controlled concurrency"""
+    semaphore = asyncio.Semaphore(max_concurrency)
+
+    async def process_with_semaphore(chunk):
+        async with semaphore:
+            return await process_chunk_async(map_chain, chunk)
+
+    tasks = [process_with_semaphore(chunk) for chunk in chunks]
+    return await asyncio.gather(*tasks)
+
 map_template = prompt_templates.PT_MAP_EVENT_INTERVIEWS_SENTIMENT
 reduce_template = prompt_templates.PT_REDUCE_SENTIMENT
-model = ChatOpenAI()
+model = ChatOpenAI(
+    max_retries=3
+)
 
 
-@timer
-def summarize_map_reduce(db: Chroma, doc_list: List, identifier='hash', preset='general') -> str:
+@async_timer
+async def summarize_map_reduce(db: Chroma, doc_list: List, identifier='hash', preset='general') -> str:
     """
     Retrieves the specified documents' chunks from the DB and summarizes them with map-reduce.
     By default, accepts a list of file hashes.
@@ -90,19 +109,28 @@ def summarize_map_reduce(db: Chroma, doc_list: List, identifier='hash', preset='
         collapse_documents_chain=combine_documents_chain,
         token_max=config.TOKEN_LIMIT
     )
-    map_reduce_chain = MapReduceDocumentsChain(
-        llm_chain=map_chain,
-        reduce_documents_chain=reduce_documents_chain,
-        document_variable_name='docs',
-        return_intermediate_steps=True
+
+    chunk_summaries = await map_chunks_parallel(map_chain, documents)
+
+    intermediate_docs = [
+        Document(page_content=summary['text'])
+        for summary in chunk_summaries
+    ]
+
+    # Reduce step
+    combine_documents_chain = StuffDocumentsChain(
+        llm_chain=reduce_chain,
+        document_variable_name='docs'
     )
 
-    summary = map_reduce_chain.invoke(documents)
+    # Optimize token handling
+    reduce_documents_chain = ReduceDocumentsChain(
+        combine_documents_chain=combine_documents_chain,
+        collapse_documents_chain=combine_documents_chain,
+        token_max=config.TOKEN_LIMIT
+    )
 
-    # Storing these two just in case
-    summary_sources = summary['input_documents']
-    summary_intermediate = summary['intermediate_steps']
-
-    summary_final = summary['output_text']
+    final_summary = await reduce_documents_chain.ainvoke({"input_documents": intermediate_docs})
+    summary_final = final_summary['output_text']
 
     return summary_final
