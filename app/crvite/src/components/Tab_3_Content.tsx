@@ -32,14 +32,16 @@ export function Tab_3_Content() {
             <UploadTable></UploadTable>
             <div className='mt-auto'>
                 <SimpleTooltip content="Pushes all uploads to the current Collection">
-                    <Button id="pushbtn" onClick={handle_push_uploads} className='w-full mt-4 mb-1'>
+                    <Button id="pushbtn"
+                    onClick={handle_push_uploads}
+                    className='w-full mt-4 mb-1 bg-accent text-text hover:bg-highlight hover:text-text2'>
                         Push
                     </Button>
                 </SimpleTooltip>
                 <div className='grid grid-cols-2'>
                     <FileUploadWindow ref={uploadRef} />
-                    <Button className="mr-1" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</Button>
-                    <Button className="ml-1" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Uploads</Button>
+                    <Button className="mr-1 bg-accent text-text hover:bg-highlight hover:text-text2" onClick={() => handle_accept_uploads(uploadRef)}>Upload Files</Button>
+                    <Button className="ml-1 bg-accent text-text hover:bg-highlight hover:text-text2" onClick={() => handle_remove_selected_uploads(selected_uploads)}>Remove Uploads</Button>
                 </div>
             </div>
         </div>

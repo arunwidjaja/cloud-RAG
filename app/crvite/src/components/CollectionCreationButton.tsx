@@ -34,11 +34,14 @@ export function CollectionCreationButton() {
         <Tooltip>
           <DialogTrigger asChild>
             <TooltipTrigger asChild>
-              <Button className="ml-1 mt-1">+</Button>
+              <Button
+                className="ml-1 mt-1 bg-accent text-text hover:text-text2 hover:bg-highlight">
+                +
+              </Button>
             </TooltipTrigger>
           </DialogTrigger>
           <TooltipContent>
-            <p className="text-text">Create a new Collection</p>
+            <p className="text-text2">Create a new Collection</p>
           </TooltipContent>
         </Tooltip>
         <DialogContent className="bg-primary">
@@ -55,7 +58,7 @@ export function CollectionCreationButton() {
                 id="name"
                 value={collectionName}
                 onChange={(e) => setCollectionName(e.target.value)}
-                className="col-span-4 bg-secondary"
+                className="col-span-4 bg-accent text-text"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -72,6 +75,7 @@ export function CollectionCreationButton() {
           </div>
           <DialogFooter>
             <Button
+              className="bg-accent hover:bg-highlight hover:text-text2 text-text"
               type="submit"
               onClick={() => handle_submit(collectionName, selectedEmbedding)}
             >

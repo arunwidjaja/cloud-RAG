@@ -75,7 +75,7 @@ export function FileTable() {
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
-          } 
+          }
           onCheckedChange={(checked) => {
             table.toggleAllPageRowsSelected(!!checked); // Adds or removes all page rows from the selected rows state
             // Sets the selected_files state to the FileData on the selected rows
@@ -90,7 +90,7 @@ export function FileTable() {
       ),
       cell: ({ row }) => (
         <Checkbox
-          checked = {row.getIsSelected()}
+          checked={row.getIsSelected()}
           onCheckedChange={(value) => {
             row.toggleSelected(!!value)
             if (value) {
@@ -189,15 +189,17 @@ export function FileTable() {
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className=" bg-secondary mr-1 col-span-3"
+          className="bg-accent text-text mr-1 col-span-3"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="default" className="ml-1 bg-secondary">
+            <Button variant="default" className="ml-1 bg-primary text-text">
               Columns <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent
+          className="text-text"
+          align="end">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
