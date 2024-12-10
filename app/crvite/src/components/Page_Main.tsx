@@ -74,9 +74,10 @@ function MainApp() {
                                 className='flex'
                                 onChange={handle_select_preset} />
                             <Button
-                                className='flex mt-2'
-                                onClick={handle_run_preset}
-                            >Run Selected Preset</Button>
+                                className='flex mt-2 hover:bg-highlight hover:text-text2 text-text'
+                                onClick={handle_run_preset}>
+                                    Run Selected Preset
+                            </Button>
                         </div>
                     </div>
                     <Logs></Logs>

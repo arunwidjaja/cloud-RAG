@@ -15,17 +15,17 @@ export function FileDisplay({ }) {
     const retrieved_id = retrieved.file.hash;
     const retrieved_source = retrieved.file.name;
     const retrieved_collection = retrieved.file.collection;
-    
-    
+
+
     let retrieved_subtitle;
-    if(retrieved_id) {
+    if (retrieved_id) {
         retrieved_subtitle =
             retrieved_source +
             " from collection " + retrieved_collection
     } else {
         retrieved_subtitle = ""
     }
-    
+
     return (
         <div id="file_display_component" className="flex flex-col flex-1 overflow-auto min-h-0">
             <div id="file_preview" className="mt-2 flex-1 overflow-auto min-h-0 bg-accent rounded-md p-2">
@@ -39,8 +39,11 @@ export function FileDisplay({ }) {
             </div>
             <div id="file_controls" className="mt-2">
                 <Button
+                    className="bg-accent text-text hover:bg-highlight hover:text-text2"
                     variant="default"
-                    onClick={handle_download_retrieved_file}> Download Full Document </Button>
+                    onClick={handle_download_retrieved_file}>
+                    Download Full Document
+                </Button>
             </div>
         </div>
     )

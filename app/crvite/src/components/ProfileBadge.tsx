@@ -9,14 +9,12 @@ import { ChevronDown } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { use_chats } from "@/hooks/hooks";
 import { start_delete_account } from "@/api/api";
-import { isPromise } from "util/types";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel } from '@/components/ui/alert-dialog'
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
 import { X } from "lucide-react";
-import { log } from "console";
 
 
 
@@ -31,7 +29,7 @@ export const ProfileBadge = () => {
             handle_delete_chat(current_id);
         }
     }
-    const handle_delete_account = async(email: string, password: string) => {
+    const handle_delete_account = async (email: string, password: string) => {
         const success = await start_delete_account(email, password);
         if (success) {
             logout();
@@ -66,28 +64,28 @@ export const ProfileBadge = () => {
                             Enter your email and password to continue.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                        <Input
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            type="email"
-                            placeholder="email"
-                            className='bg-text ml-0'>
-                        </Input>
-                        <Input
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            type="password"
-                            placeholder="password"
-                            className='bg-text ml-0'>
-                        </Input>
-                        <Button
-                            onClick={() => handle_delete_account(email, password)}
-                            type="submit"
-                            className="bg-warning text-text">
-                            Delete Account
-                        </Button>
+                    <Input
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        type="email"
+                        placeholder="email"
+                        className='bg-text ml-0'>
+                    </Input>
+                    <Input
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password"
+                        placeholder="password"
+                        className='bg-text ml-0'>
+                    </Input>
+                    <Button
+                        onClick={() => handle_delete_account(email, password)}
+                        type="submit"
+                        className="bg-warning text-text">
+                        Delete Account
+                    </Button>
                 </AlertDialogContent>
             </AlertDialog>
         );
@@ -97,14 +95,14 @@ export const ProfileBadge = () => {
         <div className='justify-end flex flex-1 items-center mr-6'>
             <Popover>
                 <PopoverTrigger>
-                    <div className='rounded-md flex flex-row text-text items-center border border-white/20 hover:bg-accent text-xs'>
+                    <div className='rounded-md flex flex-row text-text items-center border border-white/20 hover:bg-accent text-sm'>
                         <ChevronDown
                             className="m-2"></ChevronDown>
                         <div className='pr-2'>
                             {user?.email}
                         </div>
                         <div>
-                            <Avatar className="m-1.5">
+                            <Avatar className="m-1">
                                 <AvatarImage src={LOGO_PLACEHOLDER} />
                                 <AvatarFallback className='bg-accent text-text'>{user?.email.substring(0, 2)}</AvatarFallback>
                             </Avatar>
