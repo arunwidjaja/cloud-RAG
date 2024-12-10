@@ -1,7 +1,5 @@
 import { useState } from 'react';
 
-import { Button } from './ui/button';
-
 import { ICON_TRASH, ICON_TRASH_HOVERED } from '@/constants/constants';
 import { handle_select_chat, refresh_chats } from '@/handlers/chats_handlers';
 import { Chat } from '@/types/types';
@@ -73,10 +71,6 @@ export const ChatHistory = () => {
                         />
                     ))}
                 </div>
-                <Button
-                    className='flex m-2'
-                    variant='destructive'
-                    onClick={() => handle_download_chats(chat_history)}>Download Chat History</Button>
             </div>
         </div>
     )

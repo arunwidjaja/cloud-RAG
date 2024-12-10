@@ -14,7 +14,6 @@ import { Tabs_Section } from '@/components/Tabs_Section';
 import { Logs } from '@/components/Logs';
 import { TextInput } from '@/components/TextInput';
 import { DropdownMenu } from '@/components/Dropdown_Menu';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Conversation } from '@/components/Conversation';
 import { ChatHistory } from '@/components/ChatHistory';
 import { Button } from '@/components/ui/button';
@@ -28,9 +27,10 @@ import { use_presets } from '@/hooks/hooks';
 import { start_session } from '@/api/api';
 
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
+import { ProfileBadge } from './ProfileBadge';
 
 function MainApp() {
-    const { user, logout, isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     // const lorem = new LoremIpsum();
     // const filler_text = lorem.generateWords(600);
 
@@ -93,24 +93,7 @@ function MainApp() {
                             <div className="text-2xl font-bold text-text">
                                 Cloud RAG<sub className='text-text text-s font-mono'>0.5</sub>
                             </div>
-                            {/* Profile Badge */}
-                            <div className='justify-end flex flex-1 items-center mr-6'>
-                                <div className='flex flex-row text-text items-center'>
-                                    <Button
-                                        onClick={logout}>
-                                        Log Out
-                                    </Button>
-                                    <div className='p-2'>
-                                        {user?.email}
-                                    </div>
-                                    <div>
-                                        <Avatar>
-                                            <AvatarImage src="" />
-                                            <AvatarFallback className='bg-accent text-text'>{user?.email.substring(0, 2)}</AvatarFallback>
-                                        </Avatar>
-                                    </div>
-                                </div>
-                            </div>
+                            <ProfileBadge></ProfileBadge>
                         </div>
                     </header>
 

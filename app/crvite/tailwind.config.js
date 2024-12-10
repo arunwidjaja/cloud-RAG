@@ -20,6 +20,7 @@ export default {
     			accent: 'var(--color-accent)',
     			foreground: 'hsl(var(--foreground))',
     			highlight: 'var(--color-highlight)',
+				warning: 'var(--color-warning)',
     			card: {
     				DEFAULT: 'hsl(var(--card))',
     				foreground: 'hsl(var(--card-foreground))'
