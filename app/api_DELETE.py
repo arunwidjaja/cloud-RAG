@@ -24,19 +24,22 @@ async def delete_account(credentials: CredentialsModel, db=Depends(get_db)):
         )
 
 
-@router.delete("/delete_chats")
-async def delete_chats(db=Depends(get_db)):
+@router.delete("/delete_chat")
+async def delete_chat(chat_id: str = Query(...), db=Depends(get_db)):
     """
     Deletes stored chats
     """
     chats_path = utils.get_env_paths()['CHATS']
-    for item in os.listdir(chats_path):
-        item_path = os.path.join(chats_path, item)
-        # Remove files and directories
-        if os.path.isfile(item_path):
-            os.remove(item_path)
-        elif os.path.isdir(item_path):
-            shutil.rmtree(item_path)
+    chat_path = chats_path / f"{chat_id}.json"
+
+    if not os.path.exists(chat_path):
+        return False
+    try:
+        if os.path.isfile(chat_path):
+            os.remove(chat_path)
+            return True
+    except Exception as e:
+        raise e
 
 
 @router.delete("/delete_uploads")

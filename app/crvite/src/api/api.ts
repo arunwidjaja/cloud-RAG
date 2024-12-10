@@ -252,9 +252,10 @@ export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
     return false
   }
 }
-export const start_delete_chats = async (): Promise<boolean> => {
+export const start_delete_chat = async (chat_id: string): Promise<boolean> => {
   try {
-    const url = `${import.meta.env.VITE_API_BASE_URL}/delete_chats`
+    const query = `chat_id=${encodeURIComponent(chat_id)}`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/delete_chat?${query}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: {
