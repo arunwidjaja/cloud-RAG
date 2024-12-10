@@ -10,8 +10,8 @@ import { handle_download_retrieved_file } from "@/handlers/retrieved_handlers";
 
 export function FileDisplay({ }) {
     const retrieved = use_current_retrieved();
-    const retrieved_context = retrieved.text;
 
+    const retrieved_context = retrieved.text;
     const retrieved_id = retrieved.file.hash;
     const retrieved_source = retrieved.file.name;
     const retrieved_collection = retrieved.file.collection;

@@ -3,7 +3,7 @@ import useCollectionsStore from "@/stores/collectionsStore";
 import useEmbeddingsStore from "@/stores/embeddingsStore";
 import useFilesStore from "@/stores/filesStore";
 import usePresetsStore from "@/stores/presetsStore";
-import useRetrievedStore from "@/stores/retrievedStore";
+import useRetrievedStore, { createDefaultContextData } from "@/stores/retrievedStore";
 
 import { Chat, ContextData, FileData } from "@/types/types";
 
@@ -54,6 +54,11 @@ export const use_retrieved_files = (): ContextData[] => {
 
 export const use_current_retrieved = (): ContextData => {
     const current_retrieved = useRetrievedStore((state) => state.current_retrieved);
-    return current_retrieved;
+    if(current_retrieved) {
+        return current_retrieved;
+    } else {
+        return createDefaultContextData();
+    }
+    
 }
 

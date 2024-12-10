@@ -17,6 +17,19 @@ export const handle_delete_chats = async () => {
     else { add_log('Unable to delete chats') }
 }
 
+export const handle_download_chats = async (chat_history: Chat[]) => {
+    const chat_string = JSON.stringify(chat_history, null, 2)
+    const blob = new Blob([chat_string], {type: 'application/json '});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = "chat_history";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+}
+
 interface ChatPreviewProps {
     subject: string;
     chat: Chat;
@@ -53,7 +66,7 @@ export const ChatHistory = () => {
                 <Button
                     className='flex m-2'
                     variant='destructive'
-                    onClick={handle_delete_chats}>Erase Chat History</Button>
+                    onClick={() => handle_download_chats(chat_history)}>Download Chat History</Button>
             </div>
         </div>
     )
