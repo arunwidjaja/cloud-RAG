@@ -1,23 +1,25 @@
 # File Types
+*.db
 *.env
+*.htpasswd
+*.log
+*.notes
 *.pem
 *.pyc
-*.notes
-*.log
-*.htpasswd
-*.db
+*.zip
 
 # Utility or temporary files not necessary for the app
 app/_*
 
-# Folders
+# User Data Folders
+archive/
+auth/
 chats/
 chroma/
-myenv/
-Sample Documents/
-data/
-archive/
 uploads/
+Sample Documents/
+myenv/
+
 
 # React.JS (Frontend Files)
 
@@ -32,7 +34,6 @@ uploads/
 .env.development.local
 .env.test.local
 .env.production.local
-
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
