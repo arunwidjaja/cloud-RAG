@@ -8,11 +8,16 @@ import { Button } from './ui/button';
 function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const { register, isAuthenticated } = useAuth();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
         try {
             await register(email, password);
         } catch (err) {
@@ -51,8 +56,16 @@ function RegisterPage() {
                         placeholder="password"
                         className='bg-gray-200 m-1'>
                     </Input>
+                    <Input
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        type="password"
+                        placeholder="re-enter password"
+                        className='bg-gray-200 m-1'>
+                    </Input>
                     <Button
-                        className='bg-purple-500 text-white m-1'>Request an Account</Button>
+                        className='bg-purple-500 text-white m-1'>Create Account</Button>
                 </form>
             </div>
         </div>
