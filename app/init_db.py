@@ -44,34 +44,6 @@ def init_db(user_id: str, collection_name: str, embedding_function='openai') -> 
         raise
 
 
-# def init_http_db(collection_name=config.DEFAULT_COLLECTION_NAME, embedding_function='openai', host_arg='localhost', port_arg=config.PORT_DB) -> Chroma:
-#     """
-#     Creates a Chroma (LangChain) instance that connects to an HTTP Chroma DB.
-#     Defaults to localhost.
-#     Chroma server must be running first. Start it from the command line.
-#     """
-#     ef = get_embedding_function(embedding_function)
-#     try:
-#         print("Connecting to the Chroma HTTP client at {host_arg}:{port_arg}")
-#         http_client = chromadb.HttpClient(
-#             host=host_arg,
-#             port=port_arg
-#         )
-#         existing_collections = http_client.list_collections()
-#         if not existing_collections:
-#             default_collection = collection_name
-#         else:
-#             default_collection = existing_collections[0].name
-#         db = Chroma(
-#             collection_name=default_collection,
-#             client=http_client,
-#             embedding_function=ef)
-#         return db
-#     except Exception as e:
-#         print(f"There was an error connecting to the Chroma DB: {str(e)}")
-#         raise
-
-
 def init_paths(user_id: str) -> None:
     """
     Initializes necessary directories

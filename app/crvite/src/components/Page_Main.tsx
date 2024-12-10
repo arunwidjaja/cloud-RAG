@@ -106,7 +106,7 @@ function MainApp() {
                                     <div>
                                         <Avatar>
                                             <AvatarImage src="" />
-                                            <AvatarFallback className='bg-secondary'>{user?.email.substring(0, 2)}</AvatarFallback>
+                                            <AvatarFallback className='bg-accent text-text'>{user?.email.substring(0, 2)}</AvatarFallback>
                                         </Avatar>
                                     </div>
                                 </div>

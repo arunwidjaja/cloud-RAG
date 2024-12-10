@@ -11,19 +11,14 @@ class UserAuth:
         self._init_db()
 
     def _init_db(self) -> None:
-        # Creating the authentication database if it doesn't exist
-        if not os.path.exists(self.db_path):
-            with open(self.db_path, 'w') as f:
-                print(f"Creating auth database: {self.db_path}")
-                pass
         # Creating the users table if it doesn't exist
         print(f"Attempting to connect to: {self.db_path}")
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute("""
                     CREATE TABLE IF NOT EXISTS users (
-                        id TEXT PRIMARY KEY,
-                        username TEXT NOT NULL,
+                        id TEXT PRIMARY KEY UNIQUE,
+                        username TEXT UNIQUE,
                         password_hash TEXT NOT NULL
                     )
                 """)
@@ -37,6 +32,7 @@ class UserAuth:
         Returns user id if credentials are valid, False otherwise.
         """
         try:
+            print(f"Validating credentials against db: {self.db_path}")
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.execute(
                     "SELECT id, password_hash FROM users WHERE username = ?",
@@ -70,7 +66,6 @@ class UserAuth:
             # Generate salt and hash password
             password_hash = bcrypt.hashpw(
                 password.encode('utf-8'),
-                # Work factor of 12 is a good default
                 bcrypt.gensalt(rounds=12)
             )
             # Generate UUID

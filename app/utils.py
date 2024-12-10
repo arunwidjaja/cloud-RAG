@@ -10,6 +10,9 @@ _user_paths = {}
 
 
 def setup_paths():
+    """
+    Initializes resource paths. Creates them if they don't exist.
+    """
     print("Initializing resource paths...")
     global _base_paths
     global _user_paths
@@ -58,6 +61,7 @@ def setup_paths():
         else:
             print(f"Located directory: {path}")
     auth_db = _base_paths['AUTH'] / "users.db"
+    auth_db.touch()
 
     _user_paths = _base_paths
 
@@ -67,8 +71,8 @@ setup_paths()
 
 def set_env_paths(user_id: str):
     """
-    Appends path with the user's id and creates it
-    Auth database is shared for all users so it's not modified
+    Appends path with the user's id and creates it.
+    Auth database is sshared across users.
     """
     global _user_paths
 
@@ -78,6 +82,7 @@ def set_env_paths(user_id: str):
             _user_paths[key] = _base_paths[key] / strip_text(user_id)
             os.makedirs(_user_paths[key], exist_ok=True)
             print(f"Verified user's path exists: {_user_paths[key]}")
+    _user_paths['AUTH'] = _base_paths['AUTH']
 
 
 def get_env_paths() -> dict[str, Path]:
