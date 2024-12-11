@@ -26,7 +26,7 @@ from chromadb.config import Settings
 # API
 import uvicorn
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, HTTPException, APIRouter, Query, File, Depends
+from fastapi import FastAPI, UploadFile, HTTPException, APIRouter, BackgroundTasks, Query, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -35,21 +35,28 @@ from mangum import Mangum
 from pydantic import BaseModel
 from starlette.requests import Request
 
+# Email
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 # General
 import asyncio
 import bcrypt
-import time
 import functools
 import sqlite3
 import boto3
 import json
 import io
 import os
+import random
 import re
 import shutil
+import string
+import smtplib
 import zipfile
 import uuid
 from collections import Counter, defaultdict
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from dotenv import load_dotenv
 from pathlib import Path

@@ -41,5 +41,10 @@ class CredentialsModel(BaseModel):
     pwd: str
 
 
+class OTPModel(BaseModel):
+    email: str
+    otp: str
+
+
 class StartSessionModel(BaseModel):
     user_id: str

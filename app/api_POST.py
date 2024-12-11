@@ -25,14 +25,31 @@ async def login(credentials: CredentialsModel):
 
 
 @router.post("/register")
-async def register(credentials: CredentialsModel):
+async def register(credentials: CredentialsModel, background_tasks: BackgroundTasks):
     try:
         auth = authentication.UserAuth()
-        return auth.register_user(username=credentials.email, password=credentials.pwd)
+        return auth.register_user(
+            email=credentials.email,
+            password=credentials.pwd,
+            background_tasks=background_tasks)
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"Failed to register user: {str(e)}"
+        )
+
+
+@router.post("/verify_otp")
+async def verify_otp(otp: OTPModel) -> bool:
+    try:
+        auth = authentication.UserAuth()
+        return await auth.verify_email(
+            email=otp.email,
+            otp=otp.otp)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to verify OTP: {str(e)}"
         )
 
 

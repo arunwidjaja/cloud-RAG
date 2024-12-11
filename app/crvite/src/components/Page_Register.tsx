@@ -5,18 +5,31 @@ import { Navigate } from 'react-router-dom';
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import OneTimePasscode from './OneTimePasscode';
 function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showOTP, setShowOTP] = useState(false);
 
     const { register, isAuthenticated } = useAuth();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            await register(email, password);
-        } catch (err) {
-            console.log('Error occurred while registering user');
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+        else {
+            try {
+                
+                const success = await register(email, password);
+                if(success) {
+                    setShowOTP(true);
+                }
+            } catch (err) {
+                console.log('Error occurred while registering user');
+            }
         }
     }
 
@@ -51,10 +64,20 @@ function RegisterPage() {
                         placeholder="password"
                         className='bg-gray-200 m-1'>
                     </Input>
+                    <Input
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        type="password"
+                        placeholder="re-enter password"
+                        className='bg-gray-200 m-1'>
+                    </Input>
                     <Button
-                        className='bg-purple-500 text-white m-1'>Request an Account</Button>
+                        className='bg-purple-500 text-white m-1'>Create Account</Button>
                 </form>
+                {showOTP && <OneTimePasscode email={email}></OneTimePasscode>}
             </div>
+
         </div>
 
     );

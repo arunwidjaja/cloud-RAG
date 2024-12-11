@@ -71,15 +71,21 @@ SEC_DESC_4 = """
 Authentication Constants: Keys and addresses
 ============================================
 """
+load_dotenv()
+
+SMTP_SERVER = "mail.privateemail.com"
+SMTP_PORT = 587
+SMTP_USERNAME = "verification@ragbase.cloud"
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")  # Store this in .env file
+
+OTP_LIFESPAN_MINUTES = 15
+
 HOST = "0.0.0.0"
 PORT_APP = 8000
 PORT_DB = 8001
-load_dotenv()
+
+
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
-# AWS_LAMBDA_SECRET_KEY = os.environ['AWS_LAMBDA_SECRET_KEY']
-# AWS_LAMBDA_ACCESS_KEY = os.environ['AWS_LAMBDA_ACCESS_KEY']
-# AWS_LAMBDA_ACCESS_KEY_ROOT = os.environ['AWS_LAMBDA_ACCESS_KEY_ROOT']
-# AWS_LAMBDA_SECRET_KEY_ROOT = os.environ['AWS_LAMBDA_SECRET_KEY_ROOT']
 
 SEC_DESC_END = """
 
