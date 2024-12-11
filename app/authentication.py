@@ -49,13 +49,17 @@ class UserAuth:
             print(f"SQLite error: {str(e)}")
             raise
 
-    def generate_otp(length: int = 6) -> str:
+    def generate_otp(self, length: int = 6) -> str:
         "Generate a random OTP of specified length"
-        return ''.join(random.choices(string.digits, k=length))
+        print(f"Generating OTP...")
+        otp = ''.join(random.choices(string.digits, k=length))
+        print(f"Generated OTP: {otp}")
+        return otp
 
     def send_verification_email(self, email: str, otp: str):
         """Send verification email with OTP."""
         try:
+            print(f"Sending verification email")
             msg = MIMEMultipart()
             msg['From'] = self.smtp_username
             msg['To'] = email
@@ -66,7 +70,7 @@ class UserAuth:
 
             Your verification code is: {otp}
 
-            This code will expire in {self.otp_lifespan_minutes}
+            This code will expire in {self.otp_lifespan_minutes} minutes.
 
             If you did not request this verification, please ignore this email.
             """
@@ -138,7 +142,7 @@ class UserAuth:
                     status_code=400, detail="Email already verified")
 
             # Check OTP expiry
-            if datetime.utcnow() > datetime.fromisoformat(otp_expiry):
+            if datetime.now(timezone.utc) > datetime.fromisoformat(otp_expiry).replace(tzinfo=timezone.utc):
                 raise HTTPException(status_code=400, detail="OTP has expired")
 
             # Verify OTP
@@ -171,10 +175,12 @@ class UserAuth:
             )
 
             # Open database connection
+            print(f"Connecting to authentication database: {self.db_path}")
             conn = sqlite3.connect(self.db_path)
             c = conn.cursor()
 
             # Check for an existing verified email
+            print(f"Checking if {email} is unique")
             c.execute("""
                 SELECT username
                 FROM users
@@ -185,13 +191,16 @@ class UserAuth:
 
             # Generate OTP and add email to verification DB
             otp = self.generate_otp()
-            otp_expiry = datetime.utcnow() + timedelta(minutes=self.otp_lifespan_minutes)
+            otp_expiry = datetime.now(
+                timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
+            print(f"Adding email and OTP to verification database")
             c.execute("""
                 INSERT INTO email_verifications (user_id, email, otp, otp_expiry, verified)
                 VALUES (?, ?, ?, ?, FALSE)
             """, (user_id, email, otp, otp_expiry))
 
             # Create user and add to the users database
+            print(f"Adding user to database")
             c.execute("""
                 INSERT INTO users (id, username, password_hash)
                 VALUES (?, ?, ?)
