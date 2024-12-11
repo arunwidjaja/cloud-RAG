@@ -8,6 +8,7 @@ import db_ops
 import config
 import utils
 import authentication
+import delete_user_data
 
 router = APIRouter()
 
@@ -16,7 +17,16 @@ router = APIRouter()
 async def delete_account(credentials: CredentialsModel, db=Depends(get_db)):
     try:
         auth = authentication.UserAuth()
-        return auth.delete_user(username=credentials.email, password=credentials.pwd)
+        user_id = auth.validate_user(
+            username=credentials.email,
+            password=credentials.pwd
+        )
+        if user_id:
+            auth.delete_user(
+                username=credentials.email,
+                password=credentials.pwd)
+            # delete_user_data.delete_user_data(user_id)
+
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -29,7 +39,7 @@ async def delete_chat(chat_id: str = Query(...), db=Depends(get_db)):
     """
     Deletes stored chats
     """
-    chats_path = utils.get_env_paths()['CHATS']
+    chats_path = utils.get_env_user_paths()['CHATS']
     chat_path = chats_path / f"{chat_id}.json"
 
     if not os.path.exists(chat_path):

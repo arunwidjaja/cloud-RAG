@@ -17,7 +17,7 @@ def init_db(user_id: str, collection_name: str, embedding_function='openai') -> 
     Returns:
         The LangChain Chroma object pointing to the DB
     """
-    chroma_path = utils.get_env_paths()['DB']
+    chroma_path = utils.get_env_user_paths()['DB']
     print(f"The current chroma_path is {chroma_path}")
     ef = get_embedding_function(embedding_function)
 

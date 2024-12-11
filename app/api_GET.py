@@ -29,7 +29,7 @@ async def download_files(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
         # Get the hashes of the files in the archive
-        source_location = utils.get_env_paths()['ARCHIVE']
+        source_location = utils.get_env_user_paths()['ARCHIVE']
         archive_hash = utils.get_hash_dir(source_location)
 
         # Convert hashes to paths
@@ -156,7 +156,7 @@ async def get_saved_chats(db=Depends(get_db)):
     print("API CALL: get_saved_chats")
     all_chats = []
     try:
-        chats_dir = utils.get_env_paths()['CHATS']
+        chats_dir = utils.get_env_user_paths()['CHATS']
         for chat_name in os.listdir(chats_dir):
             chat_path = Path(chats_dir) / chat_name
             with open(chat_path, 'r') as chat:

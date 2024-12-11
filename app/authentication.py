@@ -8,7 +8,7 @@ import utils
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        self.db_path = utils.get_env_paths()['AUTH'] / "users.db"
+        self.db_path = utils.get_env_user_paths()['AUTH'] / "users.db"
 
         self.smtp_server = config.SMTP_SERVER
         self.smtp_port = config.SMTP_PORT
@@ -295,11 +295,15 @@ class UserAuth:
         if (user_id):
             try:
                 with sqlite3.connect(self.db_path) as conn:
-                    cursor = conn.execute(
+                    conn.execute(
                         "DELETE FROM users WHERE username = ?",
                         (username,)
                     )
-                    return cursor.rowcount > 0
+                    conn.execute(
+                        "DELETE FROM email_verifications WHERE email = ?",
+                        (username,)
+                    )
+                return True
             except sqlite3.Error as e:
                 print(f"Auth DB error: {e}")
                 return False

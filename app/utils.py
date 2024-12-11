@@ -85,8 +85,12 @@ def set_env_paths(user_id: str):
     _user_paths['AUTH'] = _base_paths['AUTH']
 
 
-def get_env_paths() -> dict[str, Path]:
+def get_env_user_paths() -> dict[str, Path]:
     return _user_paths.copy()
+
+
+def get_env_base_paths() -> dict[str, Path]:
+    return _base_paths.copy()
 
 
 def format_time(ms: float):

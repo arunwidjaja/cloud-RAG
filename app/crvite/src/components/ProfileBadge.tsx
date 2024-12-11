@@ -33,6 +33,7 @@ export const ProfileBadge = () => {
         const success = await start_delete_account(email, password);
         if (success) {
             logout();
+            alert("Deleted account: " + email)
         } else {
             alert("Unable to delete the account.")
         }
