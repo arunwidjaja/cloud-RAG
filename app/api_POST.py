@@ -39,6 +39,18 @@ async def register(credentials: CredentialsModel, background_tasks: BackgroundTa
         )
 
 
+@router.post("/resend_otp")
+async def register(email: str):
+    try:
+        auth = authentication.UserAuth()
+        auth.update_otp(email)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to resent OTP: {str(e)}"
+        )
+
+
 @router.post("/verify_otp")
 async def verify_otp(otp: OTPModel) -> bool:
     try:

@@ -37,12 +37,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const register = async(email: string, password: string): Promise<boolean> => {
         try {
-            const user_id = await start_register(email, password);
-            if (user_id) {
-                alert("Your account has been created! Please check your email for a verification code.")
+            const success = await start_register(email, password);
+            if (success) {
                 return true
             } else {
-                alert("This email already exists. Please choose a different one.")
+                alert("An error occurred while registering your account.")
                 return false
             }
         } catch (error) {

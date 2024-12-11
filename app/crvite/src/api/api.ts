@@ -7,6 +7,21 @@ let current_user_id: string;
 export const initializeApi = (user_id: string) => {
   current_user_id = user_id;
 }
+export const start_resend_otp = async(email: string): Promise<void> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/resend_otp`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(email)
+    });
+    if(!response.ok) { throw new Error('Network response was not ok'); }
+  } catch (error) {
+    console.error('Error resending OTP: ', error);
+  }
+}
 export const start_verify_otp = async(otp: string, email: string): Promise<boolean> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/verify_otp`
