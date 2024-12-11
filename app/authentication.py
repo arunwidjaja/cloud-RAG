@@ -51,9 +51,7 @@ class UserAuth:
 
     def generate_otp(self, length: int = 6) -> str:
         "Generate a random OTP of specified length"
-        print(f"Generating OTP...")
         otp = ''.join(random.choices(string.digits, k=length))
-        print(f"Generated OTP: {otp}")
         return otp
 
     def send_verification_email(self, email: str, otp: str):
@@ -118,8 +116,9 @@ class UserAuth:
             print(f"Auth DB error: {str(e)}")
             raise
 
-    async def verify_email(self, email: str, otp: str):
+    async def verify_email(self, email: str, otp: str) -> bool:
         """Verify email with OTP"""
+
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         try:
@@ -132,31 +131,37 @@ class UserAuth:
 
             result = c.fetchone()
             if not result:
+                print(f"{email} was not found in the database.")
                 raise HTTPException(status_code=404, detail="Email not found")
 
             stored_otp, otp_expiry, is_verified = result
 
+            print(f"Checking OTP: {otp} against email: {email}")
             # Check if email is already verified
             if is_verified:
+                print(f"This email is already verified.")
                 raise HTTPException(
-                    status_code=400, detail="Email already verified")
+                    status_code=400, detail="Email already verified.")
 
             # Check OTP expiry
             if datetime.now(timezone.utc) > datetime.fromisoformat(otp_expiry).replace(tzinfo=timezone.utc):
-                raise HTTPException(status_code=400, detail="OTP has expired")
+                print(f"This OTP is expired.")
+                return False
 
             # Verify OTP
             if otp != stored_otp:
-                raise HTTPException(status_code=400, detail="Invalid OTP")
+                print(f"This OTP is incorrect.")
+                return False
 
+            print(f"{email} is verified!")
             c.execute("""
-                UPDATE otps
+                UPDATE email_verifications
                 SET verified = TRUE, otp = NULL, OTP_EXPIRY = NULL
                 WHERE email = ?
             """, (email,))
 
             conn.commit()
-            return {"message": "Email verified successfully!"}
+            return True
 
         finally:
             conn.close()

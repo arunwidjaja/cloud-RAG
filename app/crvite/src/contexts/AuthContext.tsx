@@ -35,16 +35,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const register = async(email: string, password: string) => {
+    const register = async(email: string, password: string): Promise<boolean> => {
         try {
             const user_id = await start_register(email, password);
             if (user_id) {
-                // const user = createUser(user_id, email)
-                // setUser(user)
-
-                alert("Thank you for your interest! Your information has been saved and you will be notified when registrations are open.")
+                alert("Your account has been created! Please check your email for a verification code.")
+                return true
             } else {
                 alert("This email already exists. Please choose a different one.")
+                return false
             }
         } catch (error) {
             console.error('Registration error: ', error);

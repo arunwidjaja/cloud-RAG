@@ -39,6 +39,20 @@ async def register(credentials: CredentialsModel, background_tasks: BackgroundTa
         )
 
 
+@router.post("/verify_otp")
+async def verify_otp(otp: OTPModel) -> bool:
+    try:
+        auth = authentication.UserAuth()
+        return await auth.verify_email(
+            email=otp.email,
+            otp=otp.otp)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to verify OTP: {str(e)}"
+        )
+
+
 @router.post("/save_chat")
 async def save_chat(chat: ChatModel, db=Depends(get_db)):
     try:

@@ -5,10 +5,12 @@ import { Navigate } from 'react-router-dom';
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import OneTimePasscode from './OneTimePasscode';
 function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showOTP, setShowOTP] = useState(false);
 
     const { register, isAuthenticated } = useAuth();
 
@@ -18,10 +20,16 @@ function RegisterPage() {
             alert('Passwords do not match');
             return;
         }
-        try {
-            await register(email, password);
-        } catch (err) {
-            console.log('Error occurred while registering user');
+        else {
+            try {
+                
+                const success = await register(email, password);
+                if(success) {
+                    setShowOTP(true);
+                }
+            } catch (err) {
+                console.log('Error occurred while registering user');
+            }
         }
     }
 
@@ -67,7 +75,9 @@ function RegisterPage() {
                     <Button
                         className='bg-purple-500 text-white m-1'>Create Account</Button>
                 </form>
+                {showOTP && <OneTimePasscode email={email}></OneTimePasscode>}
             </div>
+
         </div>
 
     );
