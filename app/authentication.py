@@ -8,7 +8,7 @@ import utils
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        self.db_path = utils.get_env_paths()['AUTH'] / "users.db"
+        self.db_path = utils.get_env_user_paths()['AUTH'] / "users.db"
 
         self.smtp_server = config.SMTP_SERVER
         self.smtp_port = config.SMTP_PORT
@@ -50,9 +50,31 @@ class UserAuth:
             raise
 
     def generate_otp(self, length: int = 6) -> str:
-        "Generate a random OTP of specified length"
+        """Generate a random OTP of specified length"""
         otp = ''.join(random.choices(string.digits, k=length))
         return otp
+
+    def update_otp(self, email: str, otp: str, otp_expiry: str):
+        """updates the verification DB with a new OTP"""
+        new_otp = otp
+        otp_expiry = datetime.now(
+            timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
+        print(f"Updating OTP for {email}...")
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        try:
+            c.execute("""
+                UPDATE email_verifications
+                SET otp = ?, otp_expiry = ?
+                WHERE email = ? AND verified != 1
+            """, (new_otp, otp_expiry, email))
+            conn.commit()
+        except sqlite3.Error as e:
+            conn.rollback()
+            raise Exception(f"OTP error: {str(e)}")
+        finally:
+            conn.close()
 
     def send_verification_email(self, email: str, otp: str):
         """Send verification email with OTP."""
@@ -61,10 +83,10 @@ class UserAuth:
             msg = MIMEMultipart()
             msg['From'] = self.smtp_username
             msg['To'] = email
-            msg['Subject'] = "RAGbase OTP Verification"
+            msg['Subject'] = f"Your RAGbase Code is: {otp}"
 
             body = f"""
-            Welcome to RAGbase!
+            Thank you for signing up with RAGbase!
 
             Your verification code is: {otp}
 
@@ -111,7 +133,6 @@ class UserAuth:
                 if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
                     return user_id
                 return None
-
         except sqlite3.Error as e:
             print(f"Auth DB error: {str(e)}")
             raise
@@ -166,58 +187,105 @@ class UserAuth:
         finally:
             conn.close()
 
-    def register_user(self, email: str, password: str, background_tasks: BackgroundTasks) -> str:
+    def register_user(self, email: str, password: str, background_tasks: BackgroundTasks) -> bool:
         """
         Register a new user with the given username and password.
-        Returns True if successful, False if username already exists.
+
+        Returns:
+            TRUE if the email is successfully registered and awaiting verification.
+
+            FALSE if the email is already registered and verified.
         """
+        is_user_duplicate = False
+        is_user_unverified = False
+        is_user_new = False
+
         try:
-            # Generate user ID and pwd hash
+            # Generate user ID and hash password
             user_id = str(uuid.uuid4())
             password_hash = bcrypt.hashpw(
                 password.encode('utf-8'),
                 bcrypt.gensalt(rounds=12)
             )
+            # Generate an OTP
+            otp = self.generate_otp()
+            otp_expiry = datetime.now(
+                timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
 
             # Open database connection
             print(f"Connecting to authentication database: {self.db_path}")
             conn = sqlite3.connect(self.db_path)
             c = conn.cursor()
 
-            # Check for an existing verified email
+            # Check for an existing email
             print(f"Checking if {email} is unique")
             c.execute("""
                 SELECT username
                 FROM users
-                WHERE username = ?""", (email,))
-            if c.fetchone():
-                raise HTTPException(
-                    status_code=400, detail="Username already taken")
+                WHERE username = ?
+            """, (email,))
+            result = c.fetchone()
 
-            # Generate OTP and add email to verification DB
-            otp = self.generate_otp()
-            otp_expiry = datetime.now(
-                timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
-            print(f"Adding email and OTP to verification database")
-            c.execute("""
-                INSERT INTO email_verifications (user_id, email, otp, otp_expiry, verified)
-                VALUES (?, ?, ?, ?, FALSE)
-            """, (user_id, email, otp, otp_expiry))
+            # If an existing email is found...
+            if result is not None:
+                existing_email = result[0]
+                # Check if the email is verified yet
+                c.execute("""
+                        SELECT verified
+                        FROM email_verifications
+                        WHERE email = ?
+                    """, (existing_email,))
+                result = c.fetchone()
+                if result is not None:
+                    is_verified = result[0]
+                else:
+                    # This else block should never execute
+                    is_verified = False
+                    print(f"Could not find {email} in the verification DB!")
 
-            # Create user and add to the users database
-            print(f"Adding user to database")
-            c.execute("""
-                INSERT INTO users (id, username, password_hash)
-                VALUES (?, ?, ?)
-            """, (user_id, email, password_hash.decode('utf-8')))
+                if is_verified:
+                    is_user_duplicate = True
+                else:
+                    is_user_unverified = True
+            # If email doesn't exist yet, create the user and add the email to the auth DB
+            else:
+                is_user_new = True
 
-            conn.commit()
+            if is_user_new:
+                # Generate OTP and add email to verification DB
+                print(f"Adding {email} to verification database")
+                c.execute("""
+                    INSERT INTO email_verifications (user_id, email, otp, otp_expiry, verified)
+                    VALUES (?, ?, ?, ?, FALSE)
+                """, (user_id, email, otp, otp_expiry))
 
-            background_tasks.add_task(self.send_verification_email, email, otp)
-            return user_id
+                # Create user and add to the users database
+                print(f"Adding user to database")
+                c.execute("""
+                    INSERT INTO users (id, username, password_hash)
+                    VALUES (?, ?, ?)
+                """, (user_id, email, password_hash.decode('utf-8')))
+                conn.commit()
+                background_tasks.add_task(
+                    self.send_verification_email, email, otp)
+                return True
+            elif is_user_unverified:
+                print(f"{email} is not verified yet. Resending OTP.")
+                conn.commit()
+                conn.close()  # Close existing connectiong before updating DB
+                self.update_otp(email, otp, otp_expiry)
+                background_tasks.add_task(
+                    self.send_verification_email, email, otp)
+                return True
+            elif is_user_duplicate:
+                print(f"{email} is already registered.")
+                conn.commit()
+                return False
         except sqlite3.Error as e:
             print(f"Auth DB error: {str(e)}")
-            return None  # Email/username already exists
+            raise
+        finally:
+            conn.close()
 
     def delete_user(self, username: str, password: str) -> bool:
         """
@@ -227,11 +295,15 @@ class UserAuth:
         if (user_id):
             try:
                 with sqlite3.connect(self.db_path) as conn:
-                    cursor = conn.execute(
+                    conn.execute(
                         "DELETE FROM users WHERE username = ?",
                         (username,)
                     )
-                    return cursor.rowcount > 0
+                    conn.execute(
+                        "DELETE FROM email_verifications WHERE email = ?",
+                        (username,)
+                    )
+                return True
             except sqlite3.Error as e:
                 print(f"Auth DB error: {e}")
                 return False

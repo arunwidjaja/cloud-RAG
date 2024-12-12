@@ -22,7 +22,6 @@ function RegisterPage() {
         }
         else {
             try {
-                
                 const success = await register(email, password);
                 if(success) {
                     setShowOTP(true);

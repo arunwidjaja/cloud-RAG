@@ -15,7 +15,7 @@ def download_files(requested_files_hashes: List | str, collection_name) -> List[
         The name of the file(s) that were downloaded.
     """
     # collection_name is actually not used because all documents are stored in the same archive
-    source_location = utils.get_env_paths()['ARCHIVE']
+    source_location = utils.get_env_user_paths()['ARCHIVE']
     download_location = str(Path.home())
     downloaded_files = []
 

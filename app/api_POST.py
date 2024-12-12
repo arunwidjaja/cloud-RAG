@@ -39,6 +39,18 @@ async def register(credentials: CredentialsModel, background_tasks: BackgroundTa
         )
 
 
+@router.post("/resend_otp")
+async def register(email: str):
+    try:
+        auth = authentication.UserAuth()
+        auth.update_otp(email)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to resent OTP: {str(e)}"
+        )
+
+
 @router.post("/verify_otp")
 async def verify_otp(otp: OTPModel) -> bool:
     try:
@@ -56,7 +68,7 @@ async def verify_otp(otp: OTPModel) -> bool:
 @router.post("/save_chat")
 async def save_chat(chat: ChatModel, db=Depends(get_db)):
     try:
-        chats_path = utils.get_env_paths()['CHATS']
+        chats_path = utils.get_env_user_paths()['CHATS']
 
         # Create the file path using the chat ID
         file_path = chats_path / f"{chat.id}.json"
@@ -144,7 +156,7 @@ async def submit_query(request: QueryModel, db=Depends(get_db)):
 async def upload_documents(files: List[UploadFile] = File(...), db=Depends(get_db)):
     print(f"API CALL: upload_documents")
     saved_files = []
-    uploads_path = utils.get_env_paths()['UPLOADS']
+    uploads_path = utils.get_env_user_paths()['UPLOADS']
 
     print(f"Files received: {files}")
     for file in files:
