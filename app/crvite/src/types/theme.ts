@@ -12,7 +12,7 @@ export type ThemeColors = {
     warning: string;
 }
 
-export type ThemeName = 'Light' | 'Dark' | 'DEHR';
+export type ThemeName = 'Light' | 'Dark';
 
 export const themes: Record<ThemeName,ThemeColors> = {
     Light: {
@@ -39,16 +39,4 @@ export const themes: Record<ThemeName,ThemeColors> = {
         highlight: '#D5C1F3',
         warning: '#EF4444'
     },
-    DEHR: {
-        primary: '#111111',
-        primary_light: '#383838',
-        secondary: '#000000',
-        secondary_light: '#262626',
-        background: '#000000',
-        text: '#6A4C02',
-        text2: '#343434',
-        accent: '#1E1D1D',
-        highlight: '#D5C1F3',
-        warning: '#EF4444'
-    }
 }
