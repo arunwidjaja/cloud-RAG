@@ -34,9 +34,9 @@ export const themes: Record<ThemeName,ThemeColors> = {
         secondary_light: '#FFFFFF',
         background: '#343434',
         text: '#343434',
-        text2: '#5E5E5E',
+        text2: '#DBDADA',
         accent: '#C7C7C7',
-        highlight: '#D5C1F3',
+        highlight: '#9A69E2',
         warning: '#EF4444'
     },
 }
