@@ -10,9 +10,9 @@ export const ThemeSwitcher = () => {
   const handleToggle = (checked: boolean) => {
     setIsEnabled(checked);
     if (checked) {
-      setTheme('Dark')
-    } else {
       setTheme('Light')
+    } else {
+      setTheme('Dark')
     }
   }
 
@@ -22,7 +22,7 @@ export const ThemeSwitcher = () => {
         onCheckedChange={handleToggle}>
       </Switch>
       <Label className='text-text text-xs'>
-        {isEnabled ? 'Light Mode' : 'Dark Mode'}
+        {isEnabled ? 'Dark Mode' : 'Light Mode'}
       </Label>
     </div>
   );

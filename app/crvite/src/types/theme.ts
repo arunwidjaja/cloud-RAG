@@ -15,7 +15,7 @@ export type ThemeColors = {
 export type ThemeName = 'Light' | 'Dark';
 
 export const themes: Record<ThemeName,ThemeColors> = {
-    Light: {
+    Dark: {
         primary: '#1f1f1f',
         primary_light: '#383838',
         secondary: '#1f1f1f',
@@ -27,15 +27,15 @@ export const themes: Record<ThemeName,ThemeColors> = {
         highlight: '#D5C1F3',
         warning: '#EF4444'
     },
-    Dark: {
-        primary: '#111111',
-        primary_light: '#383838',
-        secondary: '#000000',
-        secondary_light: '#262626',
-        background: '#FFFFFF',
-        text: '#FFFFFF',
-        text2: '#343434',
-        accent: '#343434',
+    Light: {
+        primary: '#ECEBEB',
+        primary_light: '#FFFFFF',
+        secondary: '#ECEBEB',
+        secondary_light: '#FFFFFF',
+        background: '#343434',
+        text: '#343434',
+        text2: '#5E5E5E',
+        accent: '#C7C7C7',
         highlight: '#D5C1F3',
         warning: '#EF4444'
     },
