@@ -7,7 +7,7 @@ from langchain.prompts import PromptTemplate
 from langchain_chroma import Chroma
 # from langchain_community.embeddings.bedrock import BedrockEmbeddings
 # from langchain_community.embeddings.ollama import OllamaEmbeddings
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain.schema import Document

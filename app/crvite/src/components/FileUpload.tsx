@@ -27,8 +27,8 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            if(!file.name.toLowerCase().endsWith('.txt')) {
-                alert(`File ${file.name} is not a .txt file`);
+            if(!file.name.toLowerCase().endsWith('.pdf')) {
+                alert(`File ${file.name} is not a .pdf file`);
                 event.target.value='';
                 return;
             }
@@ -61,7 +61,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
             onChange={accept_uploads}
             style={{ display: 'none' }}
             multiple
-            accept=".txt"
+            accept=".pdf"
         />
     );
 });

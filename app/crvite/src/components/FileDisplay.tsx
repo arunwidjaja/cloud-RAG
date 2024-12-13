@@ -29,9 +29,8 @@ export function FileDisplay({ }) {
     return (
         <div id="file_display_component" className="flex flex-col flex-1 overflow-auto min-h-0">
             <div id="file_preview" className="mt-2 flex-1 overflow-auto min-h-0 bg-accent rounded-md p-2">
-                <div className="max-h-full overflow-auto text-text [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="whitespace-pre-wrap max-h-full overflow-auto text-text [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-thumb]:rounded-full">
                     {retrieved_context}
-                    {/* {filler_text} */}
                 </div>
             </div>
             <div id="file_subtitle" className="mt-1 pt-1 text-xs">

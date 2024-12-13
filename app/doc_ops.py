@@ -10,7 +10,7 @@ import utils
 # 3. Add metadatas: add metadata tags to the chunks for easier identification
 
 
-def load_documents():
+async def load_documents():
     """
     Loads documents from the uploads folder
     """
@@ -21,9 +21,12 @@ def load_documents():
     try:
         for file_path in document_path.iterdir():
             print(f"Found file: {file_path.name}")
-            if (file_path.suffix in '.txt.md'):
-                document = TextLoader(file_path, autodetect_encoding=True)
-                documents_list.extend(document.load())
+            if (file_path.suffix in '.pdf.PDF'):
+                loader = PyPDFLoader(file_path)
+                # document = TextLoader(file_path, autodetect_encoding=True)
+                # documents_list.extend(document.load())
+                async for page in loader.alazy_load():
+                    documents_list.append(page)
             else:
                 print("Invalid format. Skipping this file.")
     except Exception as e:
@@ -149,7 +152,7 @@ def add_collection(chunks, collection: str):
         chunk.metadata['collection'] = collection
 
 
-def process_documents(collection: str) -> List[Document]:
+async def process_documents(collection: str) -> List[Document]:
     """
     Runs the document processing pipeline.
     Returns a list of chunks that will be added to the DB.
@@ -157,7 +160,7 @@ def process_documents(collection: str) -> List[Document]:
     Args:
         collection: The collection that the documents will be added to
     """
-    documents = load_documents()
+    documents = await load_documents()
     chunks = chunk_text(documents)
     add_chunk_ids(chunks)
     add_source_hash(chunks)
@@ -169,8 +172,7 @@ def process_documents(collection: str) -> List[Document]:
 
 
 def main():
-    print(f"Processing documents in the uploads folder...")
-    process_documents()
+    return
 
 
 if __name__ == "__main__":

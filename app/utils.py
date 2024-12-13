@@ -247,6 +247,7 @@ def get_word_count(file_path) -> int:
     """
     Gets word count of the file at file_path
     """
+    return 0
     with open(file_path, 'r', encoding='utf-8') as file:
         text = file.read()  # Read the entire file as a string
         words = text.split()  # Split text by whitespace to get words

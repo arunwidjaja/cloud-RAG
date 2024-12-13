@@ -181,7 +181,7 @@ def delete_db_files(db: Chroma, file_hash_list: List, collection_name: str) -> L
     return deleted_files
 
 
-def push_to_database(db: Chroma, collection: str) -> List[str]:
+async def push_to_database(db: Chroma, collection: str) -> List[str]:
     """
     Pushes uploads to the database then archives them.
 
@@ -193,7 +193,7 @@ def push_to_database(db: Chroma, collection: str) -> List[str]:
     Returns:
         a list of the pushed uploads
     """
-    chunks = doc_ops.process_documents(collection)
+    chunks = await doc_ops.process_documents(collection)
     documents_list = save_to_chroma(db, chunks, collection)
     doc_ops_utils.archive_all_uploads()
     return documents_list

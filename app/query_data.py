@@ -134,7 +134,7 @@ def query_rag(
                 if hash_existing == doc_source_hash:
                     entry['context'] = (
                         entry['context'] +
-                        '\n...\n' +
+                        '...\n\n...' +
                         doc_context
                     )
                     source_is_duplicate = True

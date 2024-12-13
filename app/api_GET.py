@@ -88,7 +88,7 @@ async def initiate_push_to_db(collection: List[str] = Query(...), db=Depends(get
         # database = get_database()
         database = db
         # Collection can only have one element in it
-        pushed_files = db_ops.push_to_database(database, collection[0])
+        pushed_files = await db_ops.push_to_database(database, collection[0])
         return pushed_files
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
