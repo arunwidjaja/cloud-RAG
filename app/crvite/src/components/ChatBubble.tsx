@@ -1,7 +1,7 @@
 import { Message } from "../types/types";
 import React from 'react';
 
-import { ICON_COPY, ICON_RETRY } from "../constants/constants";
+import { ClipboardList, RefreshCcw } from "lucide-react";
 
 interface ChatBubbleProps {
     message: Message;
@@ -19,20 +19,14 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
             {message.text}
             <div id="message_functions" className={`${message.type}-icon-container mt-1`}>
                 <div className="flex flex-row items-center">
-                    <div className={`${message.type}-icon rounded-md`}>
-                        <img
-                            src={ICON_COPY}
-                            className={`w-6 h-6 hover:cursor-pointer`}
-                            onClick={handle_copy}>
-                        </img>
-                    </div>
-                    <div className={`${message.type}-icon rounded-md`}>
-                        <img
-                            src={ICON_RETRY}
-                            className={`w-6 h-6 hover:cursor-pointer`}
-                            onClick={handle_copy}>
-                        </img>
-                    </div>
+                    <ClipboardList
+                        onClick={handle_copy}
+                        className="opacity-50 hover:opacity-100 hover:cursor-pointer">
+                    </ClipboardList>
+                    <RefreshCcw
+                        onClick={handle_copy}
+                        className="opacity-50 hover:opacity-100 hover:cursor-pointer">
+                    </RefreshCcw>
                 </div>
             </div>
 

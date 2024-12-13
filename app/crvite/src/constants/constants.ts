@@ -13,7 +13,7 @@ export const ICON_CHAT_DARK = '/icon_chat_dark.svg'
 export const ICON_TRASH = '/icon_trash.svg'
 export const ICON_TRASH_HOVERED = '/icon_trash_hovered.svg'
 
-export const LOGO_PLACEHOLDER = '/logo_placeholder.svg'
+export const LOGO_PLACEHOLDER = '/logo.svg'
 
 export const EF = ['openai']
 

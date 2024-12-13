@@ -1,12 +1,11 @@
-import { useState } from 'react';
 
-import { ICON_TRASH, ICON_TRASH_HOVERED } from '@/constants/constants';
 import { handle_select_chat, refresh_chats } from '@/handlers/chats_handlers';
 import { Chat } from '@/types/types';
 
 import { use_chats } from '@/hooks/hooks';
 import { start_delete_chat } from '@/api/api';
 import { add_log } from '@/handlers/log_handlers';
+import { Trash2 } from 'lucide-react';
 
 export const handle_delete_chat = async (chat_id: string) => {
     const success = await start_delete_chat(chat_id);
@@ -36,17 +35,13 @@ interface ChatPreviewProps {
 }
 
 export const ChatPreview = ({ subject, chat }: ChatPreviewProps) => {
-    const [isHovered, setIsHovered] = useState(false);
     return (
         <div
             className='flex flex-row items-center hover:bg-highlight hover:text-text2 p-1 text-text text-sm rounded-md font-sans ml-3'>
-            <img
-                src={isHovered ? ICON_TRASH_HOVERED : ICON_TRASH}
-                className='w-6 h-6 mr-1 hover:cursor-pointer'
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+            <Trash2
+                className='text-warning w-6 h-6 mr-1 opacity-50 hover:cursor-pointer hover:opacity-100'
                 onClick={() => handle_delete_chat(chat.id)}>
-            </img>
+            </Trash2>
             <div
                 onClick={() => handle_select_chat(chat)}
                 className='min-w-0 truncate hover:cursor-pointer hover:font-bold'>

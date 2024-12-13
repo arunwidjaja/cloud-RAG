@@ -9,7 +9,7 @@ import { RefreshCcw } from "lucide-react";
 function OneTimePasscode({ email }: { email: string }) {
     const [value, setValue] = React.useState('');
 
-    const handleResendOTP = async() => {
+    const handleResendOTP = async () => {
         setValue('')
         start_resend_otp(email)
         alert("A new code has been sent to " + email)
@@ -44,8 +44,8 @@ function OneTimePasscode({ email }: { email: string }) {
                     </InputOTPGroup>
                 </InputOTP>
                 <RefreshCcw
-                onClick={handleResendOTP}
-                className="ml-3 hover:cursor-pointer hover:text-purple-500">    
+                    onClick={handleResendOTP}
+                    className="ml-3 hover:cursor-pointer hover:text-purple-500">
                 </RefreshCcw>
             </div>
             <p>Please enter the six-digit code sent to:</p>

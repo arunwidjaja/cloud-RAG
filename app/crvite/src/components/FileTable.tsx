@@ -17,13 +17,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -143,16 +142,21 @@ export function FileTable() {
                 <MoreHorizontal />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="text-text">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
+                className="hover:cursor-pointer"
                 onClick={() => navigator.clipboard.writeText(file.hash)}
               >
                 Copy ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handle_download_selected_files}>Download File</DropdownMenuItem>
-              <DropdownMenuItem onClick={handle_delete_selected_files}>Delete File</DropdownMenuItem>
+              <DropdownMenuItem
+              className="hover:cursor-pointer"
+              onClick={handle_download_selected_files}>Download File</DropdownMenuItem>
+              <DropdownMenuItem
+              className="hover:cursor-pointer"
+              onClick={handle_delete_selected_files}>Delete File</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -189,36 +193,8 @@ export function FileTable() {
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="bg-accent text-text mr-1 col-span-3"
+          className="bg-accent text-text mr-1 col-span-4"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="default" className="ml-1 bg-primary text-text">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-          className="text-text"
-          align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       {/* Table */}

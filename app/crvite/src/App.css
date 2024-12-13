@@ -75,12 +75,6 @@ html, body, #root {
 .answer-icon-container {
   justify-items: start;
 }
-.input-icon:hover {
-  @apply bg-primary_light;
-}
-.answer-icon:hover {
-  @apply bg-secondary_light;
-}
 
 
 
