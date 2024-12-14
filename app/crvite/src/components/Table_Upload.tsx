@@ -153,7 +153,7 @@ export function UploadTable() {
     return (
         <div id="upload_table_component" className="mt-2 flex flex-col flex-1 overflow-auto min-h-0">
             {/* Table */}
-            <div id='table' className="rounded-md border flex flex-1">
+            <div id='table' className="rounded-md border border-text flex flex-1">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

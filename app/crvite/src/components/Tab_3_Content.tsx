@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 
 import { DropdownMenu } from "./Dropdown_Menu"
-import { UploadTable } from "./UploadTable"
+import { UploadTable } from "./Table_Upload"
 import { SimpleTooltip } from "./SimpleTooltip"
 import { Button } from "./ui/button"
 import { FileUploadWindow } from "./FileUpload"

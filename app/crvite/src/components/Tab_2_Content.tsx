@@ -2,7 +2,7 @@ import { DropdownMenu } from "./Dropdown_Menu"
 import { CollectionCreationButton } from "./CollectionCreationButton"
 import { CollectionDeletionButton } from "./CollectionDeletionButton"
 import { handle_choose_collection } from "@/handlers/button_handlers"
-import { FileTable } from "./FileTable"
+import { FileTable } from "./Table_Files"
 import { use_collections } from "@/hooks/hooks"
 
 export function Tab_2_Content() {

@@ -198,7 +198,7 @@ export function FileTable() {
       </div>
 
       {/* Table */}
-      <div id='table' className="rounded-md border flex flex-1">
+      <div id='table' className="rounded-md border border-text flex flex-1">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

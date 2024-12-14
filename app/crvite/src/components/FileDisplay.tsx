@@ -20,8 +20,8 @@ export function FileDisplay({ }) {
     let retrieved_subtitle;
     if (retrieved_id) {
         retrieved_subtitle =
-            retrieved_source +
-            " from collection " + retrieved_collection
+            '"' + retrieved_source + '"' +
+            " from collection: " + retrieved_collection
     } else {
         retrieved_subtitle = ""
     }

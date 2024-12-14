@@ -60,7 +60,6 @@ function MainApp() {
                 <div className='min-h-full max-h-full w-64 flex flex-col bg-accent'>
                     <div id="fillerdiv" className="h-14"></div>
                     {/* Chat History Section */}
-                    <div className='ml-4 font-bold text-text'>Recent Chats</div>
                     <ChatHistory></ChatHistory>
                     {/* Presets and LLM settings */}
                     <div id="llmpanel" className='p-2'>
@@ -76,7 +75,7 @@ function MainApp() {
                             <Button
                                 className='flex mt-2 hover:bg-highlight hover:text-text2 text-text'
                                 onClick={handle_run_preset}>
-                                    Run Selected Preset
+                                Run Selected Preset
                             </Button>
                         </div>
                     </div>

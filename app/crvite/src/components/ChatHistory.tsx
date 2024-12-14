@@ -5,7 +5,7 @@ import { Chat } from '@/types/types';
 import { use_chats } from '@/hooks/hooks';
 import { start_delete_chat } from '@/api/api';
 import { add_log } from '@/handlers/log_handlers';
-import { Trash2 } from 'lucide-react';
+import { MessageCirclePlus, Trash2 } from 'lucide-react';
 
 export const handle_delete_chat = async (chat_id: string) => {
     const success = await start_delete_chat(chat_id);
@@ -27,6 +27,10 @@ export const handle_download_chats = async (chat_history: Chat[]) => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
+}
+
+export const start_new_chat = () => {
+    alert("Implement start new chat function.")
 }
 
 interface ChatPreviewProps {
@@ -54,17 +58,33 @@ export const ChatPreview = ({ subject, chat }: ChatPreviewProps) => {
 export const ChatHistory = () => {
     const chat_history = use_chats();
     return (
-        <div id="chathistory" className="flex-1 min-h-0 w-full mb-2">
-            <div className='flex flex-col h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
-                <div
-                    className='mr-1 overflow-auto whitespace-nowrap [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full'>
-                    {chat_history.map((chat, index) => (
-                        <ChatPreview
-                            key={index}
-                            subject={chat.subject}
-                            chat={chat}
-                        />
-                    ))}
+        <div className='flex-1'>
+            <div
+            onClick={start_new_chat}
+            className='mb-4 text-highlight flex flex-row items-center rounded-md mr-1 p-1 ml-3 hover:bg-highlight hover:cursor-pointer hover:text-text2'>
+                <MessageCirclePlus
+                    className='hover:cursor-pointer'>
+                </MessageCirclePlus>
+                <p
+                    className='ml-2 text-sm hover:cursor-pointer hover:font-bold'>
+                    Start New Chat
+                </p>
+            </div>
+            <div className='ml-5 mb-1 font-serif font-bold text-text'>
+                Recent Chats
+            </div>
+            <div id="chathistory" className="flex-1 min-h-0 w-full mb-2">
+                <div className='flex flex-col h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+                    <div
+                        className='mr-1 overflow-auto whitespace-nowrap [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full'>
+                        {chat_history.map((chat, index) => (
+                            <ChatPreview
+                                key={index}
+                                subject={chat.subject}
+                                chat={chat}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

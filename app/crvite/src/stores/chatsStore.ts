@@ -26,7 +26,7 @@ const useChatsStore = create<ChatsState>()((set) => ({
   updateChats: () => {
     const msgs = useMessageStore.getState().messages
     if (msgs.length === 0) return;
-    // chat ID is based on the ID of the oldest (first) message
+    // chat ID is the same as the ID of its oldest (first) message
     // messages are stored chronologically, so this would be the last message in the array
     const current_chat_id = `chat_${msgs[msgs.length - 1].id}`;
     const newChat: Chat = {
