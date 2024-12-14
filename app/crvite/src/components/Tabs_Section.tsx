@@ -12,7 +12,7 @@ import { Tab_3_Content } from './Tab_3_Content';
 
 export function Tabs_Section() {
     return (
-        <Tabs defaultValue="data" className="w-[500px] flex flex-col h-full pb-2">
+        <Tabs defaultValue="data" className="w-[400px] flex flex-col h-full pb-2">
             <TabsList className="grid grid-cols-3 ml-4 mr-4">
                 <TabsTrigger
                     value="data"

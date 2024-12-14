@@ -62,7 +62,6 @@ export const handle_push_uploads = async () => {
   else {
     add_log("Upload files first")
   }
-
 };
 
 // Deletes the selected files from the DB
