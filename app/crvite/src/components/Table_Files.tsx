@@ -39,6 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
+import FileUpload2 from "./FileUpload2"
 
 export function FileTable() {
   const collection = use_current_collection()
@@ -185,6 +186,7 @@ export function FileTable() {
 
   return (
     <div id="file_table_component" className="mt-2 flex flex-col flex-1 overflow-auto min-h-0">
+      {/* <FileUpload2></FileUpload2> */}
       {/* Search and Filter */}
       <div id='searchandfilter' className="grid grid-cols-4 mb-3">
         <Input
