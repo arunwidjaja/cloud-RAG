@@ -28,12 +28,9 @@ export const set_chats = (chats: Chat[]) => {
 
 export const get_saved_chats = async(): Promise<Chat[]> => {
     const saved_chats_reverse = await fetch_saved_chats();
-    // The chats need to be sorted in reversed order after loading
-    // The names are based on timestamps, so the newest ones are last
-    // The newest ones need to be first for the state variable to display them correctly
-    // The Chat History should show newest chats at the TOP.
+    // The chats' order needs to be reversed, because:
+    // The chat history component should show newest chats at the TOP.
     const saved_chats = saved_chats_reverse.reverse();
-
     for (const chat of saved_chats){
         console.log("Fetched chat: " + chat.id)
     }

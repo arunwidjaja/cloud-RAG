@@ -6,6 +6,7 @@ import { use_chats } from '@/hooks/hooks';
 import { start_delete_chat } from '@/api/api';
 import { add_log } from '@/handlers/log_handlers';
 import { MessageCirclePlus, Trash2 } from 'lucide-react';
+import { set_messages } from '@/handlers/message_handlers';
 
 export const handle_delete_chat = async (chat_id: string) => {
     const success = await start_delete_chat(chat_id);
@@ -30,7 +31,7 @@ export const handle_download_chats = async (chat_history: Chat[]) => {
 }
 
 export const start_new_chat = () => {
-    alert("Implement start new chat function.")
+    set_messages([]);
 }
 
 interface ChatPreviewProps {
