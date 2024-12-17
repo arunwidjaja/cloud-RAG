@@ -1,11 +1,6 @@
 from imports import *
 
 
-class QueryModel(BaseModel):
-    query_text: str
-    query_type: str
-
-
 class CollectionModel(BaseModel):
     collection_name: str
     embedding_function: str
@@ -34,6 +29,12 @@ class ChatModel(BaseModel):
     id: str
     subject: str
     messages: List[MessageModel]
+
+
+class QueryModel(BaseModel):
+    query_text: str
+    chat: ChatModel
+    query_type: str
 
 
 class CredentialsModel(BaseModel):

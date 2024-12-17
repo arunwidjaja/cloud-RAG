@@ -1,6 +1,7 @@
 from imports import *
 
 # Local Modules
+from api_MODELS import ChatModel
 import config
 import db_ops_utils
 import utils
@@ -27,6 +28,37 @@ class QueryResponse:
         self.message = message_arg
         self.id = id_arg
         self.contexts = contexts_arg
+
+
+def parse_chat(chat: ChatModel) -> str:
+    """
+    Parses the ChatModel object into a formatted string, used to prompt the LLM.
+    Inputs/Outputs/Context are labeled accordingly.
+    This can be used to prompt the LLM to assemble a new query for building the final prompt.
+    """
+
+    messages = chat.messages[::-1]  # reversing order of messages
+    conversation = "Previous Messages:\n"
+    for c_msg in messages:
+        conversation = conversation + c_msg.type + ":\n"
+        conversation = conversation + c_msg.text + "\n"
+    return conversation
+
+
+def assemble_query(query: str, chat: str) -> str:
+    """
+    Assembles a query based on the user's current query and message history.
+    For example, if a user adds clarifying details or builds upon their previous query, this will provide a full query with all details.
+    The embeddings are searched based on the full query.
+
+    Attributes:
+        query: The user's query
+        chat_messages: the messages from the current chat
+
+    Returns:
+        The reconstructed chat.
+    """
+    return
 
 
 def build_prompt(
@@ -58,6 +90,7 @@ def build_prompt(
 def query_rag(
     db: Chroma,
     query_text: str,
+    chat: ChatModel,
     query_type: str,
     collections=None
 ) -> QueryResponse:
@@ -66,12 +99,18 @@ def query_rag(
 
     Args:
         db: The Chroma instance
-        query_text: The user's query string
-        collections: List of collection names include in the search
+        query_text: The user's query string.
+        chat: The messages in the chat prior to the query.
+        query_type: this is "question" for now since all queries are by default questions.
+        collections: List of collection names include in the search. If None, searches all collections.
 
     Returns:
         QueryResponse
     """
+    print(f"Current Chat History:")
+    chat_parsed = parse_chat(chat)
+    print(chat_parsed)
+
     model = ChatOpenAI()
     if query_type == 'question':
         prompt_template = prompt_templates.PT_RAG
@@ -162,8 +201,6 @@ def query_rag(
         id_arg=LLM_message_id,
         contexts_arg=contexts
     )
-
-    print(query_response)
     return (query_response)
 
 

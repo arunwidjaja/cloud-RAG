@@ -478,7 +478,7 @@ export const start_delete_collection = async (collection: string): Promise<strin
     return ''
   }
 }
-export const start_submit_query = async (user_query: string, query_type: string): Promise<ContextMessage> => {
+export const start_submit_query = async (user_query: string, current_chat: Chat, query_type: string): Promise<ContextMessage> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/submit_query`
     const response = await fetch(url, {
@@ -489,6 +489,7 @@ export const start_submit_query = async (user_query: string, query_type: string)
       },
       body: JSON.stringify({
         query_text: user_query,
+        chat: current_chat,
         query_type: query_type
       })
     });

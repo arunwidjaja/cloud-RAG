@@ -19,7 +19,14 @@ interface ChatsState {
    */
   updateChats: () => void;
   setChats: (chats: Chat[]) => void;
+  getCurrentChat: () => Chat;
 }
+
+export const createChat = (id: string = '', subject: string = '', messages: Message[] = []): Chat => ({
+    id,
+    subject,
+    messages
+})
 
 const useChatsStore = create<ChatsState>()((set) => ({
   chats: [],
@@ -29,11 +36,11 @@ const useChatsStore = create<ChatsState>()((set) => ({
     // chat ID is the same as the ID of its oldest (first) message
     // messages are stored chronologically, so this would be the last message in the array
     const current_chat_id = `chat_${msgs[msgs.length - 1].id}`;
-    const newChat: Chat = {
-      id: current_chat_id,
-      subject: msgs[msgs.length - 1].text,
-      messages: msgs
-    };
+    const newChat = createChat(
+      current_chat_id,
+      msgs[msgs.length - 1].text, 
+      msgs
+    )
 
     set((state) => {
       const chat_exists = state.chats.some(chat => chat.id === current_chat_id);
@@ -48,6 +55,17 @@ const useChatsStore = create<ChatsState>()((set) => ({
     })
   },
   setChats: (newChats) => set({ chats: newChats }),
+  getCurrentChat: () => {
+    const msgs = useMessageStore.getState().messages;
+    if (msgs.length === 0) return createChat();
+    const current_chat_id = `chat_${msgs[msgs.length - 1].id}`;
+    const current_chat = createChat(
+      current_chat_id,
+      msgs[msgs.length - 1].text, 
+      msgs
+    )
+    return current_chat
+  }
 }));
 
 export default useChatsStore

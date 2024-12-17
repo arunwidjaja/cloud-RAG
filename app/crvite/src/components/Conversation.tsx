@@ -10,8 +10,10 @@ export function Conversation() {
     useEffect(() => {
         const handle_conversation_update = async () => {
             try {
-                update_chats();
-                await save_chats();
+                if (messages.length > 0) {
+                    update_chats();
+                    await save_chats();
+                }
             } catch (error) {
                 console.error('Error updating chats: ', error)
             }

@@ -1,8 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { start_submit_query } from '../api/api';
+
+// Handlers
 import { add_message } from '../handlers/message_handlers';
-import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
 import { set_current_retrieved, set_retrieved_files } from '@/handlers/retrieved_handlers';
+
+// Stores
+import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
+import { get_current_chat } from '@/handlers/chats_handlers';
 
 import { ContextData } from '@/types/types';
 
@@ -27,10 +32,12 @@ export const TextInput = () => {
     const send_user_input = async () => {
         if (user_input.trim()) {
             const input_message = createInputMessage(user_input)
+            const current_chat = get_current_chat();
+
             add_message(input_message);
             set_user_input('')
-
-            const ai_reply = await start_submit_query(user_input, 'question');
+            
+            const ai_reply = await start_submit_query(user_input, current_chat, 'question');
 
             const ai_reply_text: string = ai_reply.text; // The Answer
             const ai_reply_context: ContextData[] = ai_reply.context_list; // The LIST of contexts used
