@@ -4,7 +4,7 @@ import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 
 export const ThemeSwitcher = () => {
-  const { currentTheme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
   const [isEnabled, setIsEnabled] = useState(false);
 
   const handleToggle = (checked: boolean) => {
