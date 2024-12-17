@@ -12,7 +12,9 @@ export const handle_delete_chat = async (chat_id: string) => {
     const success = await start_delete_chat(chat_id);
     if (success) {
         refresh_chats();
+        start_new_chat();
         add_log("Deleted chat: " + chat_id)
+
     }
     else { add_log('Unable to delete chat') }
 }

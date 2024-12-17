@@ -47,7 +47,7 @@ async def register(email: str):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to resent OTP: {str(e)}"
+            detail=f"Failed to resend OTP: {str(e)}"
         )
 
 

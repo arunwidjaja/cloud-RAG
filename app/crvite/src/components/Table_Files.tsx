@@ -1,5 +1,7 @@
 "use client"
 
+import { useRef } from 'react';
+
 import * as React from "react"
 import { fetch_db_files_metadata } from "@/api/api"
 import { use_current_collection, use_selected_files, use_files } from "@/hooks/hooks"
@@ -17,7 +19,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -38,10 +40,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
-import FileUpload2 from "./FileUpload2"
+import { handle_accept_uploads, handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
+import { FileUploadWindow2 } from './FileUpload2';
 
 export function FileTable() {
+  const uploadRef = useRef(null);
+
   const collection = use_current_collection()
   const files = use_files()
   const selected_files = use_selected_files()
@@ -54,6 +58,7 @@ export function FileTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
 
   // The data is reloaded every time the selected collection or the DB files changes
   React.useEffect(() => {
@@ -153,11 +158,11 @@ export function FileTable() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-              className="hover:cursor-pointer"
-              onClick={handle_download_selected_files}>Download File</DropdownMenuItem>
+                className="hover:cursor-pointer"
+                onClick={handle_download_selected_files}>Download File</DropdownMenuItem>
               <DropdownMenuItem
-              className="hover:cursor-pointer"
-              onClick={handle_delete_selected_files}>Delete File</DropdownMenuItem>
+                className="hover:cursor-pointer"
+                onClick={handle_delete_selected_files}>Delete File</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -250,6 +255,12 @@ export function FileTable() {
           </TableBody>
         </Table>
       </div>
+      <FileUploadWindow2 ref={uploadRef} />
+      <Button
+        onClick={() => handle_accept_uploads(uploadRef)}
+        className="mt-2 bg-text hover:bg-highlight">
+        <Upload></Upload>
+      </Button>
       {/* Pagination */}
       <div id='pagination' className="flex items-center justify-end space-x-2 py-4">
         <div className="space-x-2">

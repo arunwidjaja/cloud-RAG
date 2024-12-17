@@ -29,6 +29,36 @@ class QueryResponse:
         self.contexts = contexts_arg
 
 
+def get_chat(user_id: str, chat_id: str):
+    """
+    Retrieves the specified chat.
+
+    Attributes:
+        user_id: User ID. 
+        chat_id: Chat ID. Messages will be retrieved from the chat matching this ID.
+
+    Returns:
+        The chat.
+    """
+    return
+
+
+def assemble_query(query: str, chat_messages: str) -> str:
+    """
+    Assembles a query based on the user's current query and context from the chat history.
+    For example, if a user adds clarifying details or builds upon their previous query, this will provide a full query with all details.
+    The embeddings are searched based on the full query.
+
+    Attributes:
+        query: The user's query
+        chat_messages: the messages from the current chat
+
+    Returns:
+        The reconstructed chat.
+    """
+    return
+
+
 def build_prompt(
     query_text: str,
     context: List[tuple],
