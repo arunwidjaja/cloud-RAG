@@ -123,6 +123,7 @@ async def submit_query(request: QueryModel, db=Depends(get_db)):
     query_response = query_rag(
         db=database,
         query_text=request.query_text,
+        chat=request.chat,
         query_type=request.query_type)
 
     message = query_response.message

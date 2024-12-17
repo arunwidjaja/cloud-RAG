@@ -26,6 +26,11 @@ export const set_chats = (chats: Chat[]) => {
     return setChats(chats);
 }
 
+export const get_current_chat = (): Chat => {
+    const current_chat = useChatsStore.getState().getCurrentChat();
+    return current_chat;
+}
+
 export const get_saved_chats = async(): Promise<Chat[]> => {
     const saved_chats_reverse = await fetch_saved_chats();
     // The chats' order needs to be reversed, because:
