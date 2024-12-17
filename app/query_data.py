@@ -56,7 +56,7 @@ def assemble_query(query: str, chat: str) -> str:
         chat_messages: the messages from the current chat
 
     Returns:
-        The reconstructed chat.
+        The reconstructed query.
     """
     return
 
