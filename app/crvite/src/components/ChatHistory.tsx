@@ -46,7 +46,7 @@ export const ChatPreview = ({ subject, chat }: ChatPreviewProps) => {
         <div
             className='flex flex-row items-center hover:bg-highlight hover:text-text2 p-1 text-text text-sm rounded-md font-sans ml-3'>
             <Trash2
-                className='text-warning w-6 h-6 mr-1 opacity-50 hover:cursor-pointer hover:opacity-100'
+                className='text-warning w-6 h-6 mr-1 opacity-50 hover:cursor-pointer hover:opacity-100 flex-shrink-0'
                 onClick={() => handle_delete_chat(chat.id)}>
             </Trash2>
             <div
