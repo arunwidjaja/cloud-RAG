@@ -13,6 +13,7 @@ import { handle_push_uploads, handle_choose_collection, handle_accept_uploads, h
 // Hooks
 import { use_collections, use_selected_uploads } from "@/hooks/hooks"
 import Spinner from './Spinner';
+import { Upload } from 'lucide-react';
 
 
 
@@ -61,20 +62,21 @@ export function Tab_3_Content() {
             </div>
             <UploadTable></UploadTable>
             <div id="upload_buttons" className='mt-auto'>
-                <SimpleTooltip content="Pushes all uploads to the current Collection">
-                    <Button id="pushbtn"
-                        onClick={handle_click_push_uploads}
-                        className='w-full mt-4 mb-1 bg-accent text-text hover:bg-highlight hover:text-text2'>
-                        Push
-                    </Button>
-                </SimpleTooltip>
+                <FileUploadWindow ref={uploadRef} />
+                <Button
+                    className='w-full mt-4 mb-1 bg-text hover:bg-highlight'
+                    onClick={() => handle_accept_uploads(uploadRef)}>
+                    <Upload></Upload>
+                </Button>
+
                 <div className='grid grid-cols-2'>
-                    <FileUploadWindow ref={uploadRef} />
-                    <Button
-                        className="mr-1 bg-accent text-text hover:bg-highlight hover:text-text2"
-                        onClick={() => handle_accept_uploads(uploadRef)}>
-                        Upload Files
-                    </Button>
+                    <SimpleTooltip content="Pushes all uploads to the current Collection">
+                        <Button id="pushbtn"
+                            onClick={handle_click_push_uploads}
+                            className="mr-1 bg-accent text-text hover:bg-highlight hover:text-text2">
+                            Push
+                        </Button>
+                    </SimpleTooltip>
                     <Button
                         className="ml-1 bg-accent text-text hover:bg-highlight hover:text-text2"
                         onClick={() => handle_remove_selected_uploads(selected_uploads)}>

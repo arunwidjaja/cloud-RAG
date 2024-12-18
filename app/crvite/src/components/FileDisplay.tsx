@@ -28,8 +28,8 @@ export function FileDisplay({ }) {
 
     return (
         <div id="file_display_component" className="flex flex-col flex-1 overflow-auto min-h-0">
-            <div id="file_preview" className="mt-2 flex-1 overflow-auto min-h-0 bg-accent rounded-md p-2">
-                <div className="whitespace-pre-wrap max-h-full overflow-auto text-text [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-black [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div id="file_preview" className="mt-2 flex-1 min-h-0 bg-accent rounded-md p-2 overflow-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-highlight [&::-webkit-scrollbar-thumb]:rounded-full">
+                <div className="whitespace-pre-wrap h-full text-text">
                     {retrieved_context}
                 </div>
             </div>

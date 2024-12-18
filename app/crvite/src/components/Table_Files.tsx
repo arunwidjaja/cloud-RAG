@@ -19,7 +19,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Upload } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -40,7 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { handle_accept_uploads, handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
+import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
 import { FileUploadWindow2 } from './FileUpload2';
 
 export function FileTable() {
@@ -256,11 +256,6 @@ export function FileTable() {
         </Table>
       </div>
       <FileUploadWindow2 ref={uploadRef} />
-      <Button
-        onClick={() => handle_accept_uploads(uploadRef)}
-        className="mt-2 bg-text hover:bg-highlight">
-        <Upload></Upload>
-      </Button>
       {/* Pagination */}
       <div id='pagination' className="flex items-center justify-end space-x-2 py-4">
         <div className="space-x-2">

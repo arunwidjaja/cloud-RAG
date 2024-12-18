@@ -17,7 +17,7 @@ export const ThemeSwitcher = () => {
   }
 
   return (
-    <div className="flex items-center space-x-2 p-1 h-10 m-2">
+    <div className="bg-accent p-4 flex items-center space-x-2 relative z-10">
       <Switch
         onCheckedChange={handleToggle}>
       </Switch>
