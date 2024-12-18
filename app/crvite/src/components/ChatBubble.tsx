@@ -1,7 +1,7 @@
 import { Message } from "../types/types";
 import React from 'react';
 
-import { ClipboardList, RefreshCcw } from "lucide-react";
+import { ClipboardList, RotateCw } from "lucide-react";
 
 interface ChatBubbleProps {
     message: Message;
@@ -10,6 +10,9 @@ interface ChatBubbleProps {
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
     const handle_copy = () => {
         navigator.clipboard.writeText(message.text);
+    }
+    const handle_regenerate = () => {
+        alert("This button is supposed to regenerate the response.")
     }
     return (
         <div
@@ -23,10 +26,10 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
                         onClick={handle_copy}
                         className="opacity-50 hover:opacity-100 hover:cursor-pointer">
                     </ClipboardList>
-                    <RefreshCcw
-                        onClick={handle_copy}
+                    <RotateCw
+                        onClick={handle_regenerate}
                         className="opacity-50 hover:opacity-100 hover:cursor-pointer">
-                    </RefreshCcw>
+                    </RotateCw>
                 </div>
             </div>
 
