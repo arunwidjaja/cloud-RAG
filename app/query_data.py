@@ -38,11 +38,15 @@ def parse_chat(chat: ChatModel) -> str:
     """
 
     messages = chat.messages[::-1]  # reversing order of messages
-    conversation = "Previous Messages:\n"
-    for c_msg in messages:
-        conversation = conversation + c_msg.type + ":\n"
-        conversation = conversation + c_msg.text + "\n"
-    return conversation
+    # Skip parsing and return and empty string if the chat history is empty
+    if not messages:
+        return ""
+    else:
+        conversation = "Previous Messages:\n"
+        for c_msg in messages:
+            conversation = conversation + c_msg.type + ":\n"
+            conversation = conversation + c_msg.text + "\n"
+        return conversation
 
 
 def assemble_query(query: str, chat: str) -> str:
@@ -51,17 +55,30 @@ def assemble_query(query: str, chat: str) -> str:
     For example, if a user adds clarifying details or builds upon their previous query, this will provide a full query with all details.
     The embeddings are searched based on the full query.
 
+    The model used for query reconstruction is hardcoded.
+    TODO: Switch to a lightweight model for this step. Currently using OpenAI.
+
     Attributes:
         query: The user's query
         chat_messages: the messages from the current chat
 
     Returns:
-        The reconstructed query.
+        The original query if chat is empty, else it returns the reconstructed query.
     """
-    return
+    if not chat:
+        return query
+    else:
+        prompt_template = ChatPromptTemplate.from_template(
+            template=prompt_templates.PT_QUERY_RECONSTRUCTION)
+        prompt = prompt_template.format(
+            context=chat,
+            question=query
+        )
+        query_reconstructed = ChatOpenAI().invoke(prompt).content
+        return (query_reconstructed)
 
 
-def build_prompt(
+def build_prompt_RAG(
     query_text: str,
     context: List[tuple],
     prompt_template: str
@@ -107,9 +124,13 @@ def query_rag(
     Returns:
         QueryResponse
     """
-    print(f"Current Chat History:")
     chat_parsed = parse_chat(chat)
-    print(chat_parsed)
+    query_reconstructed = assemble_query(
+        query=query_text,
+        chat=chat_parsed
+    )
+    print("Latest Query:\n" + query_text + "\n")
+    print("Reconstructued Query:\n" + query_reconstructed)
 
     model = ChatOpenAI()
     if query_type == 'question':
@@ -123,6 +144,8 @@ def query_rag(
 
     # Search all collections and combine the results into one list
     aggregated_docs = []
+    print(f"Searching for documents relevant to the query: {
+          query_reconstructed}")
     for coll_name in coll_list:
         print(f"Searching collection: {coll_name}")
         collection = Chroma(
@@ -131,7 +154,7 @@ def query_rag(
             collection_name=coll_name
         )
         aggregated_docs_partial = collection.similarity_search_with_relevance_scores(
-            query=query_text,
+            query=query_reconstructed,
             k=config.LLM_K
         )
         aggregated_docs.extend(aggregated_docs_partial)
@@ -185,7 +208,7 @@ def query_rag(
 
     # Build prompt and invoke LLM
     context_values = [data['context'] for data in contexts]
-    prompt = build_prompt(
+    prompt = build_prompt_RAG(
         query_text=query_text,
         context=context_values,
         prompt_template=prompt_template

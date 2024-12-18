@@ -9,6 +9,20 @@ Question:
 {question}
 """
 
+PT_QUERY_RECONSTRUCTION = """
+The user's inputs are labeled as "input," while you answers are labeled as "answer."
+The following is your previous conversation with the user.
+Please reconstruct the user's latest query to include context from the conversation:
+
+Previous Conversation:
+{context}
+
+Query:
+{question}
+
+Please rewrite the last query to be complete and explicit, maintaining all important context from the conversation.
+"""
+
 PT_RAG_STATEMENT = """
 Show me the context that supports the statements.
 Please repeat the statement verbatim before generating your response.
