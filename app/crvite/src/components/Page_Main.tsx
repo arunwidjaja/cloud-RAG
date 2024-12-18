@@ -55,7 +55,7 @@ function MainApp() {
 
     return (
         <ThemeProvider>
-            <div className="container_parent max-w-full max-h-full flex flex-row">
+            <div className="container_parent max-w-full max-h-full flex flex-row overflow-hidden absolute">
                 {/* Left Pane */}
                 <div className='min-h-full max-h-full w-64 flex flex-col bg-accent'>
                     <div id="fillerdiv" className="h-14"></div>
