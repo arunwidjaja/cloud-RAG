@@ -225,7 +225,6 @@ def query_rag(
         context=context_values,
         prompt_template=prompt_template
     )
-
     LLM_base_response = model.invoke(prompt)
 
     LLM_message = LLM_base_response.content
@@ -236,7 +235,73 @@ def query_rag(
         id_arg=LLM_message_id,
         contexts_arg=contexts
     )
-    return (query_response)
+    return query_response
+
+
+async def query_rag_streaming(
+    db: Chroma,
+    query_text: str,
+    chat: ChatModel,
+    query_type: str,
+    collections=None
+) -> AsyncGenerator[str, None]:
+    """
+    Streaming version of query_rag that yields chunks of the response as they're generated.
+    """
+    chat_parsed = parse_chat(chat)
+    query_reconstructed = assemble_query(
+        query=query_text,
+        chat=chat_parsed
+    )
+
+    # Setup streaming callback handler
+    callback_handler = AsyncIteratorCallbackHandler()
+    model = ChatOpenAI(
+        streaming=True,
+        callbacks=[callback_handler]
+    )
+
+    # Prepare context and prompt (similar to original)
+    if collections is not None:
+        coll_list = collections
+    else:
+        coll_list = db_ops_utils.get_all_collections_names(db)
+
+    retrieved_docs = search_database(
+        query=query_reconstructed,
+        db=db,
+        collections=coll_list
+    )
+
+    contexts = combine_context(retrieved_docs)
+    context_values = [data['context'] for data in contexts]
+
+    prompt_template = (
+        prompt_templates.PT_RAG if query_type == 'question'
+        else prompt_templates.PT_RAG_STATEMENT
+    )
+
+    prompt = build_prompt_RAG(
+        query_text=query_text,
+        context=context_values,
+        prompt_template=prompt_template
+    )
+
+    # Create task for streaming response
+    task = asyncio.create_task(model.ainvoke(prompt))
+
+    # Stream the response chunks
+    async for chunk in callback_handler.aiter():
+        yield chunk
+
+    # Wait for completion and get message ID
+    response = await task
+
+    # Yield the contexts as a final chunk
+    yield "\n\nSources:\n" + "\n".join(
+        f"- {ctx['title']}: {ctx['context'][:200]}..."
+        for ctx in contexts
+    )
 
 
 def main():
