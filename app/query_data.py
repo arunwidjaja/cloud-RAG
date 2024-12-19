@@ -104,6 +104,73 @@ def build_prompt_RAG(
     return (prompt)
 
 
+def search_database(query: str, db: Chroma, collections: List[str]) -> List[Document]:
+    print(f"Searching for documents relevant to the query: {
+          query}")
+    aggregated_docs = []
+    coll_list = collections
+    for coll_name in coll_list:
+        print(f"Searching collection: {coll_name}")
+        collection = Chroma(
+            client=db._client,
+            embedding_function=db._embedding_function,
+            collection_name=coll_name
+        )
+        aggregated_docs_partial = collection.similarity_search_with_relevance_scores(
+            query=query,
+            k=config.LLM_K
+        )
+        aggregated_docs.extend(aggregated_docs_partial)
+
+    # Sort the retrieved docs based on relevance score and retrieve the top K results
+    # Relevance score is the second element of the tuple (doc[1])
+    retrieved_docs = sorted(
+        aggregated_docs,
+        key=lambda doc: doc[1],
+        reverse=True
+    )
+    retrieved_docs = retrieved_docs[:config.LLM_K]
+    return retrieved_docs
+
+
+def combine_context(retrieved_docs: List[Document]) -> List:
+    contexts = []
+    if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
+        context = dict.fromkeys(['context', 'source', 'source_hash'], None)
+    else:
+        for doc in retrieved_docs:
+            # store source and context in dictionary
+            context = dict.fromkeys(['context', 'source', 'source_hash'], None)
+
+            doc_source_hash = doc[0].metadata['source_hash']
+            doc_source = doc[0].metadata['source_base_name']
+            doc_collection = doc[0].metadata['collection']
+            doc_context = doc[0].page_content
+
+            context['source_hash'] = doc_source_hash
+            context['source'] = doc_source
+            context['collection'] = doc_collection
+            context['context'] = doc_context
+
+            # merge contexts from sources that have already been added
+            source_is_duplicate = False
+            for entry in contexts:
+                hash_existing = entry['source_hash']
+                if hash_existing == doc_source_hash:
+                    entry['context'] = (
+                        entry['context'] +
+                        '...\n\n...' +
+                        doc_context
+                    )
+                    source_is_duplicate = True
+                    break
+
+            # append to list of contexts
+            if not source_is_duplicate:
+                contexts.append(context)
+    return contexts
+
+
 def query_rag(
     db: Chroma,
     query_text: str,
@@ -143,68 +210,13 @@ def query_rag(
         coll_list = db_ops_utils.get_all_collections_names(db)
 
     # Search all collections and combine the results into one list
-    aggregated_docs = []
-    print(f"Searching for documents relevant to the query: {
-          query_reconstructed}")
-    for coll_name in coll_list:
-        print(f"Searching collection: {coll_name}")
-        collection = Chroma(
-            client=db._client,
-            embedding_function=db._embedding_function,
-            collection_name=coll_name
-        )
-        aggregated_docs_partial = collection.similarity_search_with_relevance_scores(
-            query=query_reconstructed,
-            k=config.LLM_K
-        )
-        aggregated_docs.extend(aggregated_docs_partial)
-
-    # Sort the retrieved docs based on relevance score and retrieve the top K results
-    # Relevance score is the second element of the tuple (doc[1])
-    retrieved_docs = sorted(
-        aggregated_docs,
-        key=lambda doc: doc[1],
-        reverse=True
+    retrieved_docs = search_database(
+        query=query_reconstructed,
+        db=db,
+        collections=coll_list
     )
-    retrieved_docs = retrieved_docs[:config.LLM_K]
 
-    # aggregate context
-    contexts = []
-    if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
-        LLM_message = "Unable to find matching results."
-        LLM_message_id = config.DEFAULT_MESSAGE_ID
-        context = dict.fromkeys(['context', 'source', 'source_hash'], None)
-    else:
-        for doc in retrieved_docs:
-            # store source and context in dictionary
-            context = dict.fromkeys(['context', 'source', 'source_hash'], None)
-
-            doc_source_hash = doc[0].metadata['source_hash']
-            doc_source = doc[0].metadata['source_base_name']
-            doc_collection = doc[0].metadata['collection']
-            doc_context = doc[0].page_content
-
-            context['source_hash'] = doc_source_hash
-            context['source'] = doc_source
-            context['collection'] = doc_collection
-            context['context'] = doc_context
-
-            # merge contexts from sources that have already been added
-            source_is_duplicate = False
-            for entry in contexts:
-                hash_existing = entry['source_hash']
-                if hash_existing == doc_source_hash:
-                    entry['context'] = (
-                        entry['context'] +
-                        '...\n\n...' +
-                        doc_context
-                    )
-                    source_is_duplicate = True
-                    break
-
-            # append to list of contexts
-            if not source_is_duplicate:
-                contexts.append(context)
+    contexts = combine_context(retrieved_docs)
 
     # Build prompt and invoke LLM
     context_values = [data['context'] for data in contexts]
