@@ -244,7 +244,7 @@ async def query_rag_streaming(
     chat: ChatModel,
     query_type: str,
     collections=None
-) -> Iterator[str]:
+) -> AsyncGenerator[str, None]:
     """
     Streaming version of query_rag that yields chunks of the response as they're generated.
     """
