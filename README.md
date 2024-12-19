@@ -1,28 +1,40 @@
 # RAGBase
 
-[RAGbase](https://www.ragbase.cloud/landing) is a Retrieval-Augmented Generation client that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
+RAGbase is a Retrieval-Augmented Generation dashboard that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
 Text transformation, embedding, and generation is currently powered primarily by DistilBERT, ADA, and GPT-4.
 
 ## Getting Started
 
-RAGbase can be compiled and run locally, but requires OpenAI API keys:
+RAGbase is available as a free cloud service [here.](https://www.ragbase.cloud)
 
-1. Update <code>/app/config.py</code> with local Chroma DB and file upload paths.
+It can also be compiled and run locally, but requires OpenAI API keys:
+
+1. Update <code>/app/config.py</code> with your local file and environment paths.
 
 2. Update <code>/.env</code> and add your <code>OPENAI_API_KEY</code> key.
 
-3. LLM paramters can be configured in <code>/app/config.py</code>. Prompt templates and presets can be configured in <code>/app/prompt_templates.py</code>
+3. LLM performance can be tweaked by configuring parameters in <code>/app/config.py</code> and templates in <code>/app/prompt_templates.py</code>
 
 
 ## Project Stack
 
-- Python
-  - Langchain - LLM framework
-  - HuggingFace - Transformers
-  - Chroma - Vector DB
-  - FastAPI
-- ReactJS, Vite, Docker, Amazon AWS - Deployment
-- TypeScript, Tailwind CSS - Frontend
+- Frontend
+  - React, Vite
+  - TypeScript
+  - Tailwind CSS
+- Backend
+  - Python
+    - Langchain
+    - HuggingFace
+    - FastAPI
+- Deployment
+  - AWS Amplify
+  - AWS Elastic Beanstalk
+  - AWS EC2
+  - Docker
+- Databases
+  - Chroma
+  - SQLite3
 
 ## Release Notes
 
@@ -38,7 +50,6 @@ RAGbase can be compiled and run locally, but requires OpenAI API keys:
 - Support for multiple users
   - Registrations are available on request to limit traffic 
 - Support for chat history
-
 
 ### 2024.11.21 - v0.4
 - UI overhaul
@@ -76,4 +87,3 @@ v0.1 is the first prototype with all of the basic client functionality implement
 The originally planned architecture was to have Cloud RAG deployed on AWS Lambda, but the read-only file system is too restrictive. DirectoryLoader cannot be used to load multiple file types from a single directory because it requires a writable file system to download nltk dependency data. Currently, the best solution is to preprocess data into a single format and use the appropriate loader, or to manually parse file extensions rather than rely on DirectoryLoader. The /tmp folder for the Lambda function is erased after every invocation of the FastAPI handler and cannot be used to store data, even during a single session. This project will be moved to a different Cloud serivce; AWS EC2 and S3 are officially supported and have documentation [here](https://docs.trychroma.com/deployment/aws).
 
 More detail on the DirectoryLoader issue can be found [here](https://github.com/langchain-ai/langchain/issues/17936#issuecomment-2021689653).
-
