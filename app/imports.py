@@ -63,4 +63,4 @@ from io import BytesIO
 from dotenv import load_dotenv
 from pathlib import Path
 from pprint import pprint
-from typing import Dict, List, Optional, Tuple, Callable, AsyncGenerator, Any
+from typing import Dict, List, Optional, Tuple, Callable, Union, AsyncGenerator, Any

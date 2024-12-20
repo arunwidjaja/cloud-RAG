@@ -11,8 +11,8 @@ export function Conversation() {
         const handle_conversation_update = async () => {
             try {
                 if (messages.length > 0) {
-                    update_chats();
-                    await save_chats();
+                    // update_chats();
+                    // await save_chats();
                 }
             } catch (error) {
                 console.error('Error updating chats: ', error)

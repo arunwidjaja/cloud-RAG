@@ -297,9 +297,9 @@ async def query_rag_streaming(
     # Wait for completion and get message ID
     response = await task
 
-    # Yield the contexts as a final chunk
+    # # Yield the contexts as a final chunk
     yield "\n\nSources:\n" + "\n".join(
-        f"- {ctx['title']}: {ctx['context'][:200]}..."
+        f"{ctx['source']}"
         for ctx in contexts
     )
 

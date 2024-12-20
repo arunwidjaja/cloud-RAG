@@ -3,7 +3,7 @@ from imports import *
 # Local Modules
 from api_dependencies import get_db
 from api_MODELS import *
-from query_data import query_rag
+from query_data import query_rag, query_rag_streaming
 import config
 import db_ops
 import utils
@@ -110,6 +110,19 @@ async def create_collection(request: CollectionModel, db=Depends(get_db)):
         return collection
     except Exception as e:
         raise Exception(f"Exception occurred when creating a collection: {e}")
+
+
+@router.post("/stream-query")
+async def stream_query(request: QueryModel, db=Depends(get_db)):
+    database = db
+    return StreamingResponse(
+        query_rag_streaming(
+            db=database,
+            query_text=request.query_text,
+            chat=request.chat,
+            query_type=request.query_type),
+        media_type='text/event-stream'
+    )
 
 
 @router.post("/submit_query")

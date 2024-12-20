@@ -7,7 +7,7 @@ let current_user_id: string;
 export const initializeApi = (user_id: string) => {
   current_user_id = user_id;
 }
-export const start_resend_otp = async(email: string): Promise<void> => {
+export const start_resend_otp = async (email: string): Promise<void> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/resend_otp`
     const response = await fetch(url, {
@@ -17,12 +17,12 @@ export const start_resend_otp = async(email: string): Promise<void> => {
       },
       body: JSON.stringify(email)
     });
-    if(!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network response was not ok'); }
   } catch (error) {
     console.error('Error resending OTP: ', error);
   }
 }
-export const start_verify_otp = async(otp: string, email: string): Promise<boolean> => {
+export const start_verify_otp = async (otp: string, email: string): Promise<boolean> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/verify_otp`
     const data = {
@@ -36,14 +36,14 @@ export const start_verify_otp = async(otp: string, email: string): Promise<boole
       },
       body: JSON.stringify(data)
     });
-  if(!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network response was not ok'); }
   } catch (error) {
     console.error('Error verifying OTP: ', error);
     return false;
   }
   return true
 }
-export const start_session = async(): Promise<void> => {
+export const start_session = async (): Promise<void> => {
   console.log("Starting session")
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/start_session`
@@ -54,7 +54,7 @@ export const start_session = async(): Promise<void> => {
       },
       body: JSON.stringify({ user_id: current_user_id })
     });
-  if (!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network response was not ok'); }
   } catch (error) {
     console.error('Error starting session: ', error);
   }
@@ -153,7 +153,7 @@ export const fetch_saved_chats = async (): Promise<Chat[]> => {
   }
 }
 
-export const start_upload = async(uploads: FormData): Promise<string[]> => {
+export const start_upload = async (uploads: FormData): Promise<string[]> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/upload_documents`
     const response = await fetch(url, {
@@ -163,7 +163,7 @@ export const start_upload = async(uploads: FormData): Promise<string[]> => {
       },
       body: uploads
     })
-    if(!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
       const uploaded_files: string[] = await response.json();
       return uploaded_files
@@ -504,6 +504,55 @@ export const start_submit_query = async (user_query: string, current_chat: Chat,
     throw error;
   }
 }
+
+export type StreamCallback = (chunk: string) => void;
+export const start_stream_query = async (
+  query: string,
+  onChunk: StreamCallback,
+  chat?: Chat,
+  query_type: string = 'stream'
+): Promise<void> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/stream-query`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'uuid': current_user_id
+      },
+      body: JSON.stringify({
+        query_text: query,
+        chat: chat,
+        query_type: query_type
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    if (!response.body) {
+      throw new Error('Response body is null');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      onChunk(chunk);
+    }
+  } catch (error) {
+    console.error('There was an error streaming your query:', error);
+    throw error;
+  }
+}
+
+
+
 export const start_summarization = async (files: FileData[]): Promise<string> => {
   if (!Array.isArray(files) || files.length === 0) {
     return 'There were no files to summarize'
