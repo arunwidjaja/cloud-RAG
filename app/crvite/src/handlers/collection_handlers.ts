@@ -1,5 +1,5 @@
 import useCollectionsStore from '../stores/collectionsStore';
-import { fetch_db_collections, start_create_collection, start_delete_collection } from "../api/api";
+import { fetch_db_collections, start_create_collection, start_delete_collection } from "../api/api_database";
 import { add_log } from './log_handlers';
 
 

@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState } from 'react';
 import { User, AuthContextType } from '@/types/types';
 
-import { start_login, start_register, start_delete_account, start_logout } from '@/api/api';
+import { start_login, start_register, start_logout } from '@/api/api_init';
+import { start_delete_account } from '@/api/api_user_data';
 
-import { initializeApi } from '@/api/api';
+import { initializeApi } from '@/api/api_init';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 

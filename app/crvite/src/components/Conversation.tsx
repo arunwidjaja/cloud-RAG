@@ -1,25 +1,9 @@
 import useMessageStore from "@/stores/messageStore"
 import { Message } from "@/types/types";
 import { ChatBubble } from "./ChatBubble";
-import { useEffect } from "react";
-import { save_chats, update_chats } from "@/handlers/chats_handlers";
 
 export function Conversation() {
     const { messages } = useMessageStore();
-
-    useEffect(() => {
-        const handle_conversation_update = async () => {
-            try {
-                if (messages.length > 0) {
-                    // update_chats();
-                    // await save_chats();
-                }
-            } catch (error) {
-                console.error('Error updating chats: ', error)
-            }
-        };
-        handle_conversation_update();
-    }, [messages]);
 
     return (
         <div

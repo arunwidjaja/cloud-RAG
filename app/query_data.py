@@ -246,9 +246,20 @@ async def query_rag_streaming(
     collections=None
 ) -> AsyncGenerator[str, None]:
     """
-    Streaming version of query_rag that yields chunks of the response as they're generated.
+    Query LLM, stream response and context
+
+    Args:
+        db: The Chroma instance
+        query_text: The user's query string.
+        chat: The messages in the chat prior to the query.
+        query_type: this is "question" for now since all queries are by default questions.
+        collections: List of collection names include in the search. If None, searches all collections.
+
+    Returns:
+        Text stream of the LLM's response
     """
     chat_parsed = parse_chat(chat)
+
     query_reconstructed = assemble_query(
         query=query_text,
         chat=chat_parsed
@@ -261,7 +272,7 @@ async def query_rag_streaming(
         callbacks=[callback_handler]
     )
 
-    # Prepare context and prompt (similar to original)
+    # Prepare context and prompt
     if collections is not None:
         coll_list = collections
     else:
@@ -295,13 +306,20 @@ async def query_rag_streaming(
         yield chunk
 
     # Wait for completion and get message ID
-    response = await task
+    llm_response = await task
+    llm_message = llm_response.content
+    llm_message_id = llm_response.id
 
-    # # Yield the contexts as a final chunk
+    # Yield the contexts as a final chunk
     yield "\n\nSources:\n" + "\n".join(
         f"{ctx['source']}"
         for ctx in contexts
     )
+
+    # Yield context metadata
+    yield "\n\nMETADATA:" + json.dumps({
+        "contexts": contexts
+    })
 
 
 def main():

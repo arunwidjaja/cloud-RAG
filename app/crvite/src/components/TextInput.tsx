@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { start_submit_query, start_stream_query } from '../api/api';
+import { start_stream_query } from '../api/api_llm_calls';
 
 // Handlers
 import { add_message, update_message } from '../handlers/message_handlers';
@@ -7,7 +7,7 @@ import { set_current_retrieved, set_retrieved_files } from '@/handlers/retrieved
 
 // Stores
 import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
-import { get_current_chat } from '@/handlers/chats_handlers';
+import { get_current_chat, save_chats, update_chats } from '@/handlers/chats_handlers';
 
 import { ContextData } from '@/types/types';
 
@@ -58,6 +58,13 @@ export const TextInput = () => {
                     const updated_message = createAnswerMessage(streamingMessageRef.current);
                     update_message(updated_message);
                 },
+                (metadata) => {
+                    console.log('Received metadata: ',metadata);
+                    const ai_reply_context: ContextData[] = metadata.contexts;
+
+                    set_retrieved_files(ai_reply_context)
+                    set_current_retrieved(ai_reply_context[0])
+                },
                 current_chat,
                 'question'
             );
@@ -70,35 +77,10 @@ export const TextInput = () => {
             }
         } finally {
             setIsStreaming(false);
+            update_chats();
+            save_chats();
         }
     }
-
-    const send_user_input = async () => {
-        if (user_input.trim()) {
-            const input_message = createInputMessage(user_input)
-            const current_chat = get_current_chat();
-
-            add_message(input_message);
-            set_user_input('')
-
-            const ai_reply = await start_submit_query(user_input, current_chat, 'question');
-
-            const ai_reply_text: string = ai_reply.text; // The Answer
-            const ai_reply_context: ContextData[] = ai_reply.context_list; // The LIST of contexts used
-
-
-            let sources_string = '\n\nSources used: ';
-            for (const context of ai_reply_context) {
-                sources_string = sources_string + '\n' + context.file.name;
-            }
-
-            const answer_message = ai_reply_text + sources_string
-            add_message(createAnswerMessage(answer_message))
-
-            set_retrieved_files(ai_reply_context);
-            set_current_retrieved(ai_reply_context[0]);
-        }
-    };
 
     return (
         <div className='mt-2 flex flex-row justify-center'>

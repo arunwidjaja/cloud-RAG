@@ -10,9 +10,9 @@ import useCollectionsStore from '../stores/collectionsStore';
 import {
   start_file_deletion,
   start_file_download,
-  start_push_to_DB,
   start_upload_deletion
-} from '../api/api';
+} from '../api/api_files';
+import { start_push_to_DB } from '@/api/api_database';
 import { FileData } from "../types/types";
 import { RefObject } from 'react';
 

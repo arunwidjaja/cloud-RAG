@@ -1,4 +1,4 @@
-import { fetch_saved_chats, start_save_chat } from "@/api/api";
+import { fetch_saved_chats, start_save_chat } from "@/api/api_user_data";
 import { Chat } from "@/types/types";
 
 import useChatsStore from "@/stores/chatsStore";

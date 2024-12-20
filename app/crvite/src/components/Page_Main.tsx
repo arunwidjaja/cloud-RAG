@@ -24,7 +24,7 @@ import '@/App.css';
 
 // Hooks
 import { use_presets } from '@/hooks/hooks';
-import { start_session } from '@/api/api';
+import { start_session } from '@/api/api_init';
 
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
 import { ProfileBadge } from './ProfileBadge';

@@ -1,4 +1,4 @@
-import { start_file_download } from "@/api/api";
+import { start_file_download } from "@/api/api_files";
 import useRetrievedStore from "@/stores/retrievedStore";
 import { ContextData } from "@/types/types";
 import { FileData } from "@/types/types";

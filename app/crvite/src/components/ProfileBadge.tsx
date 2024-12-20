@@ -8,7 +8,7 @@ import { PopoverTrigger, Popover, PopoverContent } from "./ui/popover";
 import { ChevronDown } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { use_chats } from "@/hooks/hooks";
-import { start_delete_account } from "@/api/api";
+import { start_delete_account } from "@/api/api_user_data";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel } from '@/components/ui/alert-dialog'
 import { useState } from "react";
 import { Input } from "./ui/input";
