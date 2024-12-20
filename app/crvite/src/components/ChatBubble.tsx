@@ -32,18 +32,6 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
                     </RotateCw>
                 </div>
             </div>
-
-            {/* {(message.type === 'context') && (
-                <div className="download_context">
-                    <img 
-                        className="icon" 
-                        src={SRC_DL_ICON} 
-                        onClick={() => start_file_download([message.context_list[0].file], get_current_collection())}
-                        alt="Download"
-                        role="button"
-                    />
-                </div>
-            )} */}
         </div>
     );
 };
