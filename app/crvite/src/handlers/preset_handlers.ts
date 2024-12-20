@@ -1,9 +1,6 @@
 import { add_log } from './log_handlers';
 import usePresetsStore from '@/stores/presetsStore';
-import {
-    start_summarization,
-    start_theme_analysis,
-} from '../api/api'
+import { start_summarization, start_theme_analysis } from '../api/api_llm_calls'
 import { createAnswerMessage } from '../stores/messageStore';
 import { add_message } from './message_handlers';
 import useFilesStore from '@/stores/filesStore';

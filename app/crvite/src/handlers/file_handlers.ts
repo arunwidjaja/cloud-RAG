@@ -1,6 +1,6 @@
 import useFilesStore from "../stores/filesStore";
 
-import { fetch_db_files_metadata, fetch_uploads_metadata } from "../api/api";
+import { fetch_db_files_metadata, fetch_uploads_metadata } from "../api/api_files";
 import { FileData } from "../types/types";
 
 export const refresh_files = async () => {

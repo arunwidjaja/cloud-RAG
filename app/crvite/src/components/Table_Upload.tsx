@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { X } from "lucide-react";
-import { fetch_uploads_metadata } from "@/api/api"
+import { fetch_uploads_metadata } from "@/api/api_files"
 import { FileData } from "@/types/types"
 import {
     ColumnDef,

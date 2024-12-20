@@ -32,6 +32,7 @@ interface MessageState {
     messages: Message[];
     setMessages: (newMessages: Message[]) => void;
     addMessage: (message: Message) => void;
+    updateMessage: (updated_message: Message) => void;
     clearMessages: () => void;
 }
 
@@ -61,6 +62,9 @@ const useMessageStore = create<MessageState>()((set) => ({
     setMessages: (newMessages) => set({ messages: newMessages }),
     addMessage: (message) => set((state) => ({
         messages: [message, ...state.messages]
+    })),
+    updateMessage: (updated_message) => set((state) => ({
+        messages: [updated_message, ...state.messages.slice(1)]
     })),
     clearMessages: () => set({ messages: [] })
 }));

@@ -5,7 +5,7 @@ interface FileData {
   hash: string;
   name: string;
   collection: string;
-  word_count: number;
+  word_count?: number;
 }
 
 interface FilesState {

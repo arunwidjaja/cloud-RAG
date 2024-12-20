@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp"
-import { start_resend_otp, start_verify_otp } from "@/api/api";
+import { start_resend_otp, start_verify_otp } from "@/api/api_init";
 import { RefreshCcw } from "lucide-react";
 
 

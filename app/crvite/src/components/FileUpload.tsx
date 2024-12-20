@@ -2,7 +2,7 @@ import { forwardRef, useRef, ChangeEvent, ForwardedRef } from "react";
 import { refresh_uploads } from "../handlers/file_handlers";
 import { add_log } from "../handlers/log_handlers";
 import React from 'react';
-import { start_upload } from "@/api/api";
+import { start_upload } from "@/api/api_files";
 
 type FileUploadWindowProps = {
     // Add any props if needed

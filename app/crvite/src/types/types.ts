@@ -2,7 +2,7 @@ export interface FileData {
     hash: string;
     name: string;
     collection: string;
-    word_count: number;
+    word_count?: number;
 }
 
 export interface ContextData {
