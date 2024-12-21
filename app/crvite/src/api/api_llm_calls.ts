@@ -17,7 +17,7 @@ export const start_stream_query = async (
   query_type: string = 'stream'
 ): Promise<void> => {
   try {
-    const url = `${import.meta.env.VITE_API_BASE_URL}/stream-query`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/stream_query`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {

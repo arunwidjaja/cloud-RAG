@@ -112,7 +112,7 @@ async def create_collection(request: CollectionModel, db=Depends(get_db)):
         raise Exception(f"Exception occurred when creating a collection: {e}")
 
 
-@router.post("/stream-query")
+@router.post("/stream_query")
 async def stream_query(request: QueryModel, db=Depends(get_db)):
     database = db
     return StreamingResponse(
