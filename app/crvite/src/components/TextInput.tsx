@@ -15,6 +15,11 @@ import { get_current_chat, save_chats, update_chats } from '@/handlers/chats_han
 import { Paperclip } from 'lucide-react';
 import { FileUploadWindow } from './FileUpload';
 
+// Hooks
+import { use_attachments } from '@/hooks/hooks_files';
+import { refresh_attachments } from '@/handlers/file_handlers';
+import { Attachment } from './Attachment';
+
 const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): void => {
     if (attachmentRef && attachmentRef.current) { attachmentRef.current.click(); }
 }
@@ -25,14 +30,23 @@ interface TextInputProps {
 }
 
 export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
-    const [user_input, set_user_input] = useState("");
-    const [isStreaming, setIsStreaming] = useState(false);
+
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const streamingMessageRef = useRef<string>("");
-
     const attachmentRef = useRef(null);
 
-    // Resizes the text field when typing
+    const [user_input, set_user_input] = useState(""); // text in the text field
+    const [isStreaming, setIsStreaming] = useState(false); // flag for checking if the response is still streaming
+
+    const attachments = use_attachments()
+
+    // Fetches the attachments on load
+    useEffect(() => {
+        refresh_attachments();
+    }, []);
+
+
+    // Resizes the text field and updates the user input vlaue when typing
     useEffect(() => {
         if (textAreaRef.current) {
             textAreaRef.current.style.height = 'auto';
@@ -121,16 +135,18 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
                 `}>
                 <div
                     className={`
-                        grid grid-cols-3
                         w-[90%]
                         rounded-tl-lg rounded-tr-lg
                         border
-                        text-white
-                        border-green-800
+                        bg-text
+                        text-text2
                     `}>
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
+                        {attachments.map((attachment, index)=>(
+                            <Attachment
+                                key={index}
+                                file={attachment}
+                            />
+                        ))}
                 </div>
                 <textarea
                     id='userinput'

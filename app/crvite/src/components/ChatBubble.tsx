@@ -1,8 +1,10 @@
+// Types
 import { Message } from "../types/types";
 
+// Hooks
 import { useToast } from '@/hooks/use-toast';
 
-// Icons
+// Components
 import { ClipboardList, PencilLine } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 

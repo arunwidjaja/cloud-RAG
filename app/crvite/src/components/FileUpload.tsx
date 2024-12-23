@@ -50,29 +50,6 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
         } catch (error) {
             console.error('Error upload files: ', error);
         }
-        // try {
-        //     // Uploads files to uploads
-        //     if (!is_attachment) {
-        //         const uploaded_files = await start_upload(formData);
-        //         uploaded_files.forEach((uploaded_file) => {
-        //             add_log("Uploaded File: " + uploaded_file);
-        //         });
-
-        //         if (upload_window.current) {
-        //             upload_window.current.value = '';
-        //         }
-        //         refresh_uploads();
-        //     }
-        //     // If they are attachments, the file is included as part of the query
-        //     else {
-        //         const attached_files = await start_upload(formData, true)
-        //         attached_files.forEach((attached_file) => {
-        //             add_log("Attached File: " + attached_file);
-        //         });
-        //     }
-        // } catch (error) {
-        //     console.error('Error upload files: ', error);
-        // }
     };
 
     return (

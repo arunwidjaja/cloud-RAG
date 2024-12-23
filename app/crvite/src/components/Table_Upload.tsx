@@ -28,7 +28,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { use_current_uploads, use_selected_uploads } from "@/hooks/hooks";
+import { use_uploads, use_selected_uploads } from "@/hooks/hooks_files";
 import { set_selected_uploads } from "@/handlers/file_handlers"
 import { handle_remove_selected_uploads } from "@/handlers/button_handlers";
 
@@ -38,7 +38,7 @@ import { handle_remove_selected_uploads } from "@/handlers/button_handlers";
 
 
 export function UploadTable() {
-    const uploads = use_current_uploads()
+    const uploads = use_uploads()
     const selected_uploads = use_selected_uploads()
     const [data, setData] = React.useState<FileData[]>([]);
     const [sorting, setSorting] = React.useState<SortingState>([])

@@ -84,14 +84,20 @@ def archive_all_uploads() -> List:
     return archive_uploads(all_uploads)
 
 
-def get_uploads_metadata() -> List[dict]:
+def get_uploads_metadata(is_attachment: bool = False) -> List[dict]:
     """
     Gets the metadata of all the uploads.
 
+    Args:
+        is_attachment: if set to True, will fetch attachments instead of uploads.
+
     Returns:
-        A list of dictionaries containing the file name, hash, and word count
+        A list of dictionaries containing the file name, hash, and word count.
     """
-    uploads_folder_path = utils.get_env_user_paths()['UPLOADS']
+    if (not is_attachment):
+        uploads_folder_path = utils.get_env_user_paths()['UPLOADS']
+    else:
+        uploads_folder_path = utils.get_env_user_paths()['ATTACHMENTS']
     uploads_metadata = []
     for f in uploads_folder_path.iterdir():
         if f.is_file():
@@ -99,7 +105,8 @@ def get_uploads_metadata() -> List[dict]:
                 ['name', 'hash', 'word_count'])
             name = os.path.basename(str(f))
             hash = utils.get_hash(f)
-            word_count = utils.get_word_count(f)
+            # word_count = utils.get_word_count(f)
+            word_count = 0
 
             current_upload_metadata['name'] = name
             current_upload_metadata['hash'] = hash

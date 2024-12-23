@@ -1,9 +1,14 @@
+// Components
 import { DropdownMenu } from "./Dropdown_Menu"
+import { FileTable } from "./Table_Files"
 import { CollectionCreationButton } from "./CollectionCreationButton"
 import { CollectionDeletionButton } from "./CollectionDeletionButton"
+
+// Handlers
 import { handle_choose_collection } from "@/handlers/button_handlers"
-import { FileTable } from "./Table_Files"
-import { use_collections } from "@/hooks/hooks"
+
+// Hooks
+import { use_collections } from "@/hooks/hooks_database"
 
 export function Tab_2_Content() {
     return (

@@ -2,7 +2,7 @@
 import { handle_select_chat, refresh_chats } from '@/handlers/chats_handlers';
 import { Chat } from '@/types/types';
 
-import { use_chats } from '@/hooks/hooks';
+import { use_chats } from '@/hooks/hooks_user_data';
 import { start_delete_chat } from '@/api/api_user_data';
 import { add_log } from '@/handlers/log_handlers';
 import { MessageCirclePlus, Trash2 } from 'lucide-react';

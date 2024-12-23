@@ -1,22 +1,21 @@
-import { handle_delete_chat, handle_download_chats } from "./ChatHistory";
 import { useAuth } from "@/contexts/AuthContext";
-
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-
+import { useState } from "react";
 import { LOGO_PLACEHOLDER } from "@/constants/constants";
+import { start_delete_account } from "@/api/api_user_data";
+
+// Components
+import { handle_delete_chat, handle_download_chats } from "./ChatHistory";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { PopoverTrigger, Popover, PopoverContent } from "./ui/popover";
 import { ChevronDown } from "lucide-react";
 import { Separator } from "./ui/separator";
-import { use_chats } from "@/hooks/hooks";
-import { start_delete_account } from "@/api/api_user_data";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel } from '@/components/ui/alert-dialog'
-import { useState } from "react";
+import { X } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel } from '@/components/ui/alert-dialog'
 
-import { X } from "lucide-react";
-
-
+// Hooks
+import { use_chats } from "@/hooks/hooks_user_data";
 
 export const ProfileBadge = () => {
     const { user, logout } = useAuth();

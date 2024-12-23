@@ -52,6 +52,15 @@ export const get_uploads = async () => {
     return uploads;
 }
 
+export const refresh_attachments = async () => {
+    const setAttachments = useFilesStore.getState().setAttachments;
+    const fetched_attachments = await fetch_uploads_metadata(true);
+    for (const file of fetched_attachments) {
+        console.log("Fetched attachment: " + file.name)
+    }
+    setAttachments(fetched_attachments);
+}
+
 // Unused function
 export const clear_uploads = () => {
     const { setUploads } = useFilesStore.getState();

@@ -6,14 +6,17 @@ import { UploadTable } from "./Table_Upload"
 import { SimpleTooltip } from "./SimpleTooltip"
 import { Button } from "./ui/button"
 import { FileUploadWindow } from "./FileUpload"
+import { Upload } from 'lucide-react';
+import Spinner from './Spinner';
 
 // Handlers
 import { handle_push_uploads, handle_choose_collection, handle_accept_uploads, handle_remove_selected_uploads } from "@/handlers/button_handlers"
 
 // Hooks
-import { use_collections, use_selected_uploads } from "@/hooks/hooks"
-import Spinner from './Spinner';
-import { Upload } from 'lucide-react';
+import { use_collections } from '@/hooks/hooks_database';
+import { use_selected_uploads } from '@/hooks/hooks_files';
+
+
 
 
 

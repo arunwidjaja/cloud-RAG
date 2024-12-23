@@ -184,13 +184,18 @@ async def get_db_files_metadata(collections: List[str] = Query(...), db=Depends(
 
 
 @router.get("/uploads_metadata")
-async def get_uploads_metadata(db=Depends(get_db)):
+async def get_uploads_metadata(
+        is_attachment: bool = Query(False),
+        db=Depends(get_db)
+):
     """
-    Gets the metadata of all uploads
+    Gets the metadata of all uploads or attachments.
+    is_attachment determines whether to fetch uploads or attachments.
     """
-    print("API CALL: get_uploads_metadata")
+    print(f"Fetching metadata of {
+          "attachments." if is_attachment else "uploads."}")
     try:
-        uploads_metadata = doc_ops_utils.get_uploads_metadata()
+        uploads_metadata = doc_ops_utils.get_uploads_metadata(is_attachment)
         return JSONResponse(content=uploads_metadata)
     except Exception as e:
-        raise Exception(f"Exception occured when getting uploads list: {e}")
+        raise Exception(f"Exception occured when fetching uploads: {e}")

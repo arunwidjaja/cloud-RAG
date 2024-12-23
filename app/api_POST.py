@@ -172,6 +172,10 @@ async def upload_documents(
     is_attachment: bool = Query(False),
     db=Depends(get_db)
 ):
+    """
+    Uploads files to user's data folders.
+    is_attachment determines whether to send them to uploads or attachments folder.
+    """
     print(f"Uploading documents as {
           "attachments." if is_attachment else "uploads."}")
     saved_files = []

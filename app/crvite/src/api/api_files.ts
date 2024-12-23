@@ -15,7 +15,7 @@ export const fetch_db_files_metadata = async (): Promise<FileData[]> => {
           'uuid': current_user_id
         },
       });
-      if (!response.ok) { throw new Error('Network response was not ok'); }
+      if (!response.ok) { throw new Error('Network error when fetching database files'); }
       else {
         const files = await response.json();
         return files;
@@ -30,9 +30,10 @@ export const fetch_db_files_metadata = async (): Promise<FileData[]> => {
     return [];
   }
 }
-export const fetch_uploads_metadata = async (): Promise<FileData[]> => {
+export const fetch_uploads_metadata = async (is_attachment: boolean = false): Promise<FileData[]> => {
   try {
-    const url = `${import.meta.env.VITE_API_BASE_URL}/uploads_metadata`
+    const query = `is_attachment=${is_attachment}`
+    const url = `${import.meta.env.VITE_API_BASE_URL}/uploads_metadata?${query}`
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -40,7 +41,7 @@ export const fetch_uploads_metadata = async (): Promise<FileData[]> => {
         'uuid': current_user_id
       },
     });
-    if (!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network error when fetching uploads'); }
     else {
       const files = await response.json();
       return files;
@@ -61,7 +62,7 @@ export const start_upload = async (uploads: FormData, is_attachment: boolean = f
       },
       body: uploads
     })
-    if (!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network error when uploading files'); }
     else {
       const uploaded_files: string[] = await response.json();
       return uploaded_files
@@ -86,7 +87,7 @@ export const start_upload_deletion = async (upload_deletion_list: FileData[]): P
         'uuid': current_user_id
       },
     });
-    if (!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network error when deleting uploads'); }
     else {
       const deleted_uploads = await response.json();
       return deleted_uploads;
@@ -113,7 +114,7 @@ export const start_file_download = async (file_download_list: FileData[], collec
         'uuid': current_user_id
       }
     });
-    if (!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network error when downloading files'); }
     else {
       console.log('Raw response', response)
       const content_disp = response.headers.get('Content-Disposition');
@@ -159,7 +160,7 @@ export const start_file_deletion = async (file_deletion_list: FileData[], collec
         'uuid': current_user_id
       },
     });
-    if (!response.ok) { throw new Error('Network response was not ok'); }
+    if (!response.ok) { throw new Error('Network error when deleting files'); }
     else {
       const deleted_files = await response.json();
       return deleted_files;
