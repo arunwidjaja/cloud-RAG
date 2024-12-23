@@ -1,4 +1,3 @@
-// import { LoremIpsum } from 'lorem-ipsum';
 import { useEffect } from 'react';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,20 +13,22 @@ import { Tabs_Section } from '@/components/Tabs_Section';
 import { Logs } from '@/components/Logs';
 import { DropdownMenu } from '@/components/Dropdown_Menu';
 import { ChatHistory } from '@/components/ChatHistory';
-import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { Toaster } from './ui/toaster';
+import { ProfileBadge } from '@/components/ProfileBadge';
+import { ChatInterface } from '@/components/ChatInterface';
 
-// Styling
-import '@/App.css';
+import { Toaster } from '@/components/ui/toaster';
+import { Button } from '@/components/ui/button';
 
 // Hooks
 import { use_presets } from '@/hooks/hooks';
 import { start_session } from '@/api/api_init';
 
+// Constants
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
-import { ProfileBadge } from './ProfileBadge';
-import { ChatInterface } from './ChatInterface';
+
+// Styling
+import '@/App.css';
 
 function MainApp() {
     const { user, isAuthenticated } = useAuth();

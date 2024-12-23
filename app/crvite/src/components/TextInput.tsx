@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { RefObject } from 'react';
 import { start_stream_query } from '../api/api_llm_calls';
+import { ContextData } from '@/types/types';
 
 // Handlers
 import { add_message, update_message } from '../handlers/message_handlers';
@@ -9,7 +11,13 @@ import { set_current_retrieved, set_retrieved_files } from '@/handlers/retrieved
 import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
 import { get_current_chat, save_chats, update_chats } from '@/handlers/chats_handlers';
 
-import { ContextData } from '@/types/types';
+// Components
+import { Paperclip } from 'lucide-react';
+import { FileUploadWindow } from './FileUpload';
+
+const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): void => {
+    if (attachmentRef && attachmentRef.current) { attachmentRef.current.click(); }
+}
 
 interface TextInputProps {
     edited_query: string;
@@ -21,6 +29,8 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
     const [isStreaming, setIsStreaming] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const streamingMessageRef = useRef<string>("");
+
+    const attachmentRef = useRef(null);
 
     // Resizes the text field when typing
     useEffect(() => {
@@ -102,22 +112,61 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
         <div
             className={`
                 flex flex-row justify-center
-                mt-2 
+                mt-2
             `}>
-            <textarea
-                id='userinput'
-                ref={textAreaRef}
-                value={user_input}
-                onChange={(e) => set_user_input(e.target.value)}
-                onKeyDown={handle_key_down}
-                disabled={isStreaming}
+            <div
                 className={`
-                    text-text bg-accent
-                    w-3/4 p-4 rounded-lg
-                    [&::-webkit-scrollbar]:hidden
-                    [-ms-overflow-style:'none']
-                    [scrollbar-width:'none']
-                `}/>
+                    relative flex flex-col items-center
+                    w-3/4
+                `}>
+                <div
+                    className={`
+                        grid grid-cols-3
+                        w-[90%]
+                        rounded-tl-lg rounded-tr-lg
+                        border
+                        text-white
+                        border-green-800
+                    `}>
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                </div>
+                <textarea
+                    id='userinput'
+                    ref={textAreaRef}
+                    value={user_input}
+                    onChange={(e) => set_user_input(e.target.value)}
+                    onKeyDown={handle_key_down}
+                    disabled={isStreaming}
+                    className={`
+                        w-full p-4 pr-8
+                        rounded-lg
+                        text-text bg-accent
+                        [&::-webkit-scrollbar]:hidden
+                        [-ms-overflow-style:'none']
+                        [scrollbar-width:'none']
+                `} />
+                <div
+                    className={`
+                        flex-col
+                        absolute right-0 bottom-0 justify-center
+                    `}>
+                    <FileUploadWindow
+                        is_attachment={true}
+                        ref={attachmentRef}>
+                    </FileUploadWindow>
+                    <Paperclip
+                        onClick={() => handle_accept_attachments(attachmentRef)}
+                        className={`
+                            m-1
+                            text-text opacity-50
+                            hover:cursor-pointer
+                            hover:opacity-100
+                        `}>
+                    </Paperclip>
+                </div>
+            </div>
         </div>
     )
 };

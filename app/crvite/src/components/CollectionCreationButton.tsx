@@ -40,7 +40,7 @@ export function CollectionCreationButton() {
               </Button>
             </TooltipTrigger>
           </DialogTrigger>
-          <TooltipContent>
+          <TooltipContent className="bg-text text-text2">
             <p className="text-text2">Create a new Collection</p>
           </TooltipContent>
         </Tooltip>

@@ -167,8 +167,13 @@ async def submit_query(request: QueryModel, db=Depends(get_db)):
 
 
 @router.post("/upload_documents")
-async def upload_documents(files: List[UploadFile] = File(...), db=Depends(get_db)):
-    print(f"API CALL: upload_documents")
+async def upload_documents(
+    files: List[UploadFile] = File(...),
+    is_attachment: bool = Query(False),
+    db=Depends(get_db)
+):
+    print(f"Uploading documents as {
+          "attachments." if is_attachment else "uploads."}")
     saved_files = []
     uploads_path = utils.get_env_user_paths()['UPLOADS']
 

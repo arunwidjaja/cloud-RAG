@@ -70,7 +70,7 @@ export function Tab_3_Content() {
                 </Button>
 
                 <div className='grid grid-cols-2'>
-                    <SimpleTooltip content="Pushes all uploads to the current Collection">
+                    <SimpleTooltip className='bg-text text-text2' content="Pushes all uploads to the current Collection">
                         <Button id="pushbtn"
                             onClick={handle_click_push_uploads}
                             className="mr-1 bg-accent text-text hover:bg-highlight hover:text-text2">

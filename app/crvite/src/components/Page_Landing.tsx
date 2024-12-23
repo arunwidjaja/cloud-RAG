@@ -37,16 +37,31 @@ export function LandingPage() {
                                 <NavigationMenuTrigger className="bg-[#08010C] hover:bg-[#08010C] text-white">Product</NavigationMenuTrigger>
                                 <NavigationMenuContent>
                                     <div className="w-[800px] h-[400px] text-white bg-[#0e0e0e] p-2 grid grid-cols-4">
-                                        <div className="col-span-2 p-2 m-2 border border-white/50 rounded-sm">
+                                        <div
+                                            className={`
+                                                col-span-2 p-2 m-2
+                                                rounded-sm
+                                                border border-white/50
+                                            `}>
                                             <p className="justify-self-center">Retrieval-Augmented Generation</p>
                                             <p className="p-2 text-s text-gray-200">RAGbase can convert and query your data. Audio and Video transcription is built-in, along with support for text formats such as .txt and .pdf.</p>
                                             <p className="p-2 text-s text-gray-200">Persistent storage with and user-specific collections and settings make it easy to customize your dashboard to your needs.</p>
                                         </div>
-                                        <div className="col-span-1 p-2 m-2 border border-white/50 rounded-sm">
+                                        <div
+                                            className={`
+                                                col-span-2 p-2 m-2
+                                                rounded-sm
+                                                border border-white/50
+                                            `}>
                                             <p className="justify-self-center">Model Selection</p>
                                             <p className="p-2 text-s text-gray-200">RAGbase supports foundation models from OpenAI, Amazon Bedrock, and Ollama</p>
                                         </div>
-                                        <div className="col-span-1 p-2 m-2 border border-white/50 rounded-sm">
+                                        <div
+                                            className={`
+                                                col-span-2 p-2 m-2
+                                                rounded-sm
+                                                border border-white/50
+                                            `}>
                                             <p className="justify-self-center">Document Analysis</p>
                                             <p className="p-2 text-s text-gray-200">Presets allow you to run sentiment and thematic analysis on document batches, for straightforward results without having to start a chat.</p>
                                         </div>
