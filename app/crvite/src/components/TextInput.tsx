@@ -16,12 +16,12 @@ interface TextInputProps {
     edit_timestamp: number;
 }
 
-export const TextInput = ({edited_query, edit_timestamp}: TextInputProps) => {
+export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
     const [user_input, set_user_input] = useState("");
     const [isStreaming, setIsStreaming] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const streamingMessageRef = useRef<string>("");
-    
+
     // Resizes the text field when typing
     useEffect(() => {
         if (textAreaRef.current) {
@@ -34,9 +34,9 @@ export const TextInput = ({edited_query, edit_timestamp}: TextInputProps) => {
     // Sets the text field content when the user edits a chat bubble.
     // The timestamp is included so that if the exact same message is edited twice, it still triggers
     useEffect(() => {
-        if(edited_query) {
+        if (edited_query) {
             set_user_input(edited_query)
-            if(textAreaRef.current){
+            if (textAreaRef.current) {
                 textAreaRef.current.focus();
             }
         }
@@ -57,7 +57,7 @@ export const TextInput = ({edited_query, edit_timestamp}: TextInputProps) => {
         const current_chat = get_current_chat();
         streamingMessageRef.current = "";
 
-        
+
         add_message(input_message);
         set_user_input('')
 
@@ -75,7 +75,7 @@ export const TextInput = ({edited_query, edit_timestamp}: TextInputProps) => {
                     update_message(updated_message);
                 },
                 (metadata) => {
-                    console.log('Received metadata: ',metadata);
+                    console.log('Received metadata: ', metadata);
                     const ai_reply_context: ContextData[] = metadata.contexts;
 
                     set_retrieved_files(ai_reply_context)
@@ -99,7 +99,11 @@ export const TextInput = ({edited_query, edit_timestamp}: TextInputProps) => {
     }
 
     return (
-        <div className='mt-2 flex flex-row justify-center'>
+        <div
+            className={`
+                flex flex-row justify-center
+                mt-2 
+            `}>
             <textarea
                 id='userinput'
                 ref={textAreaRef}
@@ -107,8 +111,13 @@ export const TextInput = ({edited_query, edit_timestamp}: TextInputProps) => {
                 onChange={(e) => set_user_input(e.target.value)}
                 onKeyDown={handle_key_down}
                 disabled={isStreaming}
-                className="w-3/4 text-text bg-accent p-4 rounded-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
-            />
+                className={`
+                    text-text bg-accent
+                    w-3/4 p-4 rounded-lg
+                    [&::-webkit-scrollbar]:hidden
+                    [-ms-overflow-style:'none']
+                    [scrollbar-width:'none']
+                `}/>
         </div>
     )
 };

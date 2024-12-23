@@ -103,12 +103,24 @@ export function LandingPage() {
                     <div>
                         <Button
                             onClick={handleClickLogin}
-                            className="p-2 text-xs text-black bg-[#CECECE] hover:bg-[#F5F5F5] hover:text-black m-1">
+                            className={`
+                                p-2 text-xs m-1
+                                text-black
+                                bg-[#CECECE]
+                                hover:bg-[#F5F5F5]
+                                hover:text-black
+                            `}>
                             Log In
                         </Button>
                         <Button
                             onClick={handleClickRegister}
-                            className="p-2 text-xs text-white bg-[#333333] hover:bg-[#686868] m-1">
+                            className={`
+                                p-2 text-xs m-1
+                                text-white
+                                bg-[#333333]
+                                hover:bg-[#686868]
+                                hover:text-white
+                            `}>
                             Register
                         </Button>
                     </div>
