@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             await start_logout();
         } catch (error) {
-            console.error('Error loggging out: ', error);
+            console.error('Error logging out: ', error);
             throw error;
         }
     };

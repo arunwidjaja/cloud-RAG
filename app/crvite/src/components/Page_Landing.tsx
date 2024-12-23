@@ -34,7 +34,7 @@ export function LandingPage() {
                     <NavigationMenu className="flex-1">
                         <NavigationMenuList>
                             <NavigationMenuItem>
-                                <NavigationMenuTrigger>Product</NavigationMenuTrigger>
+                                <NavigationMenuTrigger className="bg-[#08010C] hover:bg-[#08010C] text-white">Product</NavigationMenuTrigger>
                                 <NavigationMenuContent>
                                     <div className="w-[800px] h-[400px] text-white bg-[#0e0e0e] p-2 grid grid-cols-4">
                                         <div className="col-span-2 p-2 m-2 border border-white/50 rounded-sm">
@@ -54,7 +54,7 @@ export function LandingPage() {
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
                             <NavigationMenuItem>
-                                <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+                                <NavigationMenuTrigger className="bg-[#08010C] hover:bg-[#08010C] text-white">Resources</NavigationMenuTrigger>
                                 <NavigationMenuContent>
                                     <div className="w-[400px] h-[400px] text-white bg-[#0e0e0e] p-2 flex flex-col">
                                         <div className="border-b-2 border-b-white p-2">
