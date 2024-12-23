@@ -175,7 +175,10 @@ async def upload_documents(
     print(f"Uploading documents as {
           "attachments." if is_attachment else "uploads."}")
     saved_files = []
-    uploads_path = utils.get_env_user_paths()['UPLOADS']
+    if (is_attachment):
+        uploads_path = utils.get_env_user_paths()['ATTACHMENTS']
+    else:
+        uploads_path = utils.get_env_user_paths()['UPLOADS']
 
     print(f"Files received: {files}")
     for file in files:

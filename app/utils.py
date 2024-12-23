@@ -17,12 +17,16 @@ def setup_paths():
     global _base_paths
     global _user_paths
 
-    keys = ['DB', 'UPLOADS', 'ARCHIVE', 'CHATS', 'AUTH']
+    keys = ['DB', 'UPLOADS', 'ATTACHMENTS', 'ARCHIVE', 'CHATS', 'AUTH']
     _base_paths = dict.fromkeys(keys, None)
 
     _document_paths = {
         "LOCAL": config.PATH_UPLOADS_LOCAL,
         "EFS": config.PATH_UPLOADS_EFS
+    }
+    _attachment_paths = {
+        "LOCAL": config.PATH_ATTACHMENTS_LOCAL,
+        "EFS": config.PATH_ATTACHMENTS_EFS
     }
     _chroma_paths = {
         "LOCAL": config.PATH_CHROMA_LOCAL,
@@ -44,12 +48,14 @@ def setup_paths():
     if 'var' in str(config.CURRENT_PATH):
         _base_paths['DB'] = _chroma_paths['EFS']
         _base_paths['UPLOADS'] = _document_paths['EFS']
+        _base_paths['ATTACHMENTS'] = _attachment_paths['EFS']
         _base_paths['ARCHIVE'] = _archive_paths['EFS']
         _base_paths['CHATS'] = _chat_paths['EFS']
         _base_paths['AUTH'] = _auth_paths['EFS']
     else:
         _base_paths['DB'] = _chroma_paths['LOCAL']
         _base_paths['UPLOADS'] = _document_paths['LOCAL']
+        _base_paths['ATTACHMENTS'] = _attachment_paths['LOCAL']
         _base_paths['ARCHIVE'] = _archive_paths['LOCAL']
         _base_paths['CHATS'] = _chat_paths['LOCAL']
         _base_paths['AUTH'] = _auth_paths['LOCAL']

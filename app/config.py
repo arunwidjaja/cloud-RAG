@@ -29,6 +29,9 @@ PATH_CHROMA_EFS = EFS_PATH / Path('chroma')
 PATH_UPLOADS_LOCAL = CURRENT_PATH / Path('uploads')
 PATH_UPLOADS_EFS = EFS_PATH / Path('uploads')
 
+PATH_ATTACHMENTS_LOCAL = CURRENT_PATH / Path('attachments')
+PATH_ATTACHMENTS_EFS = EFS_PATH / Path('attachments')
+
 PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('archive')
 PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
 
