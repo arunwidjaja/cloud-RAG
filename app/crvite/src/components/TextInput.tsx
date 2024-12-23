@@ -11,14 +11,18 @@ import { get_current_chat, save_chats, update_chats } from '@/handlers/chats_han
 
 import { ContextData } from '@/types/types';
 
-export const TextInput = () => {
+interface TextInputProps {
+    edited_query: string;
+    edit_timestamp: number;
+}
+
+export const TextInput = ({edited_query, edit_timestamp}: TextInputProps) => {
     const [user_input, set_user_input] = useState("");
     const [isStreaming, setIsStreaming] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const streamingMessageRef = useRef<string>("");
     
-
-
+    // Resizes the text field when typing
     useEffect(() => {
         if (textAreaRef.current) {
             textAreaRef.current.style.height = 'auto';
@@ -27,16 +31,28 @@ export const TextInput = () => {
         }
     }, [user_input]);
 
+    // Sets the text field content when the user edits a chat bubble.
+    // The timestamp is included so that if the exact same message is edited twice, it still triggers
+    useEffect(() => {
+        if(edited_query) {
+            set_user_input(edited_query)
+            if(textAreaRef.current){
+                textAreaRef.current.focus();
+            }
+        }
+    }, [edited_query, edit_timestamp]);
+
+    // Sends input or adds a new line when hiting Enter vs Shift+Enter
     const handle_key_down = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            // send_user_input();
             handle_streaming_response();
         }
     }
 
+    // Makes an API call and starts streaming the LLM response
     const handle_streaming_response = async (): Promise<void> => {
-        setIsStreaming(true);
+        setIsStreaming(true); // Flag to disable text field while response is streaming
         const input_message = createInputMessage(user_input);
         const current_chat = get_current_chat();
         streamingMessageRef.current = "";

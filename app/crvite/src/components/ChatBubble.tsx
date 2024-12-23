@@ -1,17 +1,17 @@
-import React from 'react';
 import { Message } from "../types/types";
 
 import { useToast } from '@/hooks/use-toast';
 
 // Icons
-import { ClipboardList, RotateCw } from "lucide-react";
+import { ClipboardList, PencilLine } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 
 interface ChatBubbleProps {
     message: Message;
+    onEditMessage: (text: string) => void;
 }
 
-export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
+export const ChatBubble = ({message, onEditMessage}: ChatBubbleProps) => {
     const { toast } = useToast()
     const isLoading = !message.text;
 
@@ -24,9 +24,9 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
             duration: 1500
         })
     }
-    const handle_regenerate = () => {
-        // TODO: Implement this
-        alert("This button is supposed to regenerate the response.")
+
+    const handle_click_edit = (message: string) => {
+        onEditMessage(message)
     }
 
     return (
@@ -47,10 +47,13 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
                                 onClick={handle_copy}
                                 className="opacity-50 hover:opacity-100 hover:cursor-pointer">
                             </ClipboardList>
-                            <RotateCw
-                                onClick={handle_regenerate}
-                                className="opacity-50 hover:opacity-100 hover:cursor-pointer">
-                            </RotateCw>
+                            {/* Conditionally render the edit message button */}
+                            {message.type === 'input' && (
+                                <PencilLine
+                                    onClick={() => handle_click_edit(message.text)}
+                                    className="opacity-50 hover:opacity-100 hover:cursor-pointer">
+                                </PencilLine>
+                            )}
                         </div>
                     </div>
                 </>

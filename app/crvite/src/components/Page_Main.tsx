@@ -12,9 +12,7 @@ import { refresh_chats } from '@/handlers/chats_handlers';
 // Components
 import { Tabs_Section } from '@/components/Tabs_Section';
 import { Logs } from '@/components/Logs';
-import { TextInput } from '@/components/TextInput';
 import { DropdownMenu } from '@/components/Dropdown_Menu';
-import { Conversation } from '@/components/Conversation';
 import { ChatHistory } from '@/components/ChatHistory';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
@@ -29,6 +27,7 @@ import { start_session } from '@/api/api_init';
 
 import { LOGO_PLACEHOLDER } from '@/constants/constants';
 import { ProfileBadge } from './ProfileBadge';
+import { ChatInterface } from './ChatInterface';
 
 function MainApp() {
     const { user, isAuthenticated } = useAuth();
@@ -108,8 +107,7 @@ function MainApp() {
                                     <div className="absolute top-0 bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-transparent to-primary from-0 to-80%"></div>
                                 </div>
                             </div>
-                            <Conversation></Conversation>
-                            <TextInput></TextInput>
+                            <ChatInterface></ChatInterface>
                         </div>
                         {/* Right Pane */}
                         <div className='p-2'>
