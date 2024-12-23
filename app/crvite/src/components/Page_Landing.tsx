@@ -31,7 +31,7 @@ export function LandingPage() {
             <div id="landingpagecontent" className="relative z-10 min-h-screen items-center justify-center text-white">
                 <header className="bg-[#08010C] flex justify-between items-center p-2 border-b border-b-white/10">
                     <img src={LOGO_PLACEHOLDER} className="w-[70px] h-[70px] p-2"></img>
-                    <NavigationMenu className="absolute left-1/2 -translate-x-1/2 ">
+                    <NavigationMenu className="flex-1">
                         <NavigationMenuList>
                             <NavigationMenuItem>
                                 <NavigationMenuTrigger>Product</NavigationMenuTrigger>
