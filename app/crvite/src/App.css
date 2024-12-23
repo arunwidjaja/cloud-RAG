@@ -40,21 +40,11 @@ html, body, #root {
   width: 100%;
 }
 
-
-
 .output {
   width: 75%;
   text-align: left;
   font-size: large;
   align-self: center;
-}
-
-.chat-bubble {
-  width: 90%;
-  box-sizing: border-box;
-  margin: var(--MARGIN_SMALLEST);
-  padding: var(--PADDING_STANDARD);
-  border-radius: var(--PADDING_STANDARD);
 }
 
 .input {
@@ -75,8 +65,6 @@ html, body, #root {
 .answer-icon-container {
   justify-items: start;
 }
-
-
 
 .download_context {
   display: flex;

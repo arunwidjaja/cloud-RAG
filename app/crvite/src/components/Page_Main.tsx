@@ -18,6 +18,7 @@ import { Conversation } from '@/components/Conversation';
 import { ChatHistory } from '@/components/ChatHistory';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { Toaster } from './ui/toaster';
 
 // Styling
 import '@/App.css';
@@ -114,6 +115,7 @@ function MainApp() {
                         <div className='p-2'>
                             <Tabs_Section></Tabs_Section>
                         </div>
+                        <Toaster></Toaster>
                     </div>
                     <script src="../static/UI.js"></script>
                     <script src="../static/js"></script>

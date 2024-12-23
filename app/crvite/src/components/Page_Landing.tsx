@@ -26,7 +26,7 @@ export function LandingPage() {
     }
 
     return (
-        <div className="relative">
+        <div className="relative overflow-hidden">
             <LandingPageAnimation></LandingPageAnimation>
             <div id="landingpagecontent" className="relative z-10 min-h-screen items-center justify-center text-white">
                 <header className="bg-[#08010C] flex justify-between items-center p-2 border-b border-b-white/10">
@@ -114,12 +114,12 @@ export function LandingPage() {
                     </div>
                 </header>
                 <div className="text-center mx-auto m-12 w-1/2">
-                    <h1>Discover the <strong className="text-[#A405FA]">Power</strong> of Your Data</h1>
+                    <h1>Discover the <span className="text-[#A405FA] font-light">Power</span> of Your Data</h1>
 
                 </div>
                 <div className="text-center mx-auto m-12 w-2/5">
                     <h2 className="m-4">
-                        RAGbase is the AI-powered dashboard that empowers you to extract valuable insights from your documents.
+                        RAGbase is an AI-powered dashboard that allows you to extract valuable insights from your documents.
                         Upload your files, query them with ease, and leverage analytical techniques like summarization and thematic analysis.
                         With support for multimodal data and multiple generative models, you can adapt it to fit your needs.
                     </h2>
