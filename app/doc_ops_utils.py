@@ -5,17 +5,21 @@ import config
 import utils
 
 
-def delete_uploads(file_hash_list: List) -> List:
+def delete_uploads(file_hash_list: List, is_attachment: bool = False) -> List:
     """
     Deletes documents from the uploads folder (not from the DB)
 
     Args:
         file_hash_list: a list of the hashes of the uploads that need to be deleted
+        is_attachment: if True, deletes attachments instead of uploads
 
     Returns:
         A list of names of deleted uploads
     """
-    document_path = utils.get_env_user_paths()['UPLOADS']
+    if (not is_attachment):
+        document_path = utils.get_env_user_paths()['UPLOADS']
+    else:
+        document_path = utils.get_env_user_paths()['ATTACHMENTS']
     deleted_uploads = []
 
     uploads_folder_hash = utils.get_hash_dir(document_path)

@@ -72,13 +72,16 @@ export const start_upload = async (uploads: FormData, is_attachment: boolean = f
     return []
   }
 }
-export const start_upload_deletion = async (upload_deletion_list: FileData[]): Promise<string[]> => {
+export const start_upload_deletion = async (upload_deletion_list: FileData[], is_attachment: boolean = false): Promise<string[]> => {
   if (!Array.isArray(upload_deletion_list) || upload_deletion_list.length === 0) {
     return ['No uploads were removed']
   }
   try {
-    const hashes = upload_deletion_list.map(item => item.hash);
-    const query = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`).join('&');
+    const hashes = upload_deletion_list.map(item => item.hash); // extract list of file hashes
+    const query_hashes = hashes.map(hash => `hashes=${encodeURIComponent(hash)}`); // generate query parameter for hashes
+    const query_attachment = `is_attachment=${encodeURIComponent(is_attachment)}` // generate query parameter for is_attachment flag
+    const query = [...query_hashes,query_attachment].join('&'); // generate final query parameter
+
     const url = `${import.meta.env.VITE_API_BASE_URL}/delete_uploads?${query}`
     const response = await fetch(url, {
       method: 'DELETE',

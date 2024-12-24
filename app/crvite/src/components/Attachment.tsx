@@ -1,5 +1,12 @@
+import { start_upload_deletion } from "@/api/api_files"
+import { refresh_attachments } from "@/handlers/file_handlers"
 import { FileData } from "@/types/types"
 import { X } from "lucide-react"
+
+const remove_attachment = (files: FileData[]) => {
+    start_upload_deletion(files,true)
+    refresh_attachments()
+}
 
 export const Attachment = ({ file }: { file: FileData }) => {
     return (
@@ -10,8 +17,8 @@ export const Attachment = ({ file }: { file: FileData }) => {
                 m-1 rounded-lg 
                 text-xs font-extrabold
             `}>
-
                 <X
+                    onClick={() => remove_attachment([file])}
                     size={24}
                     className={`
                     shrink-0
@@ -29,12 +36,9 @@ export const Attachment = ({ file }: { file: FileData }) => {
                     ease-in-out
                 `}>
                 </X>
-
-
             <div className="mr-2">
                 {file.name}
             </div>
-
         </div>
     )
 }

@@ -53,7 +53,11 @@ async def delete_chat(chat_id: str = Query(...), db=Depends(get_db)):
 
 
 @router.delete("/delete_uploads")
-async def delete_uploads(hashes: List[str] = Query(...), db=Depends(get_db)):
+async def delete_uploads(
+    hashes: List[str] = Query(...),
+    is_attachment=Query(False),
+    db=Depends(get_db)
+):
     """
     Delete the list of uploads from the uploads folder
     """
@@ -62,7 +66,7 @@ async def delete_uploads(hashes: List[str] = Query(...), db=Depends(get_db)):
             status_code=422, detail="Invalid or missing hashes parameter.")
 
     try:
-        deleted_files = doc_ops_utils.delete_uploads(hashes)
+        deleted_files = doc_ops_utils.delete_uploads(hashes, is_attachment)
         return deleted_files
     except Exception as e:
         raise e

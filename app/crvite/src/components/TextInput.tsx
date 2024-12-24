@@ -134,12 +134,14 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
                     w-3/4
                 `}>
                 <div
+                    id="attachments_section"
                     className={`
                         w-[90%]
                         rounded-tl-lg rounded-tr-lg
                         border
                         bg-text
                         text-text2
+                        ${attachments.length > 0 ? "visible" : "hidden"}
                     `}>
                         {attachments.map((attachment, index)=>(
                             <Attachment

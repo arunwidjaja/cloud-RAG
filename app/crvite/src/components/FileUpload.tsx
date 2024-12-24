@@ -1,5 +1,5 @@
 import { forwardRef, useRef, ChangeEvent, ForwardedRef } from "react";
-import { refresh_uploads } from "../handlers/file_handlers";
+import { refresh_attachments, refresh_uploads } from "../handlers/file_handlers";
 import { add_log } from "../handlers/log_handlers";
 import React from 'react';
 import { start_upload } from "@/api/api_files";
@@ -47,6 +47,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
                 upload_window.current.value = '';
             }
             if (!is_attachment) { refresh_uploads() };
+            if (is_attachment) {refresh_attachments() };
         } catch (error) {
             console.error('Error upload files: ', error);
         }
