@@ -4,13 +4,18 @@ from imports import *
 import config
 import utils
 
+from doc_ops_utils import get_token_count
+
+# See document_structure.notes for an explanation of the structure of a Document object
+# Chunks have the same structure as Documents, since they are Documents themselves
+
 # Pipeline for processing documents:
 # 1. Load documents: retrieve list of documents in the uploads folder
 # 2. Chunk documents: split documents into chunks
 # 3. Add metadatas: add metadata tags to the chunks for easier identification
 
 
-async def load_documents():
+async def load_documents() -> List[Document]:
     """
     Loads documents from the uploads folder
     """
@@ -23,8 +28,6 @@ async def load_documents():
             print(f"Found file: {file_path.name}")
             if (file_path.suffix in '.pdf.PDF'):
                 loader = PyPDFLoader(file_path)
-                # document = TextLoader(file_path, autodetect_encoding=True)
-                # documents_list.extend(document.load())
                 async for page in loader.alazy_load():
                     documents_list.append(page)
             else:
@@ -53,7 +56,7 @@ def chunk_text(documents: List[Document]) -> List[Document]:
     return chunks
 
 
-def add_chunk_ids(chunks):
+def add_chunk_ids(chunks: List[Document]):
     """
     Modifies chunks.
 
@@ -86,7 +89,22 @@ def add_chunk_ids(chunks):
         last_page_id = current_page_id
 
 
-def add_source_hash(chunks):
+def add_token_count(chunks: List[Document]) -> None:
+    """
+    Modifies chunks.
+
+    Adds the token count to the metadata of the chunks.
+
+    Args:
+        document_list: The list of documents to tokenize
+    """
+
+    for chunk in chunks:
+        token_count = get_token_count(chunk.page_content)
+        chunk.metadata['tokens'] = token_count
+
+
+def add_source_hash(chunks: List[Document]) -> None:
     """
     Modifies chunks.
 
@@ -100,7 +118,7 @@ def add_source_hash(chunks):
         chunk.metadata['source_hash'] = hashes[source]
 
 
-def add_source_base_name(chunks):
+def add_source_base_name(chunks: List[Document]) -> None:
     """
     Modifies chunks.
 
@@ -112,7 +130,7 @@ def add_source_base_name(chunks):
         chunk.metadata["source_base_name"] = source_base_name
 
 
-def add_word_count(chunks):
+def add_word_count(chunks: List[Document]) -> None:
     """
     Modifies chunks.
 
@@ -123,7 +141,7 @@ def add_word_count(chunks):
         chunk.metadata['word_count'] = word_count
 
 
-def add_sentiment(chunks):
+def add_sentiment(chunks: List[Document]) -> None:
     """
     Modifies chunks.
 
@@ -140,7 +158,7 @@ def add_sentiment(chunks):
         chunk.metadata['sentiment_score'] = sentiment['score']
 
 
-def add_collection(chunks, collection: str):
+def add_collection(chunks: List[Document], collection: str) -> None:
     """
     Modifies chunks
 
@@ -162,6 +180,7 @@ async def process_documents(collection: str) -> List[Document]:
     """
     documents = await load_documents()
     chunks = chunk_text(documents)
+    add_token_count(chunks)
     add_chunk_ids(chunks)
     add_source_hash(chunks)
     add_source_base_name(chunks)
@@ -172,7 +191,7 @@ async def process_documents(collection: str) -> List[Document]:
 
 
 def main():
-    return
+    get_token_count("Indubitably")
 
 
 if __name__ == "__main__":

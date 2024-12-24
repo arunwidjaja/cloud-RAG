@@ -65,6 +65,8 @@ LLM_K = 5
 TOKEN_LIMIT = 1000
 MAX_CONCURRENCY = 8
 
+ENCODING_TOKENIZER = "cl100k_base"
+
 SENTIMENT_ANALYSIS_MODEL_DEFAULT = 'distilbert-base-uncased-finetuned-sst-2-english'
 DEFAULT_MESSAGE_ID = '0'
 

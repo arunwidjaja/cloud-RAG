@@ -5,6 +5,23 @@ import config
 import utils
 
 
+def get_token_count(text: str, encoding=config.ENCODING_TOKENIZER) -> int:
+    """
+    Gets the token count of the input text
+
+    Args:
+        text: input text
+        encoding: the encoding to use. Defaults to OpenAI's tokenizer encoding
+
+    Returns:
+        The number of tokens
+    """
+    encoder = tiktoken.get_encoding(encoding)
+    tokens = encoder.encode(text)
+
+    return len(tokens)
+
+
 def delete_uploads(file_hash_list: List, is_attachment: bool = False) -> List:
     """
     Deletes documents from the uploads folder (not from the DB)
