@@ -5,10 +5,10 @@ from api_dependencies import get_db
 from api_MODELS import *
 import doc_ops_utils
 import db_ops
-import config
 import utils
 import authentication
-import delete_user_data
+
+from paths import get_paths
 
 router = APIRouter()
 
@@ -39,7 +39,7 @@ async def delete_chat(chat_id: str = Query(...), db=Depends(get_db)):
     """
     Deletes stored chats
     """
-    chats_path = utils.get_env_user_paths()['CHATS']
+    chats_path = get_paths().CHATS
     chat_path = chats_path / f"{chat_id}.json"
 
     if not os.path.exists(chat_path):

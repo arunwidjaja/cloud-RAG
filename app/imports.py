@@ -60,9 +60,11 @@ import smtplib
 import zipfile
 import uuid
 from collections import Counter, defaultdict
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from enum import Enum, auto
 from io import BytesIO
 from dotenv import load_dotenv
 from pathlib import Path
 from pprint import pprint
-from typing import Dict, List, Optional, Tuple, Callable, Union, AsyncGenerator, Any
+from typing import Dict, List, Optional, Tuple, Callable, Union, AsyncGenerator, Any, TypedDict

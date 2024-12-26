@@ -3,12 +3,13 @@ from imports import *
 # Local Modules
 import config
 import utils
+from paths import get_paths
 
 
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        self.db_path = utils.get_env_user_paths()['AUTH'] / "users.db"
+        self.db_path = get_paths().AUTH / "users.db"
 
         self.smtp_server = config.SMTP_SERVER
         self.smtp_port = config.SMTP_PORT

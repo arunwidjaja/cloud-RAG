@@ -36,10 +36,10 @@ export function LandingPage() {
                             <NavigationMenuItem>
                                 <NavigationMenuTrigger className="bg-[#08010C] hover:bg-[#08010C] text-white">Product</NavigationMenuTrigger>
                                 <NavigationMenuContent>
-                                    <div className="w-[800px] h-[400px] text-white bg-[#0e0e0e] p-2 grid grid-cols-4">
+                                    <div className="w-[800px] h-[400px] text-white bg-[#0e0e0e] p-2 grid grid-cols-3">
                                         <div
                                             className={`
-                                                col-span-2 p-2 m-2
+                                                col-span-1 p-2 m-2
                                                 rounded-sm
                                                 border border-white/50
                                             `}>
@@ -49,7 +49,7 @@ export function LandingPage() {
                                         </div>
                                         <div
                                             className={`
-                                                col-span-2 p-2 m-2
+                                                col-span-1 p-2 m-2
                                                 rounded-sm
                                                 border border-white/50
                                             `}>
@@ -58,7 +58,7 @@ export function LandingPage() {
                                         </div>
                                         <div
                                             className={`
-                                                col-span-2 p-2 m-2
+                                                col-span-1 p-2 m-2
                                                 rounded-sm
                                                 border border-white/50
                                             `}>

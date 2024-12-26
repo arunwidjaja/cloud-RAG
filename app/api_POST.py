@@ -4,9 +4,13 @@ from imports import *
 from api_dependencies import get_db
 from api_MODELS import *
 from query_data import query_rag, query_rag_streaming
+
+from paths import get_paths
+
 import config
 import db_ops
 import utils
+
 import authentication
 
 router = APIRouter()
@@ -68,7 +72,7 @@ async def verify_otp(otp: OTPModel) -> bool:
 @router.post("/save_chat")
 async def save_chat(chat: ChatModel, db=Depends(get_db)):
     try:
-        chats_path = utils.get_env_user_paths()['CHATS']
+        chats_path = get_paths().CHATS
 
         # Create the file path using the chat ID
         file_path = chats_path / f"{chat.id}.json"
@@ -176,15 +180,15 @@ async def upload_documents(
     Uploads files to user's data folders.
     is_attachment determines whether to send them to uploads or attachments folder.
     """
+    print(f"Files received:\n{[(file.filename) for file in files]}")
     print(f"Uploading documents as {
           "attachments." if is_attachment else "uploads."}")
     saved_files = []
-    if (is_attachment):
-        uploads_path = utils.get_env_user_paths()['ATTACHMENTS']
-    else:
-        uploads_path = utils.get_env_user_paths()['UPLOADS']
+    uploads_path = (get_paths().ATTACHMENTS
+                    if is_attachment
+                    else
+                    get_paths().UPLOADS)
 
-    print(f"Files received: {files}")
     for file in files:
         file_path = os.path.join(uploads_path, file.filename)
 

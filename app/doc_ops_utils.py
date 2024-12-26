@@ -2,6 +2,7 @@ from imports import *
 
 # Local Modules
 import config
+from paths import get_paths
 import utils
 
 
@@ -34,9 +35,9 @@ def delete_uploads(file_hash_list: List, is_attachment: bool = False) -> List:
         A list of names of deleted uploads
     """
     if (not is_attachment):
-        document_path = utils.get_env_user_paths()['UPLOADS']
+        document_path = get_paths().UPLOADS
     else:
-        document_path = utils.get_env_user_paths()['ATTACHMENTS']
+        document_path = get_paths().ATTACHMENTS
     deleted_uploads = []
 
     uploads_folder_hash = utils.get_hash_dir(document_path)
@@ -60,7 +61,7 @@ def delete_all_uploads() -> List:
     Returns:
         A list of names of deleted uploads
     """
-    document_path = utils.get_env_user_paths()['UPLOADS']
+    document_path = get_paths().UPLOADS
     uploads_folder_hash = utils.get_hash_dir(document_path)
     return delete_uploads(uploads_folder_hash.keys())
 
@@ -75,7 +76,7 @@ def archive_uploads(file_list: List) -> List:
     Returns:
         A list of the moved files' names
     """
-    archive_path = utils.get_env_user_paths()['ARCHIVE']
+    archive_path = get_paths().ARCHIVE
     archived_uploads = []
     print(f"Archiving uploads to: {archive_path}")
     for file_path in file_list:
@@ -99,7 +100,7 @@ def archive_all_uploads() -> List:
     Returns:
         A list of the moved files' names
     """
-    document_path = utils.get_env_user_paths()['UPLOADS']
+    document_path = get_paths().UPLOADS
     all_uploads = [str(file) for file in Path(
         document_path).rglob('*') if file.is_file()]
     return archive_uploads(all_uploads)
@@ -116,11 +117,11 @@ def get_uploads_metadata(is_attachment: bool = False) -> List[dict]:
         A list of dictionaries containing the file name, hash, and word count.
     """
     if (not is_attachment):
-        uploads_folder_path = utils.get_env_user_paths()['UPLOADS']
+        document_path = get_paths().UPLOADS
     else:
-        uploads_folder_path = utils.get_env_user_paths()['ATTACHMENTS']
+        document_path = get_paths().ATTACHMENTS
     uploads_metadata = []
-    for f in uploads_folder_path.iterdir():
+    for f in document_path.iterdir():
         if f.is_file():
             current_upload_metadata = dict.fromkeys(
                 ['name', 'hash', 'word_count'])

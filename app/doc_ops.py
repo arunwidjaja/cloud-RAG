@@ -3,6 +3,7 @@ from imports import *
 # Local Modules
 import config
 import utils
+from paths import get_paths
 
 from doc_ops_utils import get_token_count
 
@@ -19,7 +20,7 @@ async def load_documents() -> List[Document]:
     """
     Loads documents from the uploads folder
     """
-    document_path = utils.get_env_user_paths()['UPLOADS']
+    document_path = get_paths().UPLOADS
     documents_list = []
 
     print(f"Searching for documents in: {document_path}")
