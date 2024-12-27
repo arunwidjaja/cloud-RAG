@@ -1,14 +1,25 @@
-from imports import *
+# External Modules
+from datetime import datetime, timedelta, timezone
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from fastapi import BackgroundTasks, HTTPException
+
+import bcrypt
+import config
+import random
+import smtplib
+import sqlite3
+import string
+import uuid
 
 # Local Modules
-import config
-import utils
+from paths import get_paths
 
 
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        self.db_path = utils.get_env_user_paths()['AUTH'] / "users.db"
+        self.db_path = get_paths().AUTH / "users.db"
 
         self.smtp_server = config.SMTP_SERVER
         self.smtp_port = config.SMTP_PORT

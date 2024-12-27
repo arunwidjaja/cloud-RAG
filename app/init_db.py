@@ -1,9 +1,13 @@
-from imports import *
+# External Modules
+from langchain_chroma import Chroma
+
+import chromadb
 
 # Local Modules
-import config
-import utils
 from get_embedding_function import get_embedding_function
+from paths import get_paths, set_env_paths
+
+import utils
 
 
 def init_db(user_id: str, collection_name: str, embedding_function='openai') -> Chroma:
@@ -17,7 +21,8 @@ def init_db(user_id: str, collection_name: str, embedding_function='openai') -> 
     Returns:
         The LangChain Chroma object pointing to the DB
     """
-    chroma_path = utils.get_env_user_paths()['DB']
+    chroma_path = get_paths().DB
+    # chroma_path = utils.get_env_user_paths()['DB']
     print(f"The current chroma_path is {chroma_path}")
     ef = get_embedding_function(embedding_function)
 
@@ -48,7 +53,7 @@ def init_paths(user_id: str) -> None:
     """
     Initializes necessary directories
     """
-    utils.set_env_paths(user_id)
+    set_env_paths(user_id)
 
 
 def main():

@@ -49,6 +49,10 @@ export const handle_download_selected_files = async () => {
 // Pushes all uploads to the DB
 export const handle_push_uploads = async () => {
   const current_collection = get_current_collection();
+  if(!current_collection) {
+    alert("Please select a collection to push your documents to first.");
+    return;
+  }
   const uploads = await get_uploads();
   if (uploads[0].hash){
     const pushed_uploads = await start_push_to_DB(uploads, current_collection);

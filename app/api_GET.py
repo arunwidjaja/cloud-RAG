@@ -1,13 +1,22 @@
-from imports import *
+from io import BytesIO
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
+from pathlib import Path
+from typing import List
+
+import json
+import os
+import zipfile
 
 # Local Modules
 from api_dependencies import get_db
+from paths import get_paths
 from summarize import summarize_map_reduce
-import doc_ops_utils
+
 import db_ops_utils
 import db_ops
+import doc_ops_utils
 import utils
-import config
 
 
 router = APIRouter()
@@ -29,8 +38,8 @@ async def download_files(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
         # Get the hashes of the files in the archive
-        source_location = utils.get_env_user_paths()['ARCHIVE']
-        archive_hash = utils.get_hash_dir(source_location)
+        archive_path = get_paths().ARCHIVE
+        archive_hash = utils.get_hash_dir(archive_path)
 
         # Convert hashes to paths
         file_paths = []
@@ -156,9 +165,9 @@ async def get_saved_chats(db=Depends(get_db)):
     print("API CALL: get_saved_chats")
     all_chats = []
     try:
-        chats_dir = utils.get_env_user_paths()['CHATS']
-        for chat_name in os.listdir(chats_dir):
-            chat_path = Path(chats_dir) / chat_name
+        chats_path = get_paths().CHATS
+        for chat_name in os.listdir(chats_path):
+            chat_path = Path(chats_path) / chat_name
             with open(chat_path, 'r') as chat:
                 json_content = json.load(chat)
                 all_chats.append(json_content)
@@ -184,13 +193,18 @@ async def get_db_files_metadata(collections: List[str] = Query(...), db=Depends(
 
 
 @router.get("/uploads_metadata")
-async def get_uploads_metadata(db=Depends(get_db)):
+async def get_uploads_metadata(
+        is_attachment: bool = Query(False),
+        db=Depends(get_db)
+):
     """
-    Gets the metadata of all uploads
+    Gets the metadata of all uploads or attachments.
+    is_attachment determines whether to fetch uploads or attachments.
     """
-    print("API CALL: get_uploads_metadata")
+    print(f"Fetching metadata of {
+          "attachments." if is_attachment else "uploads."}")
     try:
-        uploads_metadata = doc_ops_utils.get_uploads_metadata()
+        uploads_metadata = doc_ops_utils.get_uploads_metadata(is_attachment)
         return JSONResponse(content=uploads_metadata)
     except Exception as e:
-        raise Exception(f"Exception occured when getting uploads list: {e}")
+        raise Exception(f"Exception occured when fetching uploads: {e}")

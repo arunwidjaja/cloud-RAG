@@ -1,4 +1,5 @@
-from imports import *
+from pydantic import BaseModel
+from typing import List
 
 
 class CollectionModel(BaseModel):

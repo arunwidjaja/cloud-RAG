@@ -1,6 +1,15 @@
-from imports import *
+# External Modules
+from langchain_chroma import Chroma
+from langchain.schema import Document
+from pathlib import Path
+from typing import List
+
+import os
+import shutil
 
 # Local Modules
+from paths import get_paths
+
 import utils
 
 
@@ -15,14 +24,15 @@ def download_files(requested_files_hashes: List | str, collection_name) -> List[
         The name of the file(s) that were downloaded.
     """
     # collection_name is actually not used because all documents are stored in the same archive
-    source_location = utils.get_env_user_paths()['ARCHIVE']
+
+    archive_path = get_paths().ARCHIVE
     download_location = str(Path.home())
     downloaded_files = []
 
     if isinstance(requested_files_hashes, str):
         requested_files_hashes = [requested_files_hashes]
 
-    archive_hash = utils.get_hash_dir(source_location)
+    archive_hash = utils.get_hash_dir(archive_path)
 
     for requested_hash in requested_files_hashes:
         source_path = archive_hash.get(requested_hash)

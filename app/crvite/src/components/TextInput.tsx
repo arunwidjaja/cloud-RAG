@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { RefObject } from 'react';
 import { start_stream_query } from '../api/api_llm_calls';
+import { ContextData } from '@/types/types';
 
 // Handlers
 import { add_message, update_message } from '../handlers/message_handlers';
@@ -9,7 +11,18 @@ import { set_current_retrieved, set_retrieved_files } from '@/handlers/retrieved
 import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
 import { get_current_chat, save_chats, update_chats } from '@/handlers/chats_handlers';
 
-import { ContextData } from '@/types/types';
+// Components
+import { Paperclip } from 'lucide-react';
+import { FileUploadWindow } from './FileUpload';
+
+// Hooks
+import { use_attachments } from '@/hooks/hooks_files';
+import { refresh_attachments } from '@/handlers/file_handlers';
+import { Attachment } from './Attachment';
+
+const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): void => {
+    if (attachmentRef && attachmentRef.current) { attachmentRef.current.click(); }
+}
 
 interface TextInputProps {
     edited_query: string;
@@ -17,12 +30,23 @@ interface TextInputProps {
 }
 
 export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
-    const [user_input, set_user_input] = useState("");
-    const [isStreaming, setIsStreaming] = useState(false);
+
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const streamingMessageRef = useRef<string>("");
+    const attachmentRef = useRef(null);
 
-    // Resizes the text field when typing
+    const [user_input, set_user_input] = useState(""); // text in the text field
+    const [isStreaming, setIsStreaming] = useState(false); // flag for checking if the response is still streaming
+
+    const attachments = use_attachments()
+
+    // Fetches the attachments on load
+    useEffect(() => {
+        refresh_attachments();
+    }, []);
+
+
+    // Resizes the text field and updates the user input vlaue when typing
     useEffect(() => {
         if (textAreaRef.current) {
             textAreaRef.current.style.height = 'auto';
@@ -102,22 +126,65 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
         <div
             className={`
                 flex flex-row justify-center
-                mt-2 
+                mt-2
             `}>
-            <textarea
-                id='userinput'
-                ref={textAreaRef}
-                value={user_input}
-                onChange={(e) => set_user_input(e.target.value)}
-                onKeyDown={handle_key_down}
-                disabled={isStreaming}
+            <div
                 className={`
-                    text-text bg-accent
-                    w-3/4 p-4 rounded-lg
-                    [&::-webkit-scrollbar]:hidden
-                    [-ms-overflow-style:'none']
-                    [scrollbar-width:'none']
-                `}/>
+                    relative flex flex-col items-center
+                    w-3/4
+                `}>
+                <div
+                    id="attachments_section"
+                    className={`
+                        w-[90%]
+                        rounded-tl-lg rounded-tr-lg
+                        border
+                        bg-text
+                        text-text2
+                        ${attachments.length > 0 ? "visible" : "hidden"}
+                    `}>
+                        {attachments.map((attachment, index)=>(
+                            <Attachment
+                                key={index}
+                                file={attachment}
+                            />
+                        ))}
+                </div>
+                <textarea
+                    id='userinput'
+                    ref={textAreaRef}
+                    value={user_input}
+                    onChange={(e) => set_user_input(e.target.value)}
+                    onKeyDown={handle_key_down}
+                    disabled={isStreaming}
+                    className={`
+                        w-full p-4 pr-8
+                        rounded-lg
+                        text-text bg-accent
+                        [&::-webkit-scrollbar]:hidden
+                        [-ms-overflow-style:'none']
+                        [scrollbar-width:'none']
+                `} />
+                <div
+                    className={`
+                        flex-col
+                        absolute right-0 bottom-0 justify-center
+                    `}>
+                    <FileUploadWindow
+                        is_attachment={true}
+                        ref={attachmentRef}>
+                    </FileUploadWindow>
+                    <Paperclip
+                        onClick={() => handle_accept_attachments(attachmentRef)}
+                        className={`
+                            m-1
+                            text-text opacity-50
+                            hover:cursor-pointer
+                            hover:opacity-100
+                        `}>
+                    </Paperclip>
+                </div>
+            </div>
         </div>
     )
 };

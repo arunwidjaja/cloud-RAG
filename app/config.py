@@ -1,4 +1,8 @@
-from imports import *
+# External Modules
+from dotenv import load_dotenv
+from pathlib import Path
+
+import os
 
 SEC_DESC_START = """
 __________________________________________________________
@@ -28,6 +32,9 @@ PATH_CHROMA_EFS = EFS_PATH / Path('chroma')
 
 PATH_UPLOADS_LOCAL = CURRENT_PATH / Path('uploads')
 PATH_UPLOADS_EFS = EFS_PATH / Path('uploads')
+
+PATH_ATTACHMENTS_LOCAL = CURRENT_PATH / Path('attachments')
+PATH_ATTACHMENTS_EFS = EFS_PATH / Path('attachments')
 
 PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('archive')
 PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
@@ -61,6 +68,8 @@ LLM Constants
 LLM_K = 5
 TOKEN_LIMIT = 1000
 MAX_CONCURRENCY = 8
+
+ENCODING_TOKENIZER = "cl100k_base"
 
 SENTIMENT_ANALYSIS_MODEL_DEFAULT = 'distilbert-base-uncased-finetuned-sst-2-english'
 DEFAULT_MESSAGE_ID = '0'

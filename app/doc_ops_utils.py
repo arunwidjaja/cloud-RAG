@@ -1,21 +1,50 @@
-from imports import *
+# External Modules
+from pathlib import Path
+from typing import List
+
+import os
+import shutil
+import tiktoken
 
 # Local Modules
+from paths import get_paths
+
 import config
 import utils
 
 
-def delete_uploads(file_hash_list: List) -> List:
+def get_token_count(text: str, encoding=config.ENCODING_TOKENIZER) -> int:
+    """
+    Gets the token count of the input text
+
+    Args:
+        text: input text
+        encoding: the encoding to use. Defaults to OpenAI's tokenizer encoding
+
+    Returns:
+        The number of tokens
+    """
+    encoder = tiktoken.get_encoding(encoding)
+    tokens = encoder.encode(text)
+
+    return len(tokens)
+
+
+def delete_uploads(file_hash_list: List, is_attachment: bool = False) -> List:
     """
     Deletes documents from the uploads folder (not from the DB)
 
     Args:
         file_hash_list: a list of the hashes of the uploads that need to be deleted
+        is_attachment: if True, deletes attachments instead of uploads
 
     Returns:
         A list of names of deleted uploads
     """
-    document_path = utils.get_env_user_paths()['UPLOADS']
+    if (not is_attachment):
+        document_path = get_paths().UPLOADS
+    else:
+        document_path = get_paths().ATTACHMENTS
     deleted_uploads = []
 
     uploads_folder_hash = utils.get_hash_dir(document_path)
@@ -39,7 +68,7 @@ def delete_all_uploads() -> List:
     Returns:
         A list of names of deleted uploads
     """
-    document_path = utils.get_env_user_paths()['UPLOADS']
+    document_path = get_paths().UPLOADS
     uploads_folder_hash = utils.get_hash_dir(document_path)
     return delete_uploads(uploads_folder_hash.keys())
 
@@ -54,7 +83,7 @@ def archive_uploads(file_list: List) -> List:
     Returns:
         A list of the moved files' names
     """
-    archive_path = utils.get_env_user_paths()['ARCHIVE']
+    archive_path = get_paths().ARCHIVE
     archived_uploads = []
     print(f"Archiving uploads to: {archive_path}")
     for file_path in file_list:
@@ -78,28 +107,35 @@ def archive_all_uploads() -> List:
     Returns:
         A list of the moved files' names
     """
-    document_path = utils.get_env_user_paths()['UPLOADS']
+    document_path = get_paths().UPLOADS
     all_uploads = [str(file) for file in Path(
         document_path).rglob('*') if file.is_file()]
     return archive_uploads(all_uploads)
 
 
-def get_uploads_metadata() -> List[dict]:
+def get_uploads_metadata(is_attachment: bool = False) -> List[dict]:
     """
     Gets the metadata of all the uploads.
 
+    Args:
+        is_attachment: if set to True, will fetch attachments instead of uploads.
+
     Returns:
-        A list of dictionaries containing the file name, hash, and word count
+        A list of dictionaries containing the file name, hash, and word count.
     """
-    uploads_folder_path = utils.get_env_user_paths()['UPLOADS']
+    if (not is_attachment):
+        document_path = get_paths().UPLOADS
+    else:
+        document_path = get_paths().ATTACHMENTS
     uploads_metadata = []
-    for f in uploads_folder_path.iterdir():
+    for f in document_path.iterdir():
         if f.is_file():
             current_upload_metadata = dict.fromkeys(
                 ['name', 'hash', 'word_count'])
             name = os.path.basename(str(f))
             hash = utils.get_hash(f)
-            word_count = utils.get_word_count(f)
+            # word_count = utils.get_word_count(f)
+            word_count = 0
 
             current_upload_metadata['name'] = name
             current_upload_metadata['hash'] = hash

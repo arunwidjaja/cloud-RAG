@@ -1,13 +1,20 @@
-from imports import *
+# External Modules
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile
+from fastapi.responses import StreamingResponse
+
+import json
+import os
+import shutil
 
 # Local Modules
 from api_dependencies import get_db
 from api_MODELS import *
+from paths import get_paths
 from query_data import query_rag, query_rag_streaming
-import config
+
+import authentication
 import db_ops
 import utils
-import authentication
 
 router = APIRouter()
 
@@ -68,7 +75,7 @@ async def verify_otp(otp: OTPModel) -> bool:
 @router.post("/save_chat")
 async def save_chat(chat: ChatModel, db=Depends(get_db)):
     try:
-        chats_path = utils.get_env_user_paths()['CHATS']
+        chats_path = get_paths().CHATS
 
         # Create the file path using the chat ID
         file_path = chats_path / f"{chat.id}.json"
@@ -167,12 +174,24 @@ async def submit_query(request: QueryModel, db=Depends(get_db)):
 
 
 @router.post("/upload_documents")
-async def upload_documents(files: List[UploadFile] = File(...), db=Depends(get_db)):
-    print(f"API CALL: upload_documents")
+async def upload_documents(
+    files: List[UploadFile] = File(...),
+    is_attachment: bool = Query(False),
+    db=Depends(get_db)
+):
+    """
+    Uploads files to user's data folders.
+    is_attachment determines whether to send them to uploads or attachments folder.
+    """
+    print(f"Files received:\n{[(file.filename) for file in files]}")
+    print(f"Uploading documents as {
+          "attachments." if is_attachment else "uploads."}")
     saved_files = []
-    uploads_path = utils.get_env_user_paths()['UPLOADS']
+    uploads_path = (get_paths().ATTACHMENTS
+                    if is_attachment
+                    else
+                    get_paths().UPLOADS)
 
-    print(f"Files received: {files}")
     for file in files:
         file_path = os.path.join(uploads_path, file.filename)
 

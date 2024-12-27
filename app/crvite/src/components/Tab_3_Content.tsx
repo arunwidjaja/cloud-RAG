@@ -6,14 +6,17 @@ import { UploadTable } from "./Table_Upload"
 import { SimpleTooltip } from "./SimpleTooltip"
 import { Button } from "./ui/button"
 import { FileUploadWindow } from "./FileUpload"
+import { Upload } from 'lucide-react';
+import Spinner from './Spinner';
 
 // Handlers
 import { handle_push_uploads, handle_choose_collection, handle_accept_uploads, handle_remove_selected_uploads } from "@/handlers/button_handlers"
 
 // Hooks
-import { use_collections, use_selected_uploads } from "@/hooks/hooks"
-import Spinner from './Spinner';
-import { Upload } from 'lucide-react';
+import { use_collections } from '@/hooks/hooks_database';
+import { use_selected_uploads } from '@/hooks/hooks_files';
+
+
 
 
 
@@ -70,7 +73,7 @@ export function Tab_3_Content() {
                 </Button>
 
                 <div className='grid grid-cols-2'>
-                    <SimpleTooltip content="Pushes all uploads to the current Collection">
+                    <SimpleTooltip className='bg-text text-text2' content="Pushes all uploads to the current Collection">
                         <Button id="pushbtn"
                             onClick={handle_click_push_uploads}
                             className="mr-1 bg-accent text-text hover:bg-highlight hover:text-text2">

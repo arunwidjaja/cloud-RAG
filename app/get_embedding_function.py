@@ -1,4 +1,7 @@
-from imports import *
+# External Modules
+from langchain_openai import OpenAIEmbeddings
+
+import openai
 
 # Local Modules
 import config

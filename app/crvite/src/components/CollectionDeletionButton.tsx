@@ -34,13 +34,13 @@ export function CollectionDeletionButton() {
               <Button variant="destructive" className="ml-1 mt-1"> - </Button>
             </TooltipTrigger>
           </DialogTrigger>
-          <TooltipContent>
-            <p className="text-black">Delete this Collection</p>
+          <TooltipContent className="bg-text text-text2">
+            <p className="text-text2">Delete this Collection</p>
           </TooltipContent>
         </Tooltip>
-        <DialogContent className="bg-gray-600">
+        <DialogContent className="bg-primary">
           <DialogHeader>
-            <DialogTitle className="text-black">Are you sure?</DialogTitle>
+            <DialogTitle className="text-text">Are you sure?</DialogTitle>
             <DialogDescription>
               <p>Deleting this Collection will also delete all documents and metadata inside it.</p>
             </DialogDescription>

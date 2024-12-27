@@ -1,17 +1,20 @@
-from imports import *
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+
+import uvicorn
 
 # Local Modules
 import config
 import init_db
-import authentication
-import utils
 
-from api_MODELS import StartSessionModel
-from api_dependencies import DatabaseManager
-
-from api_GET import router as api_GET
 from api_DELETE import router as api_DELETE
+from api_dependencies import DatabaseManager
+from api_GET import router as api_GET
+from api_MODELS import StartSessionModel
 from api_POST import router as api_POST
+from document_processor import DocumentProcessor
 
 
 @asynccontextmanager
@@ -23,6 +26,7 @@ async def lifespan(application: FastAPI):
 
     try:
         db_manager = DatabaseManager()
+        doc_processor = DocumentProcessor()
         application.state.db_manager = db_manager
         yield
     except Exception as e:

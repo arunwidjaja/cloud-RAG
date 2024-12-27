@@ -11,11 +11,13 @@ interface FileData {
 interface FilesState {
   files: FileData[];
   uploads: FileData[];
+  attachments: FileData[];
   selected_files: FileData[];
   selected_uploads: FileData[];
 
   setFiles: (newFiles: FileData[]) => void;
   setUploads: (newUploads: FileData[]) => void;
+  setAttachments: (newAttachments: FileData[]) => void;
   setSelectedFiles: (selectedFiles: FileData[]) => void;
   setSelectedUploads: (selectedUploads: FileData[]) => void;
 
@@ -36,11 +38,13 @@ export const createDefaultFileData = (): FileData => ({
 const useFilesStore = create<FilesState>()((set) => ({
   files: [],
   uploads: [],
+  attachments: [],
   selected_files: [],
   selected_uploads: [],
 
   setFiles: (newFiles) => set({ files: newFiles }),
   setUploads: (newUploads) => set({ uploads: newUploads }),
+  setAttachments: (newAttachments) => set({ attachments: newAttachments }),
   setSelectedFiles: (selectedFiles) => set({ selected_files: selectedFiles }),
   setSelectedUploads: (selectedUploads) => set({ selected_uploads: selectedUploads }),
 

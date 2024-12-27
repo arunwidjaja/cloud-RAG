@@ -4,7 +4,9 @@ import { useRef } from 'react';
 
 import * as React from "react"
 import { fetch_db_files_metadata } from "@/api/api_files"
-import { use_current_collection, use_selected_files, use_files } from "@/hooks/hooks"
+import { use_current_collection } from '@/hooks/hooks_database';
+import { use_selected_files } from '@/hooks/hooks_files';
+import { use_files } from '@/hooks/hooks_files';
 import { set_selected_files } from "@/handlers/file_handlers"
 import { FileData } from "@/types/types"
 import {
