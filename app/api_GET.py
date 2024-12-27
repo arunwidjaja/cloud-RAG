@@ -1,6 +1,7 @@
 from io import BytesIO
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
+from langchain_chroma import Chroma
 from pathlib import Path
 from typing import List
 
@@ -10,6 +11,7 @@ import zipfile
 
 # Local Modules
 from api_dependencies import get_db
+from api_MODELS import *
 from paths import get_paths
 from summarize import summarize_map_reduce
 
@@ -25,15 +27,15 @@ router = APIRouter()
 @router.get("/download_files")
 async def download_files(
         hashes: List[str] = Query(...),
-        collection: List[str] = Query(...), db=Depends(get_db)):
+        collection: List[str] = Query(...), db: Chroma = Depends(get_db)):
     """
     Downloads the specified files and returns a list of the downloaded files.
     """
     print("API CALL: download_files")
-    if hashes is None or not isinstance(hashes, list):
+    if not hashes:
         raise HTTPException(
             status_code=422, detail="Invalid or missing hashes parameter.")
-    if collection is None or len(collection) != 1:
+    if not collection or len(collection) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
@@ -42,9 +44,11 @@ async def download_files(
         archive_hash = utils.get_hash_dir(archive_path)
 
         # Convert hashes to paths
-        file_paths = []
+        file_paths: List[str] = []
         for hash in hashes:
-            file_paths.append(archive_hash.get(hash))
+            file_path = archive_hash.get(hash)
+            if file_path:
+                file_paths.append(file_path)
 
         # Validate paths
         for file_path in file_paths:
@@ -53,7 +57,8 @@ async def download_files(
 
         # For single file:
         if len(file_paths) == 1:
-            file_name = os.path.basename(file_paths[0])
+            file_path = file_paths[0]
+            file_name = os.path.basename(file_path)
             return FileResponse(
                 path=file_path,
                 media_type='application/octet-stream',
@@ -85,12 +90,12 @@ async def download_files(
 
 
 @router.get("/initiate_push_to_db")
-async def initiate_push_to_db(collection: List[str] = Query(...), db=Depends(get_db)):
+async def initiate_push_to_db(collection: List[str] = Query(...), db: Chroma = Depends(get_db)):
     """
     Updates the database with all the uploaded documents
     """
     print("API CALL: push_files_to_database")
-    if collection is None or len(collection) != 1:
+    if not collection or len(collection) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
@@ -104,7 +109,7 @@ async def initiate_push_to_db(collection: List[str] = Query(...), db=Depends(get
 
 
 @router.get("/summary")
-async def summarize(hashes: List[str] = Query(...), db=Depends(get_db)):
+async def summarize(hashes: List[str] = Query(...), db: Chroma = Depends(get_db)):
     """
     Generates a map-reduce summary of the specified files.
     """
@@ -123,7 +128,7 @@ async def summarize(hashes: List[str] = Query(...), db=Depends(get_db)):
 
 
 @router.get("/theme")
-async def analyze_theme(hashes: List[str] = Query(...), db=Depends(get_db)):
+async def analyze_theme(hashes: List[str] = Query(...), db: Chroma = Depends(get_db)):
     """
     Generates a map-reduce summary of the specified files.
     """
@@ -142,7 +147,7 @@ async def analyze_theme(hashes: List[str] = Query(...), db=Depends(get_db)):
 
 
 @router.get("/collections")
-async def get_collections(db=Depends(get_db)):
+async def get_collections(db: Chroma = Depends(get_db)):
     """
     Gets a list of all the collections in the database
     """
@@ -158,18 +163,18 @@ async def get_collections(db=Depends(get_db)):
 
 
 @router.get("/saved_chats")
-async def get_saved_chats(db=Depends(get_db)):
+async def get_saved_chats(db: Chroma = Depends(get_db)):
     """
     Gets the JSON data containing all saved chats
     """
     print("API CALL: get_saved_chats")
-    all_chats = []
+    all_chats: List[ChatModel] = []
     try:
         chats_path = get_paths().CHATS
         for chat_name in os.listdir(chats_path):
             chat_path = Path(chats_path) / chat_name
             with open(chat_path, 'r') as chat:
-                json_content = json.load(chat)
+                json_content: ChatModel = json.load(chat)
                 all_chats.append(json_content)
         return all_chats
     except Exception as e:
@@ -177,7 +182,7 @@ async def get_saved_chats(db=Depends(get_db)):
 
 
 @router.get("/db_files_metadata")
-async def get_db_files_metadata(collections: List[str] = Query(...), db=Depends(get_db)):
+async def get_db_files_metadata(collections: List[str] = Query(...), db: Chroma = Depends(get_db)):
     """
     Gets the metadata of all unique files in the database for the given collections
     """
@@ -195,7 +200,7 @@ async def get_db_files_metadata(collections: List[str] = Query(...), db=Depends(
 @router.get("/uploads_metadata")
 async def get_uploads_metadata(
         is_attachment: bool = Query(False),
-        db=Depends(get_db)
+        db: Chroma = Depends(get_db)
 ):
     """
     Gets the metadata of all uploads or attachments.

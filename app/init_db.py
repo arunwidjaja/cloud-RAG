@@ -7,10 +7,8 @@ import chromadb
 from get_embedding_function import get_embedding_function
 from paths import get_paths, set_env_paths
 
-import utils
 
-
-def init_db(user_id: str, collection_name: str, embedding_function='openai') -> Chroma:
+def init_db(collection_name: str, embedding_function: str = 'openai') -> Chroma:
     """
     Creates a Chroma (LangChain) instance that connects to a Chroma DB.
 

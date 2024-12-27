@@ -16,6 +16,8 @@ def get_embedding_function(embedding: str):
     match embedding:
         case "openai":
             embeddings = OpenAIEmbeddings()
+        case _:
+            embeddings = OpenAIEmbeddings()
         # case "bedrock":
         #     embeddings = BedrockEmbeddings(
         #         credentials_profile_name="default", region_name="us-east-1"

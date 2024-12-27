@@ -1,5 +1,8 @@
 # External Modules
+from chromadb.api import ClientAPI
+from chromadb.api.models.Collection import Collection  # type: ignore
 from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings
 from langchain.schema import Document
 from pathlib import Path
 from typing import List
@@ -7,13 +10,15 @@ from typing import List
 import os
 import shutil
 
+
 # Local Modules
+from custom_types import ChunkMetadata, FileMetadata
 from paths import get_paths
 
 import utils
 
 
-def download_files(requested_files_hashes: List | str, collection_name) -> List[str] | str:
+def download_files(requested_files_hashes: List[str] | str, collection_name: str) -> List[str] | str:
     """
     Downloads the files in the given list to the user's home path.
 
@@ -27,7 +32,7 @@ def download_files(requested_files_hashes: List | str, collection_name) -> List[
 
     archive_path = get_paths().ARCHIVE
     download_location = str(Path.home())
-    downloaded_files = []
+    downloaded_files: List[str] = []
 
     if isinstance(requested_files_hashes, str):
         requested_files_hashes = [requested_files_hashes]
@@ -51,7 +56,7 @@ def download_files(requested_files_hashes: List | str, collection_name) -> List[
     return downloaded_files
 
 
-def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[dict]:
+def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[FileMetadata]:
     """
     Gets the metadata of all the unique files in the DB.
 
@@ -59,14 +64,12 @@ def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[dict]
         db: The Chroma DB instance
 
     Returns:
-        A list of dictionaries that list the file name, hash, and word count
+        A list of dictionaries that contain file metadata such as:
+        'hash', 'name', 'word_count', etc.
     """
-    all_chunk_metadata: List[dict] = []
-    print(f"Collections currently in db: ")
-    print(get_all_collections_names(db))
-    # Iterate through each collection and retrieve metadata
+    all_chunk_metadata: List[ChunkMetadata] = []
     for collection in collection_names:
-        print(f"Retrieving collection: {collection}")
+        print(f"Retrieving file metadata from collection: {collection}")
         collection_db = get_collection(db, collection)
         metadata = collection_db.get(include=['metadatas'])
         if metadata:
@@ -74,10 +77,15 @@ def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[dict]
             all_chunk_metadata.extend(chunk_metadata)
 
     # Merge all chunks with an identical hash
-    # Word count has to be summed
-    chunk_metadata_merged = {}
+    # This way, chunks from the same file aren't listed multiple times
+    # chunk_metadata_merged is a dictionary where:
+    # keys are unique hashes of each file
+    # values are the dictionary containing the file's metadata
+    chunk_metadata_merged: dict[str, FileMetadata] = {}
     for chunk_metadata in all_chunk_metadata:
-        key = (chunk_metadata["source_hash"])
+
+        # obtain hash of current chunk's source file
+        key = chunk_metadata["source_hash"]
         if key not in chunk_metadata_merged:
             chunk_metadata_merged[key] = {
                 'hash': key,
@@ -90,15 +98,6 @@ def get_db_files_metadata(db: Chroma, collection_names: List[str]) -> List[dict]
 
     file_metadata = list(chunk_metadata_merged.values())
     return file_metadata
-
-
-def get_db_chunks(db: Chroma, source_list: str | List[str]) -> List[Document]:
-    """
-    Returns all chunks from the given source files
-    """
-    collection = db._collection
-    results = collection.get(where={'source': {'$in': source_list}})
-    return results
 
 
 def generate_placeholder_document() -> List[Document]:
@@ -120,19 +119,41 @@ def generate_placeholder_document() -> List[Document]:
     return [placeholder_document]
 
 
+def get_client(db: Chroma) -> ClientAPI:
+    return db._client  # type: ignore
+
+
+def get_persist_directory(db: Chroma) -> str | None:
+    return db._persist_directory  # type: ignore
+
+
+def get_collection_chroma(db: Chroma) -> Collection:
+    return db._collection  # type: ignore
+
+
+def get_embedding_function(db: Chroma):
+    ef = db._embedding_function  # type: ignore
+    if not ef:
+        ef = OpenAIEmbeddings()
+    return ef
+
+
 def get_collection(db: Chroma, collection: str) -> Chroma:
     """
     Returns a Chroma instance pointing to the specific collection in the database.
 
     Args:
-        db: the databasse or a collection in the same database as the target collection
+        db: the database or a collection in the same database as the target collection
 
     Returns:
         A Chroma object pointing to collection
     """
-    chroma_client = db._client
+    chroma_client = get_client(db)
+    ef = get_embedding_function(db)
+
     collection_db = Chroma(
         client=chroma_client,
+        embedding_function=ef,
         collection_name=collection
     )
     return collection_db
@@ -147,4 +168,5 @@ def get_all_collections_names(db: Chroma) -> List[str]:
     Returns:
         A list of the names of all collections in the db
     """
-    return [collection.name for collection in db._client.list_collections()]
+    client = get_client(db)
+    return [collection.name for collection in client.list_collections()]

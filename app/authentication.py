@@ -21,11 +21,11 @@ class UserAuth:
         """Initialize the UserAuth system with a SQLite database."""
         self.db_path = get_paths().AUTH / "users.db"
 
-        self.smtp_server = config.SMTP_SERVER
-        self.smtp_port = config.SMTP_PORT
-        self.smtp_username = config.SMTP_USERNAME
-        self.smtp_password = config.SMTP_PASSWORD
-        self.otp_lifespan_minutes = config.OTP_LIFESPAN_MINUTES
+        self.smtp_server: str = config.SMTP_SERVER
+        self.smtp_port: int = config.SMTP_PORT
+        self.smtp_username: str = config.SMTP_USERNAME
+        self.smtp_password: str = config.SMTP_PASSWORD
+        self.otp_lifespan_minutes: int = config.OTP_LIFESPAN_MINUTES
 
         self._init_db()
 
@@ -65,11 +65,12 @@ class UserAuth:
         otp = ''.join(random.choices(string.digits, k=length))
         return otp
 
-    def update_otp(self, email: str, otp: str, otp_expiry: str):
+    def update_otp(self, email: str):
         """updates the verification DB with a new OTP"""
-        new_otp = otp
-        otp_expiry = datetime.now(
-            timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
+        new_otp = self.generate_otp()
+        cur_time = datetime.now(timezone.utc)
+        exp_time = timedelta(minutes=self.otp_lifespan_minutes)
+        otp_expiry = cur_time + exp_time
         print(f"Updating OTP for {email}...")
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -211,24 +212,22 @@ class UserAuth:
         is_user_unverified = False
         is_user_new = False
 
+        conn = sqlite3.connect(self.db_path)
+
+        # Generate user ID and hash password
+        user_id = str(uuid.uuid4())
+        password_hash = bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt(rounds=12)
+        )
+        # Generate an OTP
+        otp = self.generate_otp()
+        otp_expiry = datetime.now(
+            timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
+
         try:
-            # Generate user ID and hash password
-            user_id = str(uuid.uuid4())
-            password_hash = bcrypt.hashpw(
-                password.encode('utf-8'),
-                bcrypt.gensalt(rounds=12)
-            )
-            # Generate an OTP
-            otp = self.generate_otp()
-            otp_expiry = datetime.now(
-                timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
-
-            # Open database connection
-            print(f"Connecting to authentication database: {self.db_path}")
-            conn = sqlite3.connect(self.db_path)
+            print(f"Connecting to auth DB: {self.db_path}")
             c = conn.cursor()
-
-            # Check for an existing email
             print(f"Checking if {email} is unique")
             c.execute("""
                 SELECT username
@@ -279,17 +278,26 @@ class UserAuth:
                 conn.commit()
                 background_tasks.add_task(
                     self.send_verification_email, email, otp)
+
+                print("New user registered. Email verification sent.")
                 return True
             elif is_user_unverified:
-                print(f"{email} is not verified yet. Resending OTP.")
+                print(f"{email} is registered but not yet verified. Resending OTP.")
                 conn.commit()
                 conn.close()  # Close existing connectiong before updating DB
-                self.update_otp(email, otp, otp_expiry)
+                self.update_otp(email)
                 background_tasks.add_task(
                     self.send_verification_email, email, otp)
+                print("Verification email has been sent.")
                 return True
             elif is_user_duplicate:
-                print(f"{email} is already registered.")
+                print(
+                    f"{email} is already registered and verified. User needs to log in.")
+                conn.commit()
+                return False
+            else:
+                print(
+                    f"Unhandled user registration state. Please look into this. You should not see this message.")
                 conn.commit()
                 return False
         except sqlite3.Error as e:
@@ -330,7 +338,7 @@ class UserAuth:
             value (str): The column name to retrieve
 
         Returns:
-            Optional[str]: The requested value if found, None if not found
+            str: The requested value if found, "" if not found
         """
 
         try:
@@ -341,7 +349,7 @@ class UserAuth:
                 cursor.execute(query, (user_id,))
 
                 result = cursor.fetchone()
-            return result[0] if result else None
+            return result[0] if result else ""
         except sqlite3.Error as e:
             print(f"Database error: {e}")
             raise

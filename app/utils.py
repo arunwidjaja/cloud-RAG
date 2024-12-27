@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 # External Modules
-from typing import Any, Callable, List
+from typing import Any, Awaitable, Callable, Dict, List, TypeVar
 
 import functools
 import hashlib
@@ -14,7 +14,7 @@ import time
 # Local Modules
 
 
-def format_time(ms: float):
+def format_time(ms: float) -> str:
     """
     Accepts millisconds and returns the amount in hours, mins, secs, and ms
     """
@@ -29,7 +29,7 @@ def format_time(ms: float):
     remaining_ms %= 1000
 
     # pad to 2 digits
-    time_components = []
+    time_components: List[str] = []
     if hours > 0:
         time_components.append(f"{hours:02} hours")
     if minutes > 0:
@@ -43,11 +43,14 @@ def format_time(ms: float):
     return ", ".join(time_components)
 
 
-def timer(function):
+T = TypeVar('T')
+
+
+def timer(function: Callable[..., T]) -> Callable[..., T]:
     """
     Wrapper for timing functions
     """
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> T:
         start_time = time.perf_counter()
         result = function(*args, **kwargs)
         end_time = time.perf_counter()
@@ -58,12 +61,12 @@ def timer(function):
     return wrapper
 
 
-def async_timer(function: Callable) -> Callable:
+def async_timer(function: Callable[..., Awaitable[T]]) -> Callable[..., Awaitable[T]]:
     """
     Wrapper for timing async functions accurately
     """
     @functools.wraps(function)
-    async def wrapper(*args, **kwargs) -> Any:
+    async def wrapper(*args: Any, **kwargs: Any) -> T:
         start_time = time.perf_counter()
         result = await function(*args, **kwargs)
         end_time = time.perf_counter()
@@ -74,34 +77,30 @@ def async_timer(function: Callable) -> Callable:
     return wrapper
 
 
-def extract_file_name(paths: List[str] | str) -> List[str] | str:
+def extract_file_name(path: str) -> str:
     """
-    Extract the file name from the path or list of paths.
+    Extract the file name from the path.
     This works for both regular paths and chunk tags (which are paths that are appended with chunk data).
     """
-    file_name_list = []
-    path_list = paths
-    # convert strings to a list first
-    if isinstance(paths, str):
-        path_list = [paths]
-
-    for path in path_list:
-        path_trim = os.path.basename(path)  # gets file name
-        path_trim = re.sub(r':\d+:\d+$', '', path_trim)  # trims off tags
-        file_name_list.append(path_trim)
-
-    if isinstance(paths, str):
-        return file_name_list[0]
-    return file_name_list
+    path_trim: str = os.path.basename(path)  # gets file name
+    path_trim = re.sub(r':\d+:\d+$', '', path_trim)  # trims off tags
+    return path_trim
 
 
-def get_folder_size(path: str, print_all=False):
+def extract_file_names(paths: List[str]) -> List[str]:
+    file_names: List[str] = []
+    for path in paths:
+        file_names.append(extract_file_name(path))
+    return file_names
+
+
+def get_folder_size(path: str, print_all: bool = False) -> int:
     """
     Gets size of given folder.
     If print_all is True, prints sizes of all files
     """
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, _, filenames in os.walk(path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             # skip if it is symbolic link
@@ -113,7 +112,7 @@ def get_folder_size(path: str, print_all=False):
     return total_size
 
 
-def mirror_directory(src_path: str, dest_path: str):
+def mirror_directory(src_path: str, dest_path: str) -> None:
     """
     Deletes dest_path. Copies src_path to dest_path.
     """
@@ -126,7 +125,7 @@ def mirror_directory(src_path: str, dest_path: str):
     shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
 
 
-def copy_directory(src_path: str, dest_path: str):
+def copy_directory(src_path: str, dest_path: str) -> None:
     """
     Copies src_path to dest_path.
     """
@@ -137,7 +136,7 @@ def copy_directory(src_path: str, dest_path: str):
     shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
 
 
-def get_hash(filepath, hash_algorithm="md5", chunk_size=8192):
+def get_hash(filepath: str, hash_algorithm: str = "md5", chunk_size: int = 8192) -> str:
     """
     Gets the file hash.
     Defaults to md5 and 8 KB chunk
@@ -150,12 +149,12 @@ def get_hash(filepath, hash_algorithm="md5", chunk_size=8192):
 
 
 @timer
-def get_hash_dir(directory, hash_algorithm="md5", chunk_size=8192) -> dict[str, str]:
+def get_hash_dir(directory: str, hash_algorithm: str = "md5", chunk_size: int = 8192) -> dict[str, str]:
     """
     Returns a dictionary containing the hashes and corresponding paths of all files in a directory.
     Hashes as keys, paths as values.
     """
-    dir_hash = {}
+    dir_hash: Dict[str, str] = {}
     for item in os.listdir(directory):
         file_path = os.path.join(directory, item)
         if (os.path.isfile(file_path)):
@@ -164,7 +163,7 @@ def get_hash_dir(directory, hash_algorithm="md5", chunk_size=8192) -> dict[str, 
     return dir_hash
 
 
-def get_word_count(file_path) -> int:
+def get_word_count(file_path: str) -> int:
     """
     Gets word count of the file at file_path
     """
@@ -183,7 +182,7 @@ def strip_email(email: str) -> str:
     return strip_text(email.split('@')[0])
 
 
-def main():
+def main() -> None:
     print("running utils.py")
 
 

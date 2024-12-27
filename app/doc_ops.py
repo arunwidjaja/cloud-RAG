@@ -2,8 +2,8 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from transformers import pipeline
-from typing import List
+from transformers import Pipeline, pipeline  # type: ignore
+from typing import Any, List
 
 # Local Modules
 from doc_ops_utils import get_token_count
@@ -21,26 +21,31 @@ import utils
 # 2. Chunk documents: split documents into chunks
 # 3. Add metadatas: add metadata tags to the chunks for easier identification
 
+def set_chunk_metadata(chunk: Document, key: str, value: str | Any) -> None:
+    metadata: dict[str, Any] = getattr(chunk, "metadata")
+    metadata[key] = value
+    setattr(chunk, "metadata", metadata)
+
 
 async def load_documents() -> List[Document]:
     """
     Loads documents from the uploads folder
     """
     document_path = get_paths().UPLOADS
-    documents_list = []
+    documents_list: List[Document] = []
 
     print(f"Searching for documents in: {document_path}")
     try:
         for file_path in document_path.iterdir():
             print(f"Found file: {file_path.name}")
             if (file_path.suffix in '.pdf.PDF'):
-                loader = PyPDFLoader(file_path)
+                loader = PyPDFLoader(str(file_path))
                 async for page in loader.alazy_load():
                     documents_list.append(page)
             else:
                 print("Invalid format. Skipping this file.")
     except Exception as e:
-        raise Exception(f"Exception occured when loading files.")
+        raise Exception(f"Exception occured when loading files: {e}")
 
     return documents_list
 
@@ -76,9 +81,10 @@ def add_chunk_ids(chunks: List[Document]):
 
     for chunk in chunks:
         # "source" is the path of the file
-        source_path = chunk.metadata.get("source")
+        source_path: str = getattr(chunk, 'metadata')['source']
         source = utils.extract_file_name(source_path)
-        page = chunk.metadata.get("page")
+
+        page = getattr(chunk, 'metadata')['page']
 
         # if the chunk ID is the same as the last one, increment the index
         current_page_id = f"{source}:{page}"
@@ -92,7 +98,8 @@ def add_chunk_ids(chunks: List[Document]):
         # create the chunk id
         # the chunk id is formatted as "{source}:{page number}:{chunk index}"
         chunk_id = f"{source}:{page}:{current_chunk_index}"
-        chunk.metadata["id"] = chunk_id
+
+        set_chunk_metadata(chunk, "id", chunk_id)
         last_page_id = current_page_id
 
 
@@ -108,7 +115,7 @@ def add_token_count(chunks: List[Document]) -> None:
 
     for chunk in chunks:
         token_count = get_token_count(chunk.page_content)
-        chunk.metadata['tokens'] = token_count
+        set_chunk_metadata(chunk, "tokens", token_count)
 
 
 def add_source_hash(chunks: List[Document]) -> None:
@@ -117,12 +124,12 @@ def add_source_hash(chunks: List[Document]) -> None:
 
     Adds the hash of the source file to metadata
     """
-    hashes = {}
+    hashes: dict[str, str] = {}
     for chunk in chunks:
-        source = chunk.metadata.get('source')
+        source: str = getattr(chunk, "metadata")['source']
         if source not in hashes:
             hashes[source] = utils.get_hash(source)
-        chunk.metadata['source_hash'] = hashes[source]
+        set_chunk_metadata(chunk, 'source_hash', hashes[source])
 
 
 def add_source_base_name(chunks: List[Document]) -> None:
@@ -133,8 +140,8 @@ def add_source_base_name(chunks: List[Document]) -> None:
     """
     for chunk in chunks:
         source_base_name = utils.extract_file_name(
-            chunk.metadata.get("source"))
-        chunk.metadata["source_base_name"] = source_base_name
+            getattr(chunk, "metadata")['source'])
+        set_chunk_metadata(chunk, "source_base_name", source_base_name)
 
 
 def add_word_count(chunks: List[Document]) -> None:
@@ -145,7 +152,7 @@ def add_word_count(chunks: List[Document]) -> None:
     """
     for chunk in chunks:
         word_count = len(chunk.page_content.split())
-        chunk.metadata['word_count'] = word_count
+        set_chunk_metadata(chunk, "word_count", word_count)
 
 
 def add_sentiment(chunks: List[Document]) -> None:
@@ -156,13 +163,25 @@ def add_sentiment(chunks: List[Document]) -> None:
 
     Currently using default model for simple POSITIVE/NEGATIVE classification with a score.
     """
-    sentiment_analyzer = pipeline(
+    sentiment_analyzer: Pipeline = pipeline(
         task='sentiment-analysis',
-        model=config.SENTIMENT_ANALYSIS_MODEL_DEFAULT)
+        model=config.SENTIMENT_ANALYSIS_MODEL_DEFAULT
+    )
+
     for chunk in chunks:
-        sentiment = sentiment_analyzer(chunk.page_content)[0]
-        chunk.metadata['sentiment'] = sentiment['label']
-        chunk.metadata['sentiment_score'] = sentiment['score']
+        chunk_content: str = getattr(chunk, "page_content")
+
+        # Sentiment_analyzer outputs a list of dictionaries for the task 'sentiment-analysis'
+        # Each dictionary contains the label and score.
+        # Since only one text is passed in at a time, it is a list of 1.
+        sentiment_output: Any = sentiment_analyzer(chunk_content)
+
+        sentiment = sentiment_output[0]  # The only list item
+        sentiment_label: str = sentiment['label']
+        sentiment_score: float = sentiment['score']
+
+        set_chunk_metadata(chunk, "sentiment", sentiment_label)
+        set_chunk_metadata(chunk, "sentiment_score", sentiment_score)
 
 
 def add_collection(chunks: List[Document], collection: str) -> None:
@@ -174,7 +193,7 @@ def add_collection(chunks: List[Document], collection: str) -> None:
     """
 
     for chunk in chunks:
-        chunk.metadata['collection'] = collection
+        set_chunk_metadata(chunk, "collection", collection)
 
 
 async def process_documents(collection: str) -> List[Document]:
@@ -198,7 +217,7 @@ async def process_documents(collection: str) -> List[Document]:
 
 
 def main():
-    get_token_count("Indubitably")
+    get_token_count("This is a test string to test the tokenizer function")
 
 
 if __name__ == "__main__":
