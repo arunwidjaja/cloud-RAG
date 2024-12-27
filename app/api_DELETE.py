@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 @router.delete("/delete_account")
-async def delete_account(credentials: CredentialsModel, db=Depends(get_db)):
+async def delete_account(credentials: CredentialsModel, db=Depends(get_db)) -> None:
     try:
         auth = authentication.UserAuth()
         user_id = auth.validate_user(
