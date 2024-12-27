@@ -1,14 +1,16 @@
-from imports import *
+# External Modules
+from fastapi import APIRouter, Depends, HTTPException, Query
+import os
 
 # Local Modules
 from api_dependencies import get_db
 from api_MODELS import *
-import doc_ops_utils
-import db_ops
-import utils
-import authentication
-
 from paths import get_paths
+
+import authentication
+import db_ops
+import doc_ops_utils
+
 
 router = APIRouter()
 

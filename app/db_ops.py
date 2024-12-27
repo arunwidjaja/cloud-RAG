@@ -1,13 +1,18 @@
-from imports import *
+# External Modules
+from collections import Counter
+from langchain_chroma import Chroma
+from langchain.schema import Document
+from typing import List
 
 # Local Modules
+from db_ops_utils import generate_placeholder_document
+from get_embedding_function import get_embedding_function
+
+import config
+import db_ops_utils
 import doc_ops
 import doc_ops_utils
-import db_ops_utils
 import utils
-import config
-from get_embedding_function import get_embedding_function
-from db_ops_utils import generate_placeholder_document
 
 
 def add_persistent_collection(db: Chroma, collection_name: str, embedding_function='openai') -> str:

@@ -1,7 +1,15 @@
-from imports import *
+# External Modules
+from dataclasses import dataclass
+from enum import auto, Enum
+from pathlib import Path
+
+import os
+
+# Local Modules
+from utils import strip_text
 
 import config
-from utils import strip_text
+
 
 # This class is for maintaining the paths of resource folders.
 # The paths are accessed with get_env_user_paths

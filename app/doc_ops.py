@@ -1,11 +1,17 @@
-from imports import *
+# External Modules
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from transformers import pipeline
+from typing import List
 
 # Local Modules
-import config
-import utils
+from doc_ops_utils import get_token_count
 from paths import get_paths
 
-from doc_ops_utils import get_token_count
+import config
+import utils
+
 
 # See document_structure.notes for an explanation of the structure of a Document object
 # Chunks have the same structure as Documents, since they are Documents themselves
