@@ -7,13 +7,14 @@ import shutil
 import tiktoken
 
 # Local Modules
+from custom_types import FileMetadata
 from paths import get_paths
 
 import config
 import utils
 
 
-def get_token_count(text: str, encoding=config.ENCODING_TOKENIZER) -> int:
+def get_token_count(text: str, encoding: str = config.ENCODING_TOKENIZER) -> int:
     """
     Gets the token count of the input text
 
@@ -30,7 +31,7 @@ def get_token_count(text: str, encoding=config.ENCODING_TOKENIZER) -> int:
     return len(tokens)
 
 
-def delete_uploads(file_hash_list: List, is_attachment: bool = False) -> List:
+def delete_uploads(file_hash_list: List[str], is_attachment: bool = False) -> List[str]:
     """
     Deletes documents from the uploads folder (not from the DB)
 
@@ -45,7 +46,7 @@ def delete_uploads(file_hash_list: List, is_attachment: bool = False) -> List:
         document_path = get_paths().UPLOADS
     else:
         document_path = get_paths().ATTACHMENTS
-    deleted_uploads = []
+    deleted_uploads: List[str] = []
 
     uploads_folder_hash = utils.get_hash_dir(document_path)
 
@@ -61,7 +62,7 @@ def delete_uploads(file_hash_list: List, is_attachment: bool = False) -> List:
     return deleted_uploads
 
 
-def delete_all_uploads() -> List:
+def delete_all_uploads() -> List[str]:
     """
     Deletes all uploads.
 
@@ -70,10 +71,11 @@ def delete_all_uploads() -> List:
     """
     document_path = get_paths().UPLOADS
     uploads_folder_hash = utils.get_hash_dir(document_path)
-    return delete_uploads(uploads_folder_hash.keys())
+    all_upload_hashes = list(uploads_folder_hash.keys())
+    return delete_uploads(all_upload_hashes)
 
 
-def archive_uploads(file_list: List) -> List:
+def archive_uploads(file_list: List[str]) -> List[str]:
     """
     Moves uploads to the archive folder. Overwrites files with the same name.
 
@@ -84,7 +86,7 @@ def archive_uploads(file_list: List) -> List:
         A list of the moved files' names
     """
     archive_path = get_paths().ARCHIVE
-    archived_uploads = []
+    archived_uploads: List[str] = []
     print(f"Archiving uploads to: {archive_path}")
     for file_path in file_list:
         try:
@@ -100,7 +102,7 @@ def archive_uploads(file_list: List) -> List:
     return archived_uploads
 
 
-def archive_all_uploads() -> List:
+def archive_all_uploads() -> List[str]:
     """
     Moves all uploads to the archive folder. Overwrites files with the same name.
 
@@ -113,7 +115,7 @@ def archive_all_uploads() -> List:
     return archive_uploads(all_uploads)
 
 
-def get_uploads_metadata(is_attachment: bool = False) -> List[dict]:
+def get_uploads_metadata(is_attachment: bool = False) -> List[FileMetadata]:
     """
     Gets the metadata of all the uploads.
 
@@ -127,13 +129,18 @@ def get_uploads_metadata(is_attachment: bool = False) -> List[dict]:
         document_path = get_paths().UPLOADS
     else:
         document_path = get_paths().ATTACHMENTS
-    uploads_metadata = []
+
+    uploads_metadata: List[FileMetadata] = []
     for f in document_path.iterdir():
         if f.is_file():
-            current_upload_metadata = dict.fromkeys(
-                ['name', 'hash', 'word_count'])
+            current_upload_metadata: FileMetadata = {
+                'name': '',
+                'hash': '',
+                'collection': '',
+                'word_count': 0
+            }
             name = os.path.basename(str(f))
-            hash = utils.get_hash(f)
+            hash = utils.get_hash(str(f))
             # word_count = utils.get_word_count(f)
             word_count = 0
 

@@ -1,6 +1,7 @@
 # External Modules
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
+from langchain_chroma import Chroma
 
 import json
 import os
@@ -10,7 +11,7 @@ import shutil
 from api_dependencies import get_db
 from api_MODELS import *
 from paths import get_paths
-from query_data import query_rag, query_rag_streaming
+from query_data import query_rag_streaming
 
 import authentication
 import db_ops
@@ -47,7 +48,7 @@ async def register(credentials: CredentialsModel, background_tasks: BackgroundTa
 
 
 @router.post("/resend_otp")
-async def register(email: str):
+async def resent_otp(email: str):
     try:
         auth = authentication.UserAuth()
         auth.update_otp(email)
@@ -73,7 +74,7 @@ async def verify_otp(otp: OTPModel) -> bool:
 
 
 @router.post("/save_chat")
-async def save_chat(chat: ChatModel, db=Depends(get_db)):
+async def save_chat(chat: ChatModel, db: Chroma = Depends(get_db)):
     try:
         chats_path = get_paths().CHATS
 
@@ -102,7 +103,7 @@ async def save_chat(chat: ChatModel, db=Depends(get_db)):
 
 
 @router.post("/create_collection")
-async def create_collection(request: CollectionModel, db=Depends(get_db)):
+async def create_collection(request: CollectionModel, db: Chroma = Depends(get_db)):
     """
     Create a new collection in the database
     """
@@ -120,7 +121,7 @@ async def create_collection(request: CollectionModel, db=Depends(get_db)):
 
 
 @router.post("/stream_query")
-async def stream_query(request: QueryModel, db=Depends(get_db)):
+async def stream_query(request: QueryModel, db: Chroma = Depends(get_db)):
     database = db
     return StreamingResponse(
         query_rag_streaming(
@@ -132,52 +133,11 @@ async def stream_query(request: QueryModel, db=Depends(get_db)):
     )
 
 
-@router.post("/submit_query")
-async def submit_query(request: QueryModel, db=Depends(get_db)):
-    """
-    Send query to LLM and retrieve the response
-    """
-    print("API CALL: submit_query")
-    # database = get_database()
-    database = db
-    query_response = query_rag(
-        db=database,
-        query_text=request.query_text,
-        chat=request.chat,
-        query_type=request.query_type)
-
-    message = query_response.message
-    id = query_response.id
-    contexts = query_response.contexts
-
-    context_list = []
-
-    for context in contexts:
-        file_model = FileModel(
-            name=context['source'],
-            hash=context['source_hash'],
-            collection=context['collection']
-        )
-        context_model = ContextModel(
-            file=file_model,
-            text=context['context']
-        )
-        context_list.append(context_model)
-
-    message_model = MessageModel(
-        id=id,
-        text=message,
-        context_list=context_list
-    )
-
-    return {"message_model": message_model}
-
-
 @router.post("/upload_documents")
 async def upload_documents(
     files: List[UploadFile] = File(...),
     is_attachment: bool = Query(False),
-    db=Depends(get_db)
+    db: Chroma = Depends(get_db)
 ):
     """
     Uploads files to user's data folders.
@@ -186,14 +146,14 @@ async def upload_documents(
     print(f"Files received:\n{[(file.filename) for file in files]}")
     print(f"Uploading documents as {
           "attachments." if is_attachment else "uploads."}")
-    saved_files = []
+    saved_files: List[str] = []
     uploads_path = (get_paths().ATTACHMENTS
                     if is_attachment
                     else
                     get_paths().UPLOADS)
 
     for file in files:
-        file_path = os.path.join(uploads_path, file.filename)
+        file_path = os.path.join(str(uploads_path), str(file.filename))
 
         try:
             # Save the file to the specified directory

@@ -82,8 +82,14 @@ class PathRegistry:
             PathType.AUTH: PathConfig(
                 config.PATH_AUTH_LOCAL, config.PATH_AUTH_EFS)
         }
-        self._base_paths = {}
-        self._user_paths = {}
+        self._base_paths: dict[PathType, Path] = {}
+        self._user_paths: dict[PathType, Path] = {}
+
+    def get_user_paths(self) -> dict[PathType, Path]:
+        return self._user_paths
+
+    def get_base_paths(self) -> dict[PathType, Path]:
+        return self._base_paths
 
     def get_storage_type(self) -> StorageType:
         """
@@ -155,7 +161,11 @@ def get_paths() -> UserPathsWrapper:
         paths = get_env_user_paths()
         upload_path = paths.UPLOADS
     """
-    return UserPathsWrapper(_path_registry._user_paths)
+    return UserPathsWrapper(_path_registry.get_user_paths())
+
+
+def get_base_paths() -> UserPathsWrapper:
+    return UserPathsWrapper(_path_registry.get_base_paths())
 
 
 # Initializes paths on module import

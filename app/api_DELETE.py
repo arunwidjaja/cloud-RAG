@@ -1,5 +1,6 @@
 # External Modules
 from fastapi import APIRouter, Depends, HTTPException, Query
+from langchain_chroma import Chroma
 import os
 
 # Local Modules
@@ -16,7 +17,10 @@ router = APIRouter()
 
 
 @router.delete("/delete_account")
-async def delete_account(credentials: CredentialsModel, db=Depends(get_db)) -> None:
+async def delete_account(
+    credentials: CredentialsModel,
+    db: Chroma = Depends(get_db)
+) -> None:
     try:
         auth = authentication.UserAuth()
         user_id = auth.validate_user(
@@ -37,7 +41,10 @@ async def delete_account(credentials: CredentialsModel, db=Depends(get_db)) -> N
 
 
 @router.delete("/delete_chat")
-async def delete_chat(chat_id: str = Query(...), db=Depends(get_db)):
+async def delete_chat(
+    chat_id: str = Query(...),
+    db: Chroma = Depends(get_db)
+) -> bool:
     """
     Deletes stored chats
     """
@@ -52,21 +59,21 @@ async def delete_chat(chat_id: str = Query(...), db=Depends(get_db)):
             return True
     except Exception as e:
         raise e
+    return False
 
 
 @router.delete("/delete_uploads")
 async def delete_uploads(
     hashes: List[str] = Query(...),
-    is_attachment=Query(False),
-    db=Depends(get_db)
-):
+    is_attachment: bool = Query(False),
+    db: Chroma = Depends(get_db)
+) -> List[str]:
     """
     Delete the list of uploads from the uploads folder
     """
-    if hashes is None or not isinstance(hashes, list):
+    if not hashes:
         raise HTTPException(
             status_code=422, detail="Invalid or missing hashes parameter.")
-
     try:
         deleted_files = doc_ops_utils.delete_uploads(hashes, is_attachment)
         return deleted_files
@@ -75,11 +82,14 @@ async def delete_uploads(
 
 
 @router.delete("/delete_collection")
-async def delete_collection(collection: List[str] = Query(...), db=Depends(get_db)):
+async def delete_collection(
+    collection: List[str] = Query(...),
+    db: Chroma = Depends(get_db)
+) -> str:
     """
     Deletes the collection from the database
     """
-    if collection is None or len(collection) != 1:
+    if not collection or len(collection) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
 
@@ -95,11 +105,15 @@ async def delete_collection(collection: List[str] = Query(...), db=Depends(get_d
 
 
 @router.delete("/delete_files")
-async def delete_files(hashes: List[str] = Query(...), collection: List[str] = Query(...), db=Depends(get_db)):
+async def delete_files(
+        hashes: List[str] = Query(...),
+        collection: List[str] = Query(...),
+        db: Chroma = Depends(get_db)
+) -> List[str]:
     """
     Delete the list of files from the Chroma DB
     """
-    if collection is None or len(collection) != 1:
+    if not collection or len(collection) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:

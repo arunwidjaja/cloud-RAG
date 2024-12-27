@@ -3,8 +3,8 @@ from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.callbacks import AsyncIteratorCallbackHandler
 from langchain.prompts import ChatPromptTemplate
-from langchain.schema import Document
-from typing import AsyncGenerator, List
+from langchain.schema import BaseMessage, Document
+from typing import AsyncGenerator, Dict, List
 
 import asyncio
 import json
@@ -32,9 +32,9 @@ class QueryResponse:
 
     message: str
     id: str
-    contexts: List[dict]
+    contexts: List[Dict[str, str]]
 
-    def __init__(self, message_arg: str, id_arg: str, contexts_arg: List[dict]):
+    def __init__(self, message_arg: str, id_arg: str, contexts_arg: List[Dict[str, str]]):
         self.message = message_arg
         self.id = id_arg
         self.contexts = contexts_arg
@@ -84,13 +84,15 @@ def assemble_query(query: str, chat: str) -> str:
             context=chat,
             question=query
         )
-        query_reconstructed = ChatOpenAI().invoke(prompt).content
-        return (query_reconstructed)
+        message: BaseMessage = ChatOpenAI().invoke(prompt)
+
+        query_reconstructed: str = getattr(message, 'content')
+        return query_reconstructed
 
 
 def build_prompt_RAG(
     query_text: str,
-    context: List[tuple],
+    context: List[str],
     prompt_template: str
 ) -> str:
     """
@@ -105,27 +107,26 @@ def build_prompt_RAG(
         The formatted prompt string
     """
     # Assemble the prompt to include the context from the relevant docs.
-    context_text = "\n\n---\n\n".join(
-        context_current for context_current in context)
-    prompt_template = ChatPromptTemplate.from_template(prompt_template)
 
-    prompt = prompt_template.format(
-        context=context_text, question=query_text)
+    context_text: str = "\n\n---\n\n".join(
+        context_current for context_current in context)
+    chat_prompt_template: ChatPromptTemplate = ChatPromptTemplate.from_template(
+        prompt_template)
+
+    prompt = chat_prompt_template.format(
+        context=context_text,
+        question=query_text)
     return (prompt)
 
 
-def search_database(query: str, db: Chroma, collections: List[str]) -> List[Document]:
+def search_database(query: str, db: Chroma, collections: List[str]) -> List[tuple[Document, float]]:
     print(f"Searching for documents relevant to the query: {
           query}")
-    aggregated_docs = []
+    aggregated_docs: List[tuple[Document, float]] = []
     coll_list = collections
     for coll_name in coll_list:
         print(f"Searching collection: {coll_name}")
-        collection = Chroma(
-            client=db._client,
-            embedding_function=db._embedding_function,
-            collection_name=coll_name
-        )
+        collection = db_ops_utils.get_collection(db, coll_name)
         aggregated_docs_partial = collection.similarity_search_with_relevance_scores(
             query=query,
             k=config.LLM_K
@@ -134,7 +135,7 @@ def search_database(query: str, db: Chroma, collections: List[str]) -> List[Docu
 
     # Sort the retrieved docs based on relevance score and retrieve the top K results
     # Relevance score is the second element of the tuple (doc[1])
-    retrieved_docs = sorted(
+    retrieved_docs: List[tuple[Document, float]] = sorted(
         aggregated_docs,
         key=lambda doc: doc[1],
         reverse=True
@@ -143,19 +144,32 @@ def search_database(query: str, db: Chroma, collections: List[str]) -> List[Docu
     return retrieved_docs
 
 
-def combine_context(retrieved_docs: List[Document]) -> List:
-    contexts = []
+def combine_context(retrieved_docs: List[tuple[Document, float]]) -> List[Dict[str, str]]:
+    """
+    Consolidates all of the contexts from a list of retrieved Documents.
+
+    Args:
+        retrieved_docs: The result of a similarity search. A list of Tuples containing a Document and its score.
+
+    Returns:
+        A list of contexts.
+        Each context is a dictionary.
+        The keys contain information about the context, such as:
+        'context', 'source', 'source_hash', etc.
+        Keys and Values are both strings.
+    """
+    contexts: List[Dict[str, str]] = []
     if len(retrieved_docs) == 0 or retrieved_docs[0][1] < config.RELEVANCE_THRESHOLD:
         context = dict.fromkeys(['context', 'source', 'source_hash'], None)
     else:
         for doc in retrieved_docs:
             # store source and context in dictionary
-            context = dict.fromkeys(['context', 'source', 'source_hash'], None)
+            context = dict.fromkeys(['context', 'source', 'source_hash'], "")
 
-            doc_source_hash = doc[0].metadata['source_hash']
-            doc_source = doc[0].metadata['source_base_name']
-            doc_collection = doc[0].metadata['collection']
-            doc_context = doc[0].page_content
+            doc_source_hash: str = getattr(doc[0], 'metadata')['source_hash']
+            doc_source: str = getattr(doc[0], 'metadata')['source_base_name']
+            doc_collection: str = getattr(doc[0], 'metadata')['collection']
+            doc_context: str = doc[0].page_content
 
             context['source_hash'] = doc_source_hash
             context['source'] = doc_source
@@ -165,7 +179,7 @@ def combine_context(retrieved_docs: List[Document]) -> List:
             # merge contexts from sources that have already been added
             source_is_duplicate = False
             for entry in contexts:
-                hash_existing = entry['source_hash']
+                hash_existing: str = entry['source_hash']
                 if hash_existing == doc_source_hash:
                     entry['context'] = (
                         entry['context'] +
@@ -186,7 +200,7 @@ def query_rag(
     query_text: str,
     chat: ChatModel,
     query_type: str,
-    collections=None
+    collections: List[str] | None
 ) -> QueryResponse:
     """
     Query LLM, return response and context
@@ -210,10 +224,11 @@ def query_rag(
     print("Reconstructued Query:\n" + query_reconstructed)
 
     model = ChatOpenAI()
-    if query_type == 'question':
-        prompt_template = prompt_templates.PT_RAG
     if query_type == 'statement':
         prompt_template = prompt_templates.PT_RAG_STATEMENT
+    else:
+        prompt_template = prompt_templates.PT_RAG
+
     if collections is not None:
         coll_list = collections
     else:
@@ -237,8 +252,8 @@ def query_rag(
     )
     LLM_base_response = model.invoke(prompt)
 
-    LLM_message = LLM_base_response.content
-    LLM_message_id = LLM_base_response.id
+    LLM_message: str = getattr(LLM_base_response, 'content')
+    LLM_message_id: str = getattr(LLM_base_response, 'id')
 
     query_response = QueryResponse(
         message_arg=LLM_message,
@@ -253,7 +268,7 @@ async def query_rag_streaming(
     query_text: str,
     chat: ChatModel,
     query_type: str,
-    collections=None
+    collections: List[str] | None = None
 ) -> AsyncGenerator[str, None]:
     """
     Query LLM, stream response and context
@@ -316,9 +331,10 @@ async def query_rag_streaming(
         yield chunk
 
     # Wait for completion and get message ID
-    llm_response = await task
-    llm_message = llm_response.content
-    llm_message_id = llm_response.id
+    llm_response: BaseMessage = await task
+    llm_message = getattr(llm_response, 'content')
+    llm_message_id = getattr(llm_response, 'id')
+    print(f"LLM Response {llm_message_id}:\n{llm_message}")
 
     # Yield the contexts as a final chunk
     yield "\n\nSources:\n" + "\n".join(

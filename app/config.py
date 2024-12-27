@@ -85,7 +85,8 @@ load_dotenv()
 SMTP_SERVER = "mail.privateemail.com"
 SMTP_PORT = 587
 SMTP_USERNAME = "verification@ragbase.cloud"
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")  # Store this in .env file
+# Store this in .env file
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", default="SMTP_PASSWORD")
 
 OTP_LIFESPAN_MINUTES = 15
 

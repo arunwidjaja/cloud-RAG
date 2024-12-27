@@ -15,7 +15,7 @@ import doc_ops_utils
 import utils
 
 
-def add_persistent_collection(db: Chroma, collection_name: str, embedding_function='openai') -> str:
+def add_persistent_collection(db: Chroma, collection_name: str, embedding_function: str = 'openai') -> str:
     """
     Creates a new collection in the DB. Inserts a placeholder file to force Chroma to persist it.
 
@@ -28,16 +28,17 @@ def add_persistent_collection(db: Chroma, collection_name: str, embedding_functi
         The name of the collection
     """
     # Create collection
-    chroma_client = db._client
+    chroma_client = db_ops_utils.get_client(db)
     ef = get_embedding_function(embedding_function)
     chroma_client.create_collection(
         name=collection_name
     )
 
     # Initialize Chroma object
+
     collection = Chroma(
         collection_name=collection_name,
-        persist_directory=db._persist_directory,
+        persist_directory=db_ops_utils.get_persist_directory(db),
         embedding_function=ef
     )
 
@@ -63,14 +64,17 @@ def delete_collection(db: Chroma, collection_name: str) -> str:
     Reteurns:
         The name of the deleted collection
     """
+
     try:
-        db._client.delete_collection(collection_name)
+        client = db_ops_utils.get_client(db)
+        client.delete_collection(collection_name)
         return collection_name
     except Exception as e:
         print(f"There was an error deleting the collection: {e}")
+        return ""
 
 
-def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> List[str] | str:
+def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> List[str]:
     """
     Saves document chunks to the Chroma DB in the specified collection
 
@@ -84,13 +88,10 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     """
     print("Saving chunks to Chroma DB...")
     # Finding number of chunks in each document
-    chunk_counts = Counter([chunk.metadata.get("source") for chunk in chunks])
+    chunk_counts: Counter[str] = Counter(
+        [getattr(chunk, "metadata")["source"] for chunk in chunks])
 
-    collection = Chroma(
-        client=db._client,
-        embedding_function=db._embedding_function,
-        collection_name=collection_name
-    )
+    collection = db_ops_utils.get_collection(db, collection_name)
 
     # Get IDs of existing document chunks
     existing_items = collection.get()
@@ -98,14 +99,14 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     print(f"Number of existing chunks in DB: {len(existing_ids)}")
 
     # Add documents that aren't already in the database (don't have a matching ID)
-    new_chunks = []
-    skipped_chunks = []
-    skipped_documents = []
-    added_documents = []
+    new_chunks: List[Document] = []
+    skipped_chunks: List[Document] = []
+    skipped_documents: List[str] = []
+    added_documents: List[str] = []
     last_document = ""
 
     for chunk in chunks:
-        current_document = f"{chunk.metadata["source"]}"
+        current_document: str = f"{getattr(chunk, "metadata")["source"]}"
         # triggers when we move on to a new file (checks if file name is different)
         if (last_document != current_document):
             print(f"Currently processing {
@@ -113,7 +114,8 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
 
             last_document = current_document
 
-        if (chunk.metadata["id"] not in existing_ids):
+        cur_id: str = getattr(chunk, "metadata")["id"]
+        if (cur_id not in existing_ids):
             new_chunks.append(chunk)
             if (current_document not in added_documents):
                 added_documents.append(current_document)
@@ -125,7 +127,8 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     # Add chunks and IDs to database
     if len(new_chunks):
         print("\nAdding chunks to DB...")
-        new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
+        new_chunk_ids: List[str] = [getattr(chunk, "metadata")[
+            "id"] for chunk in new_chunks]
 
         # Needs to be split into batches because chroma has a limit for how many chunks can be added at once.
         for i in range(0, len(new_chunks), config.MAX_BATCH_SIZE):
@@ -137,15 +140,15 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     # Print the summary
     if (new_chunks):
         print(f"{len(new_chunks)} chunks from the following documents were added:\n{
-              "\n".join(utils.extract_file_name(added_documents))}")
+              "\n".join(utils.extract_file_names(added_documents))}")
     if (skipped_chunks):
         print(f"{len(skipped_chunks)} chunks from the following documents are already in the DB and were not added:\n{
-              "\n".join(utils.extract_file_name(skipped_documents))}")
+              "\n".join(utils.extract_file_names(skipped_documents))}")
     print("==========================")
-    return utils.extract_file_name(added_documents)
+    return utils.extract_file_names(added_documents)
 
 
-def delete_db_files(db: Chroma, file_hash_list: List, collection_name: str) -> List[str]:
+def delete_db_files(db: Chroma, file_hash_list: List[str], collection_name: str) -> List[str]:
     """
     Deletes all chunks associated with the given files from the collection.
     Does not delete the source files from the archive.
@@ -161,26 +164,32 @@ def delete_db_files(db: Chroma, file_hash_list: List, collection_name: str) -> L
 
     collection_db = db_ops_utils.get_collection(db, collection_name)
     # Gets the actual chromadb collection
-    # LangChain doesn't support deletion, deletion needs to be done through chromadb directly.
+    # LangChain doesn't support collection deletion.
+    # Therefore, deletion needs to be done through chromadb directly.
     # .delete() must be called on a collection, can't be called on the entire DB.
-    chroma_collection = collection_db._collection
+    chroma_collection = db_ops_utils.get_collection_chroma(collection_db)
 
-    deleted_files = []
+    deleted_files: List[str] = []
     for file_hash in file_hash_list:
         file_metadata = chroma_collection.get(
             where={"source_hash": file_hash},
-            include=["metadatas", "documents"]
         )
         ids_to_delete = file_metadata['ids']
 
         # Delete job needs to be split into batches
         # Chroma allows a maximum number of embeddings to be modified at once
+        # ids_to_delete refers to all the ids associate with a single collection
         if ids_to_delete:
+            current_file = ""
             for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
                 deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
                 chroma_collection.delete(deletion_batch)
-            deleted_file = file_metadata['metadatas'][0]['source_base_name']
-            deleted_files.append(deleted_file)
+
+            deleted_file_metadata = file_metadata["metadatas"]
+            if deleted_file_metadata:
+                current_file = str(
+                    deleted_file_metadata[0]["source_base_name"])
+            deleted_files.append(current_file)
         else:
             print("No documents found from the specified source.")
     return deleted_files

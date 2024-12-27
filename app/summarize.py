@@ -1,7 +1,7 @@
 # External Modules
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
-from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
+from langchain.chains import ReduceDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
 from langchain.prompts import ChatPromptTemplate
@@ -35,16 +35,16 @@ import prompt_templates
 # corpus -> chunks -> chunk summaries -> reduce -> ... -> reduce -> final summary
 
 
-async def process_chunk_async(map_chain, chunk):
+async def process_chunk_async(map_chain: LLMChain, chunk: Document):
     """Process a single chunk asynchronously"""
     return await map_chain.ainvoke({"docs": [chunk]})
 
 
-async def map_chunks_parallel(map_chain, chunks, max_concurrency=config.MAX_CONCURRENCY):
+async def map_chunks_parallel(map_chain: LLMChain, chunks: List[Document], max_concurrency: int = config.MAX_CONCURRENCY):
     """Process chunks in parallel with controlled concurrency"""
     semaphore = asyncio.Semaphore(max_concurrency)
 
-    async def process_with_semaphore(chunk):
+    async def process_with_semaphore(chunk: Document):
         async with semaphore:
             return await process_chunk_async(map_chain, chunk)
 
@@ -59,7 +59,7 @@ model = ChatOpenAI(
 
 
 @async_timer
-async def summarize_map_reduce(db: Chroma, doc_list: List, identifier='hash', preset='general') -> str:
+async def summarize_map_reduce(db: Chroma, doc_list: str | List[str], identifier: str = 'hash', preset: str = 'general') -> str:
     """
     Retrieves the specified documents' chunks from the DB and summarizes them with map-reduce.
     By default, accepts a list of file hashes.
@@ -95,7 +95,7 @@ async def summarize_map_reduce(db: Chroma, doc_list: List, identifier='hash', pr
     # Extracts chunks from DB.
     # Converts them to Document objects and stores them.
     # .invoke() requires Documents, not raw text.
-    documents = []
+    documents: List[Document] = []
     for doc_hash in doc_list:
         matching_chunks = db.get(where={'source_hash': doc_hash})
 

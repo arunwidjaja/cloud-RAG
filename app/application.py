@@ -14,7 +14,6 @@ from api_dependencies import DatabaseManager
 from api_GET import router as api_GET
 from api_MODELS import StartSessionModel
 from api_POST import router as api_POST
-from document_processor import DocumentProcessor
 
 
 @asynccontextmanager
@@ -26,7 +25,6 @@ async def lifespan(application: FastAPI):
 
     try:
         db_manager = DatabaseManager()
-        doc_processor = DocumentProcessor()
         application.state.db_manager = db_manager
         yield
     except Exception as e:

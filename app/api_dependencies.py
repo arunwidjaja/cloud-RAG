@@ -16,7 +16,7 @@ class DatabaseManager:
         self.uuid = None
         print("DatabaseManager Initialized")
 
-    def initialize_db(self, user_id) -> None:
+    def initialize_db(self, user_id: str) -> None:
         """
         Initializes the database for the given user
         """
@@ -32,7 +32,6 @@ class DatabaseManager:
 
             # Initialize user's DB
             self.db = init_db.init_db(
-                user_id=utils.strip_text(user_id),
                 collection_name=utils.strip_email(email)
             )
             print(f"Initialized DB for user: {user_id}")
