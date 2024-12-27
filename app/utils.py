@@ -1,3 +1,6 @@
+# Enforce strict typing
+from __future__ import annotations
+
 # External Modules
 from typing import Any, Callable, List
 

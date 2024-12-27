@@ -21,12 +21,13 @@ attachments/
 Sample Documents/
 myenv/
 
+# mypy
+.mypy_cache/
 
 # React.JS (Frontend Files)
 
 # dependencies
 .pnp.js
-
 
 
 # misc
