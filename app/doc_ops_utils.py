@@ -125,10 +125,7 @@ def get_uploads_metadata(is_attachment: bool = False) -> List[FileMetadata]:
     Returns:
         A list of dictionaries containing the file name, hash, and word count.
     """
-    if (not is_attachment):
-        document_path = get_paths().UPLOADS
-    else:
-        document_path = get_paths().ATTACHMENTS
+    document_path = get_paths().ATTACHMENTS if is_attachment else get_paths().UPLOADS
 
     uploads_metadata: List[FileMetadata] = []
     for f in document_path.iterdir():
