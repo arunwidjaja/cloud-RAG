@@ -13,25 +13,21 @@ def init_db(collection_name: str, embedding_function: str = 'openai') -> Chroma:
     Creates a Chroma (LangChain) instance that connects to a Chroma DB.
 
     Args:
-        user: UUID of user
         collection_name: the name of the default collection. Chroma DB requires at least one collection
 
     Returns:
         The LangChain Chroma object pointing to the DB
     """
-    chroma_path = get_paths().DB
-    # chroma_path = utils.get_env_user_paths()['DB']
-    print(f"The current chroma_path is {chroma_path}")
+    chroma_path = get_paths().DB_MAIN
     ef = get_embedding_function(embedding_function)
 
     try:
-        print(f"Connecting to the Chroma DB at {chroma_path}")
+        print("Connecting to the Chroma DB at:")
+        print(f"...{'/'.join(chroma_path.parts[-3:])}")
         persistent_client = chromadb.PersistentClient(
             path=str(chroma_path)
         )
         existing_collections = persistent_client.list_collections()
-        print("Collections currently in the DB: ")
-        print(existing_collections)
         if not existing_collections:
             default_collection = collection_name
         else:

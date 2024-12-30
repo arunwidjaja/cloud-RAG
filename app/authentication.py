@@ -19,7 +19,7 @@ from paths import get_paths
 class UserAuth:
     def __init__(self):
         """Initialize the UserAuth system with a SQLite database."""
-        self.db_path = get_paths().AUTH / "users.db"
+        self.db_path = get_paths().DB_AUTH / "users.db"
 
         self.smtp_server: str = config.SMTP_SERVER
         self.smtp_port: int = config.SMTP_PORT
@@ -31,7 +31,7 @@ class UserAuth:
 
     def _init_db(self) -> None:
         # Creating the users and verification tables if it doesn't exist
-        print(f"Attempting to connect to: {self.db_path}")
+        print("Connecting to authentication database...")
         try:
             with sqlite3.connect(self.db_path) as conn:
                 # Create users table
@@ -125,7 +125,7 @@ class UserAuth:
             user ID or None
         """
         try:
-            print(f"Validating credentials against db: {self.db_path}")
+            print(f"Validating credentials...")
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.execute(
                     "SELECT id, password_hash FROM users WHERE username = ?",

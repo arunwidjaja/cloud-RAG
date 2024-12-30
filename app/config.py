@@ -27,23 +27,43 @@ SEC_DESC_1A = """
 Resource Paths:
 """
 
-PATH_CHROMA_LOCAL = CURRENT_PATH / Path('chroma')
-PATH_CHROMA_EFS = EFS_PATH / Path('chroma')
+# Main database
+# Stores embeddings for user's documents
+PATH_DB_MAIN_LOCAL = CURRENT_PATH / Path('db_main')
+PATH_DB_MAIN_EFS = EFS_PATH / Path('db_main')
 
+# Temporary database
+# Stores embeddings for temporary documents, such as attachments
+# Can be cleared periodically to save space
+PATH_DB_SECONDARY_LOCAL = CURRENT_PATH / Path('db_secondary')
+PATH_DB_SECONDARY_EFS = EFS_PATH / Path('db_secondary')
+
+# Authentication database
+# Stores credentials and authentication tokens
+PATH_DB_AUTH_LOCAL = CURRENT_PATH / Path("db_auth")
+PATH_DB_AUTH_EFS = EFS_PATH / Path("db_auth")
+
+# Uploads folder
+# Temporary file storage for uploaded documents
 PATH_UPLOADS_LOCAL = CURRENT_PATH / Path('uploads')
 PATH_UPLOADS_EFS = EFS_PATH / Path('uploads')
 
+# Attachments folder
+# Temporary file storage for attached documents
 PATH_ATTACHMENTS_LOCAL = CURRENT_PATH / Path('attachments')
 PATH_ATTACHMENTS_EFS = EFS_PATH / Path('attachments')
 
+# Archived documents folder
+# Uploads are moved here after they are pushed
+# Downloads fetch documents from here
 PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('archive')
 PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
 
+# Chat history folder
+# User chat history and messages are stored here
 PATH_CHATS_LOCAL = CURRENT_PATH / Path('chats')
 PATH_CHATS_EFS = EFS_PATH / Path('chats')
 
-PATH_AUTH_LOCAL = CURRENT_PATH / Path("auth")
-PATH_AUTH_EFS = EFS_PATH / Path("auth")
 
 SEC_DESC_2 = """
 =========================
@@ -85,7 +105,6 @@ load_dotenv()
 SMTP_SERVER = "mail.privateemail.com"
 SMTP_PORT = 587
 SMTP_USERNAME = "verification@ragbase.cloud"
-# Store this in .env file
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", default="SMTP_PASSWORD")
 
 OTP_LIFESPAN_MINUTES = 15

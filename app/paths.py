@@ -36,9 +36,10 @@ class PathConfig:
 class PathType(Enum):
     ARCHIVE = auto()
     ATTACHMENTS = auto()
-    AUTH = auto()
     CHATS = auto()
-    DB = auto()
+    DB_AUTH = auto()
+    DB_MAIN = auto()
+    DB_SECONDARY = auto()
     UPLOADS = auto()
 
 
@@ -55,16 +56,20 @@ class UserPathsWrapper:
         return self._paths[PathType.ATTACHMENTS]
 
     @property
-    def AUTH(self) -> Path:
-        return self._paths[PathType.AUTH]
-
-    @property
     def CHATS(self) -> Path:
         return self._paths[PathType.CHATS]
 
     @property
-    def DB(self) -> Path:
-        return self._paths[PathType.DB]
+    def DB_AUTH(self) -> Path:
+        return self._paths[PathType.DB_AUTH]
+
+    @property
+    def DB_MAIN(self) -> Path:
+        return self._paths[PathType.DB_MAIN]
+
+    @property
+    def DB_SECONDARY(self) -> Path:
+        return self._paths[PathType.DB_SECONDARY]
 
     @property
     def UPLOADS(self) -> Path:
@@ -74,13 +79,34 @@ class UserPathsWrapper:
 class PathRegistry:
     def __init__(self):
         self._path_configs = {
-            PathType.DB: PathConfig(config.PATH_CHROMA_LOCAL, config.PATH_CHROMA_EFS),
-            PathType.UPLOADS: PathConfig(config.PATH_UPLOADS_LOCAL, config.PATH_UPLOADS_EFS),
-            PathType.ATTACHMENTS: PathConfig(config.PATH_ATTACHMENTS_LOCAL, config.PATH_ATTACHMENTS_EFS),
-            PathType.ARCHIVE: PathConfig(config.PATH_ARCHIVE_LOCAL, config.PATH_ARCHIVE_EFS),
-            PathType.CHATS: PathConfig(config.PATH_CHATS_LOCAL, config.PATH_CHATS_EFS),
-            PathType.AUTH: PathConfig(
-                config.PATH_AUTH_LOCAL, config.PATH_AUTH_EFS)
+            PathType.ARCHIVE: PathConfig(
+                config.PATH_ARCHIVE_LOCAL,
+                config.PATH_ARCHIVE_EFS
+            ),
+            PathType.ATTACHMENTS: PathConfig(
+                config.PATH_ATTACHMENTS_LOCAL,
+                config.PATH_ATTACHMENTS_EFS
+            ),
+            PathType.CHATS: PathConfig(
+                config.PATH_CHATS_LOCAL,
+                config.PATH_CHATS_EFS
+            ),
+            PathType.DB_AUTH: PathConfig(
+                config.PATH_DB_AUTH_LOCAL,
+                config.PATH_DB_AUTH_EFS
+            ),
+            PathType.DB_MAIN: PathConfig(
+                config.PATH_DB_MAIN_LOCAL,
+                config.PATH_DB_MAIN_EFS
+            ),
+            PathType.DB_SECONDARY: PathConfig(
+                config.PATH_DB_SECONDARY_LOCAL,
+                config.PATH_DB_SECONDARY_EFS
+            ),
+            PathType.UPLOADS: PathConfig(
+                config.PATH_UPLOADS_LOCAL,
+                config.PATH_UPLOADS_EFS
+            )
         }
         self._base_paths: dict[PathType, Path] = {}
         self._user_paths: dict[PathType, Path] = {}
@@ -103,24 +129,20 @@ class PathRegistry:
         """
         Initializes resource paths and authentication database.
         Creates the paths if they don't exist.
-        Does not initialize the emebedding database, because that is user-dependent.
         """
-        print("Initializing resource paths...")
+        print("Initializing resource paths:")
         storage_type = self.get_storage_type()
 
-        # Initialize base paths
         for path_type, config in self._path_configs.items():
             base_path = config.paths[storage_type]
             self._base_paths[path_type] = base_path
-
+            print(f"...{'/'.join(base_path.parts[-2:])}")
             if not os.path.exists(base_path):
                 os.makedirs(base_path)
-                print(f"Creating directory: ...{str(base_path)[-50:]}")
-            else:
-                print(f"Located directory: ...{str(base_path)[-50:]}")
 
-        # Initialize authentication database
-        auth_db = self._base_paths[PathType.AUTH] / "users.db"
+        print(f"Initializing authentication DB:")
+        auth_db = self._base_paths[PathType.DB_AUTH] / "users.db"
+        print(f"...{'/'.join(auth_db.parts[-3:])}")
         auth_db.touch()
 
         self._user_paths = self._base_paths.copy()
@@ -132,13 +154,13 @@ class PathRegistry:
         """
         self._user_paths = self._base_paths.copy()
 
+        print("Initializing user's data paths:")
         for path_type, base_path in self._base_paths.items():
-            if path_type != PathType.AUTH and not os.path.isfile(base_path):
+            if path_type != PathType.DB_AUTH and path_type != PathType.DB_MAIN and path_type != PathType.DB_SECONDARY:
                 user_path = base_path / strip_text(user_id)
                 self._user_paths[path_type] = user_path
                 os.makedirs(user_path, exist_ok=True)
-                print(f"Verified user's path exists: ...{
-                      str(user_path)[-50:]}")
+                print(f"...{'/'.join(user_path.parts[-3:])}")
 
 
 # Global instance

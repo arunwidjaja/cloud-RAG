@@ -34,7 +34,6 @@ class DatabaseManager:
             self.db = init_db.init_db(
                 collection_name=utils.strip_email(email)
             )
-            print(f"Initialized DB for user: {user_id}")
             return
         except Exception as e:
             raise HTTPException(
