@@ -1,10 +1,9 @@
 # External Modules
 from fastapi import APIRouter, Depends, HTTPException, Query
-from langchain_chroma import Chroma
 import os
 
 # Local Modules
-from api_dependencies import get_db
+from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
 from paths import get_paths
 
@@ -19,7 +18,7 @@ router = APIRouter()
 @router.delete("/delete_account")
 async def delete_account(
     credentials: CredentialsModel,
-    db: Chroma = Depends(get_db)
+    db: DatabaseManager = Depends(get_db_instance)
 ) -> None:
     try:
         auth = authentication.UserAuth()
@@ -43,7 +42,7 @@ async def delete_account(
 @router.delete("/delete_chat")
 async def delete_chat(
     chat_id: str = Query(...),
-    db: Chroma = Depends(get_db)
+    db: DatabaseManager = Depends(get_db_instance)
 ) -> bool:
     """
     Deletes stored chats
@@ -66,7 +65,7 @@ async def delete_chat(
 async def delete_uploads(
     hashes: List[str] = Query(...),
     is_attachment: bool = Query(False),
-    db: Chroma = Depends(get_db)
+    db: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Delete the list of uploads from the uploads folder
@@ -84,7 +83,7 @@ async def delete_uploads(
 @router.delete("/delete_collection")
 async def delete_collection(
     collection: List[str] = Query(...),
-    db: Chroma = Depends(get_db)
+    db: DatabaseManager = Depends(get_db_instance)
 ) -> str:
     """
     Deletes the collection from the database
@@ -95,7 +94,7 @@ async def delete_collection(
 
     try:
         # database = get_database()
-        database = db
+        database = db.get_db()
         # Collection can only have one element in it
         deleted_collection = db_ops.delete_collection(
             database, collection[0])
@@ -108,7 +107,7 @@ async def delete_collection(
 async def delete_files(
         hashes: List[str] = Query(...),
         collection: List[str] = Query(...),
-        db: Chroma = Depends(get_db)
+        db: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Delete the list of files from the Chroma DB
@@ -117,8 +116,7 @@ async def delete_files(
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        # database = get_database()
-        database = db
+        database = db.get_db()
         # Collection can only have one element in it
         deleted_files = db_ops.delete_db_files(
             database,

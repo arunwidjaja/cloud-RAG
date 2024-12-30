@@ -1,14 +1,13 @@
 # External Modules
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
-from langchain_chroma import Chroma
 
 import json
 import os
 import shutil
 
 # Local Modules
-from api_dependencies import get_db
+from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
 from paths import get_paths
 from query_data import query_rag_streaming
@@ -21,7 +20,9 @@ router = APIRouter()
 
 
 @router.post("/login")
-async def login(credentials: CredentialsModel):
+async def login(
+    credentials: CredentialsModel
+):
     try:
         auth = authentication.UserAuth()
         return auth.validate_user(username=credentials.email, password=credentials.pwd)
@@ -33,7 +34,10 @@ async def login(credentials: CredentialsModel):
 
 
 @router.post("/register")
-async def register(credentials: CredentialsModel, background_tasks: BackgroundTasks):
+async def register(
+    credentials: CredentialsModel,
+    background_tasks: BackgroundTasks
+):
     try:
         auth = authentication.UserAuth()
         return auth.register_user(
@@ -60,7 +64,9 @@ async def resent_otp(email: str):
 
 
 @router.post("/verify_otp")
-async def verify_otp(otp: OTPModel) -> bool:
+async def verify_otp(
+    otp: OTPModel
+) -> bool:
     try:
         auth = authentication.UserAuth()
         return await auth.verify_email(
@@ -74,7 +80,10 @@ async def verify_otp(otp: OTPModel) -> bool:
 
 
 @router.post("/save_chat")
-async def save_chat(chat: ChatModel, db: Chroma = Depends(get_db)):
+async def save_chat(
+    chat: ChatModel,
+    db: DatabaseManager = Depends(get_db_instance)
+):
     try:
         chats_path = get_paths().CHATS
 
@@ -103,16 +112,20 @@ async def save_chat(chat: ChatModel, db: Chroma = Depends(get_db)):
 
 
 @router.post("/create_collection")
-async def create_collection(request: CollectionModel, db: Chroma = Depends(get_db)):
+async def create_collection(
+    request: CollectionModel,
+    db: DatabaseManager = Depends(get_db_instance)
+):
     """
     Create a new collection in the database
     """
     print("API CALL: create_collection")
     try:
         # database = get_database()
-        database = db
+        database = db.get_db()
         collection_name = request.collection_name
         ef = request.embedding_function
+
         collection = db_ops.add_persistent_collection(
             database, collection_name, ef)
         return collection
@@ -121,8 +134,11 @@ async def create_collection(request: CollectionModel, db: Chroma = Depends(get_d
 
 
 @router.post("/stream_query")
-async def stream_query(request: QueryModel, db: Chroma = Depends(get_db)):
-    database = db
+async def stream_query(
+    request: QueryModel,
+    db: DatabaseManager = Depends(get_db_instance)
+):
+    database = db.get_db()
     return StreamingResponse(
         query_rag_streaming(
             db=database,
@@ -137,7 +153,7 @@ async def stream_query(request: QueryModel, db: Chroma = Depends(get_db)):
 async def upload_documents(
     files: List[UploadFile] = File(...),
     is_attachment: bool = Query(False),
-    db: Chroma = Depends(get_db)
+    db: DatabaseManager = Depends(get_db_instance)
 ):
     """
     Uploads files to user's data folders.
