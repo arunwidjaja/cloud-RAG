@@ -7,10 +7,10 @@ from fastapi import BackgroundTasks, HTTPException
 import bcrypt
 import config
 import random
+import secrets
 import smtplib
 import sqlite3
 import string
-import uuid
 
 # Local Modules
 from paths import get_paths
@@ -214,8 +214,8 @@ class UserAuth:
 
         conn = sqlite3.connect(self.db_path)
 
-        # Generate user ID and hash password
-        user_id = str(uuid.uuid4())
+        # Generate 16-character user ID and hashes password
+        user_id = secrets.token_hex(8)
         password_hash = bcrypt.hashpw(
             password.encode('utf-8'),
             bcrypt.gensalt(rounds=12)

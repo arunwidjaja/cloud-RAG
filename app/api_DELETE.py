@@ -118,7 +118,7 @@ async def delete_files(
     try:
         database = db.get_db()
         # Collection can only have one element in it
-        deleted_files = db_ops.delete_db_files(
+        deleted_files = db_ops.delete_files(
             database,
             hashes,
             collection_name=collection[0]

@@ -6,8 +6,6 @@ from pathlib import Path
 import os
 
 # Local Modules
-from utils import strip_text
-
 import config
 
 
@@ -155,9 +153,13 @@ class PathRegistry:
         self._user_paths = self._base_paths.copy()
 
         print("Initializing user's data paths:")
+        # Skip over database paths since they are shared among users
+        excluded_paths = {PathType.DB_AUTH,
+                          PathType.DB_MAIN,
+                          PathType.DB_SECONDARY}
         for path_type, base_path in self._base_paths.items():
-            if path_type != PathType.DB_AUTH and path_type != PathType.DB_MAIN and path_type != PathType.DB_SECONDARY:
-                user_path = base_path / strip_text(user_id)
+            if path_type not in excluded_paths:
+                user_path = base_path / user_id
                 self._user_paths[path_type] = user_path
                 os.makedirs(user_path, exist_ok=True)
                 print(f"...{'/'.join(user_path.parts[-3:])}")

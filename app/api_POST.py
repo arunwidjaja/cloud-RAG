@@ -10,7 +10,7 @@ import shutil
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
 from paths import get_paths
-from query_data import query_rag_streaming
+from query_data import stream_rag_response
 
 import authentication
 import db_ops
@@ -126,7 +126,7 @@ async def create_collection(
         collection_name = request.collection_name
         ef = request.embedding_function
 
-        collection = db_ops.add_persistent_collection(
+        collection = db_ops.create_collection(
             database, collection_name, ef)
         return collection
     except Exception as e:
@@ -140,7 +140,7 @@ async def stream_query(
 ):
     database = db.get_db()
     return StreamingResponse(
-        query_rag_streaming(
+        stream_rag_response(
             db=database,
             query_text=request.query_text,
             chat=request.chat,

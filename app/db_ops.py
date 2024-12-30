@@ -15,7 +15,7 @@ import doc_ops_utils
 import utils
 
 
-def add_persistent_collection(db: Chroma, collection_name: str, embedding_function: str = 'openai') -> str:
+def create_collection(db: Chroma, collection_name: str, embedding_function: str = 'openai') -> str:
     """
     Creates a new collection in the DB. Inserts a placeholder file to force Chroma to persist it.
 
@@ -148,7 +148,7 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     return utils.extract_file_names(added_documents)
 
 
-def delete_db_files(db: Chroma, file_hash_list: List[str], collection_name: str) -> List[str]:
+def delete_files(db: Chroma, file_hash_list: List[str], collection_name: str) -> List[str]:
     """
     Deletes all chunks associated with the given files from the collection.
     Does not delete the source files from the archive.

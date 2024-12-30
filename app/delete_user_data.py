@@ -5,7 +5,6 @@ import shutil
 # Local Modules
 from pathlib import Path
 from paths import get_base_paths
-import utils
 
 
 def delete_user_data(user_id: str):
@@ -14,7 +13,7 @@ def delete_user_data(user_id: str):
         base_path: Path = getattr(base_paths, path_type)
 
         if isinstance(base_path, property):
-            user_data_path = base_path / utils.strip_text(user_id)
+            user_data_path = base_path / user_id
             if os.path.exists(user_data_path):
                 print(f"Deleting user data in: {user_data_path}")
                 shutil.rmtree(user_data_path)
