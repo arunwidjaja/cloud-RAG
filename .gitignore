@@ -12,12 +12,13 @@
 app/_*
 
 # User Data Folders
-archive/
-auth/
-chats/
-chroma/
-uploads/
-attachments/
+db_auth/
+db_main/
+db_secondary
+data_archive/
+data_chats/
+data_uploads/
+data_attachments/
 Sample Documents/
 myenv/
 

@@ -12,6 +12,7 @@ import openai
 
 # Local Modules
 from api_MODELS import ChatModel
+from db_collections import extract_user_collections
 
 import config
 import db_ops_utils
@@ -100,7 +101,7 @@ def build_prompt_RAG(
 
     Args:
         query_text: The user's query string
-        context: a list of Tuples, each containing the context string and the source file,
+        context: A list of the raw context strings,
         prompt_template: f-string prompt template
 
     Returns:
@@ -195,76 +196,9 @@ def combine_context(retrieved_docs: List[tuple[Document, float]]) -> List[Dict[s
     return contexts
 
 
-def query_rag(
+async def stream_rag_response(
     db: Chroma,
-    query_text: str,
-    chat: ChatModel,
-    query_type: str,
-    collections: List[str] | None
-) -> QueryResponse:
-    """
-    Query LLM, return response and context
-
-    Args:
-        db: The Chroma instance
-        query_text: The user's query string.
-        chat: The messages in the chat prior to the query.
-        query_type: this is "question" for now since all queries are by default questions.
-        collections: List of collection names include in the search. If None, searches all collections.
-
-    Returns:
-        QueryResponse
-    """
-    chat_parsed = parse_chat(chat)
-    query_reconstructed = assemble_query(
-        query=query_text,
-        chat=chat_parsed
-    )
-    print("Latest Query:\n" + query_text + "\n")
-    print("Reconstructued Query:\n" + query_reconstructed)
-
-    model = ChatOpenAI()
-    if query_type == 'statement':
-        prompt_template = prompt_templates.PT_RAG_STATEMENT
-    else:
-        prompt_template = prompt_templates.PT_RAG
-
-    if collections is not None:
-        coll_list = collections
-    else:
-        coll_list = db_ops_utils.get_all_collections_names(db)
-
-    # Search all collections and combine the results into one list
-    retrieved_docs = search_database(
-        query=query_reconstructed,
-        db=db,
-        collections=coll_list
-    )
-
-    contexts = combine_context(retrieved_docs)
-
-    # Build prompt and invoke LLM
-    context_values = [data['context'] for data in contexts]
-    prompt = build_prompt_RAG(
-        query_text=query_text,
-        context=context_values,
-        prompt_template=prompt_template
-    )
-    LLM_base_response = model.invoke(prompt)
-
-    LLM_message: str = getattr(LLM_base_response, 'content')
-    LLM_message_id: str = getattr(LLM_base_response, 'id')
-
-    query_response = QueryResponse(
-        message_arg=LLM_message,
-        id_arg=LLM_message_id,
-        contexts_arg=contexts
-    )
-    return query_response
-
-
-async def query_rag_streaming(
-    db: Chroma,
+    uuid: str,
     query_text: str,
     chat: ChatModel,
     query_type: str,
@@ -285,6 +219,7 @@ async def query_rag_streaming(
     """
     chat_parsed = parse_chat(chat)
 
+    # Construct the user query from their current query and chat history
     query_reconstructed = assemble_query(
         query=query_text,
         chat=chat_parsed
@@ -297,29 +232,34 @@ async def query_rag_streaming(
         callbacks=[callback_handler]
     )
 
-    # Prepare context and prompt
-    if collections is not None:
-        coll_list = collections
-    else:
-        coll_list = db_ops_utils.get_all_collections_names(db)
+    # Get the user's collections.
+    all_collections = db_ops_utils.get_all_collections_names(db)
+    all_user_collections = extract_user_collections(all_collections, uuid)
 
+    # If collections aren't specified, searches all user collections by default.
+    collections_to_search = collections if collections else all_user_collections
+
+    # Retrieve relevant documents
     retrieved_docs = search_database(
         query=query_reconstructed,
         db=db,
-        collections=coll_list
+        collections=collections_to_search
     )
 
-    contexts = combine_context(retrieved_docs)
-    context_values = [data['context'] for data in contexts]
-
+    # Select the appropriate prompt
     prompt_template = (
         prompt_templates.PT_RAG if query_type == 'question'
         else prompt_templates.PT_RAG_STATEMENT
     )
 
+    # Aggregate context into a single list
+    contexts = combine_context(retrieved_docs)
+    context_strings = [data['context'] for data in contexts]
+
+    # Build the prompt with the context
     prompt = build_prompt_RAG(
         query_text=query_text,
-        context=context_values,
+        context=context_strings,
         prompt_template=prompt_template
     )
 
@@ -336,13 +276,15 @@ async def query_rag_streaming(
     llm_message_id = getattr(llm_response, 'id')
     print(f"LLM Response {llm_message_id}:\n{llm_message}")
 
-    # Yield the contexts as a final chunk
+    # Yield formatted string containing names of source files used.
+    # This will be outputted after the response finishes streaming.
     yield "\n\nSources:\n" + "\n".join(
         f"{ctx['source']}"
         for ctx in contexts
     )
 
-    # Yield context metadata
+    # Yield full context data, including metadata.
+    # Need this for front-end processing.
     yield "\n\nMETADATA:" + json.dumps({
         "contexts": contexts
     })

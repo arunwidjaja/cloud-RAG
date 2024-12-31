@@ -34,7 +34,6 @@ class DatabaseManager:
             self.db = init_db.init_db(
                 collection_name=utils.strip_email(email)
             )
-            print(f"Initialized DB for user: {user_id}")
             return
         except Exception as e:
             raise HTTPException(
@@ -60,6 +59,15 @@ class DatabaseManager:
                 status_code=500, detail="Database not initialized")
         return self.db
 
+    def get_uuid(self) -> str:
+        """
+        Return the user's uuid.
+        """
+        if self.uuid is None:
+            raise HTTPException(
+                status_code=500, detail="User not initialized")
+        return self.uuid
+
 
 async def get_current_user_id(request: Request) -> str:
     """
@@ -72,10 +80,20 @@ async def get_current_user_id(request: Request) -> str:
     return user_id
 
 
-async def get_db(request: Request, user_id: str = Depends(get_current_user_id)) -> Chroma:
-    db_manager = request.app.state.db_manager
-    current_user_id = db_manager.uuid
+# async def get_db(request: Request, user_id: str = Depends(get_current_user_id)) -> Chroma:
+#     db_manager: DatabaseManager = request.app.state.db_manager
+#     current_user_id = db_manager.get_uuid()
+#     current_db = db_manager.get_db()
+#     if user_id == current_user_id:
+#         return current_db
+#     else:
+#         raise HTTPException(status_code=401, detail="User ID mismatch")
+
+
+async def get_db_instance(request: Request, user_id: str = Depends(get_current_user_id)) -> DatabaseManager:
+    db_manager: DatabaseManager = request.app.state.db_manager
+    current_user_id = db_manager.get_uuid()
     if user_id == current_user_id:
-        return db_manager.db
+        return db_manager
     else:
         raise HTTPException(status_code=401, detail="User ID mismatch")

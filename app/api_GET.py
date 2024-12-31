@@ -1,7 +1,6 @@
 from io import BytesIO
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
-from langchain_chroma import Chroma
 from pathlib import Path
 from typing import List
 
@@ -10,8 +9,9 @@ import os
 import zipfile
 
 # Local Modules
-from api_dependencies import get_db
+from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
+from db_collections import extract_user_collections, format_name
 from paths import get_paths
 from summarize import summarize_map_reduce
 
@@ -27,7 +27,9 @@ router = APIRouter()
 @router.get("/download_files")
 async def download_files(
         hashes: List[str] = Query(...),
-        collection: List[str] = Query(...), db: Chroma = Depends(get_db)):
+        collection: List[str] = Query(...),
+        db: DatabaseManager = Depends(get_db_instance)
+):
     """
     Downloads the specified files and returns a list of the downloaded files.
     """
@@ -90,35 +92,48 @@ async def download_files(
 
 
 @router.get("/initiate_push_to_db")
-async def initiate_push_to_db(collection: List[str] = Query(...), db: Chroma = Depends(get_db)):
+async def push_db(
+    collections: List[str] = Query(...),
+    db: DatabaseManager = Depends(get_db_instance)
+) -> List[str]:
     """
     Updates the database with all the uploaded documents
     """
     print("API CALL: push_files_to_database")
-    if not collection or len(collection) != 1:
+    if not collections or len(collections) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        # database = get_database()
-        database = db
-        # Collection can only have one element in it
-        pushed_files = await db_ops.push_to_database(database, collection[0])
+        database = db.get_db()
+        uuid = db.get_uuid()
+        formatted_collection_name = format_name(collections, uuid)[0]
+
+        pushed_files = await db_ops.push_db(
+            db=database,
+            collection=formatted_collection_name,
+            user_id=uuid
+        )
         return pushed_files
     except Exception as e:
         raise Exception(f"Exception occured when pushing files: {e}")
 
 
 @router.get("/summary")
-async def summarize(hashes: List[str] = Query(...), db: Chroma = Depends(get_db)):
+async def summarize(
+    hashes: List[str] = Query(...),
+    db: DatabaseManager = Depends(get_db_instance)
+) -> str:
     """
     Generates a map-reduce summary of the specified files.
     """
     print("API CALL: summarize_files")
     try:
         # database = get_database()
-        database = db
+        database = db.get_db()
+        uuid = db.get_uuid()
         summary = await summarize_map_reduce(
             db=database,
+            uuid=uuid,
             doc_list=hashes,
             preset='GENERAL'
         )
@@ -128,16 +143,21 @@ async def summarize(hashes: List[str] = Query(...), db: Chroma = Depends(get_db)
 
 
 @router.get("/theme")
-async def analyze_theme(hashes: List[str] = Query(...), db: Chroma = Depends(get_db)):
+async def analyze_theme(
+    hashes: List[str] = Query(...),
+    db: DatabaseManager = Depends(get_db_instance)
+) -> str:
     """
     Generates a map-reduce summary of the specified files.
     """
     print("API CALL: summarize_files")
     try:
         # database = get_database()
-        database = db
+        database = db.get_db()
+        uuid = db.get_uuid()
         summary = await summarize_map_reduce(
             db=database,
+            uuid=uuid,
             doc_list=hashes,
             preset='THEMES_INTERVIEWS_1'
         )
@@ -147,23 +167,33 @@ async def analyze_theme(hashes: List[str] = Query(...), db: Chroma = Depends(get
 
 
 @router.get("/collections")
-async def get_collections(db: Chroma = Depends(get_db)):
+async def get_collections(
+    db: DatabaseManager = Depends(get_db_instance)
+) -> List[str]:
     """
-    Gets a list of all the collections in the database
+    Gets a list of all the collection names in the database.
     """
     print("API CALL: get_db_files_metadata")
     try:
         # database = get_database()
-        database = db
-        collections = db_ops_utils.get_all_collections_names(database)
-        return collections
+        database = db.get_db()
+        uuid = db.get_uuid()
+        all_collections = db_ops_utils.get_all_collections_names(database)
+        user_collections = extract_user_collections(
+            collections=all_collections,
+            uuid=uuid,
+            formatted=False
+        )
+        return user_collections
     except Exception as e:
         raise Exception(
             f"Exception occured when getting collections list: {e}")
 
 
 @router.get("/saved_chats")
-async def get_saved_chats(db: Chroma = Depends(get_db)):
+async def get_saved_chats(
+    db: DatabaseManager = Depends(get_db_instance)
+):
     """
     Gets the JSON data containing all saved chats
     """
@@ -182,16 +212,23 @@ async def get_saved_chats(db: Chroma = Depends(get_db)):
 
 
 @router.get("/db_files_metadata")
-async def get_db_files_metadata(collections: List[str] = Query(...), db: Chroma = Depends(get_db)):
+async def get_db_files_metadata(
+    collections: List[str] = Query(...),
+    db: DatabaseManager = Depends(get_db_instance)
+):
     """
     Gets the metadata of all unique files in the database for the given collections
     """
     print("API CALL: get_db_files_metadata")
     try:
-        # database = get_database()
-        database = db
+        database = db.get_db()
+        uuid = db.get_uuid()
+        formatted_collections = format_name(collections, uuid)
+
         file_metadata = db_ops_utils.get_db_files_metadata(
-            database, collections)
+            db=database,
+            collection_names=formatted_collections
+        )
         return JSONResponse(content=file_metadata)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")
@@ -200,7 +237,7 @@ async def get_db_files_metadata(collections: List[str] = Query(...), db: Chroma 
 @router.get("/uploads_metadata")
 async def get_uploads_metadata(
         is_attachment: bool = Query(False),
-        db: Chroma = Depends(get_db)
+        db: DatabaseManager = Depends(get_db_instance)
 ):
     """
     Gets the metadata of all uploads or attachments.

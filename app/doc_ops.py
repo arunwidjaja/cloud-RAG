@@ -68,13 +68,29 @@ def chunk_text(documents: List[Document]) -> List[Document]:
     return chunks
 
 
-def add_chunk_ids(chunks: List[Document]):
+def add_user_ids(chunks: List[Document], user_id: str) -> None:
+    """
+    Modifies chunks.
+
+    Adds the user's ID to the chunk.
+
+    Args:
+        chunks: A list of chunks, which are Document objects, to be modified.
+    """
+    for chunk in chunks:
+        set_chunk_metadata(chunk, "user", user_id)
+
+
+def add_chunk_ids(chunks: List[Document]) -> None:
     """
     Modifies chunks.
 
     Adds IDs to metadata.
     The chunk IDs are formatted as "file_name:page_number:chunk_index".
     For example, testfile.pdf:5:3 would be the ID for the 3rd chunk of the 5th page of testfile.pdf
+
+    Args:
+        chunks: A list of chunks, which are Document objects, to be modified.
     """
     last_page_id = None
     current_chunk_index = 0
@@ -110,7 +126,7 @@ def add_token_count(chunks: List[Document]) -> None:
     Adds the token count to the metadata of the chunks.
 
     Args:
-        document_list: The list of documents to tokenize
+        chunks: A list of chunks, which are Document objects, to be modified.
     """
 
     for chunk in chunks:
@@ -123,6 +139,9 @@ def add_source_hash(chunks: List[Document]) -> None:
     Modifies chunks.
 
     Adds the hash of the source file to metadata
+
+    Args:
+        chunks: A list of chunks, which are Document objects, to be modified.
     """
     hashes: dict[str, str] = {}
     for chunk in chunks:
@@ -137,6 +156,9 @@ def add_source_base_name(chunks: List[Document]) -> None:
     Modifies chunks.
 
     Adds source file name to metadata. (Name only, no path.)
+
+    Args:
+        chunks: A list of chunks, which are Document objects, to be modified.
     """
     for chunk in chunks:
         source_base_name = utils.extract_file_name(
@@ -149,6 +171,9 @@ def add_word_count(chunks: List[Document]) -> None:
     Modifies chunks.
 
     Adds the word count to metadata.
+
+    Args:
+        chunks: A list of chunks, which are Document objects, to be modified.
     """
     for chunk in chunks:
         word_count = len(chunk.page_content.split())
@@ -162,6 +187,9 @@ def add_sentiment(chunks: List[Document]) -> None:
     Performs sentiment analysis and adds sentiment labels and scores to chunks.
 
     Currently using default model for simple POSITIVE/NEGATIVE classification with a score.
+
+    Args:
+        chunks: A list of chunks, which are Document objects, to be modified.
     """
     sentiment_analyzer: Pipeline = pipeline(
         task='sentiment-analysis',
@@ -190,22 +218,26 @@ def add_collection(chunks: List[Document], collection: str) -> None:
 
     Adds the collection name to the chunk.
     This makes it easier to reference the collection name later.
+
+    Args:
+        chunks: A list of chunks, which are Document objects, to be modified.
     """
 
     for chunk in chunks:
         set_chunk_metadata(chunk, "collection", collection)
 
 
-async def process_documents(collection: str) -> List[Document]:
+async def process_documents(collection: str, user_id: str) -> List[Document]:
     """
     Runs the document processing pipeline.
     Returns a list of chunks that will be added to the DB.
 
     Args:
-        collection: The collection that the documents will be added to
+        collection: The collection that the documents will be added to.
     """
     documents = await load_documents()
     chunks = chunk_text(documents)
+    add_user_ids(chunks, user_id)
     add_token_count(chunks)
     add_chunk_ids(chunks)
     add_source_hash(chunks)

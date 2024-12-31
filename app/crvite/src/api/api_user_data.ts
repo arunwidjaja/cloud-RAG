@@ -1,4 +1,4 @@
-import { current_user_id } from "./api_init";
+import { current_user_id, start_logout } from "./api_init";
 import { Chat } from "@/types/types";
 
 export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
@@ -79,7 +79,14 @@ export const fetch_saved_chats = async (): Promise<Chat[]> => {
       })
       if (!response.ok) { throw new Error('Network response was not ok'); }
       else {
-        return await response.json();
+        const success = await response.json();
+        if(success) {
+          start_logout();
+          return success;
+        }
+        else {
+          return success
+        }
       }
     } catch (error) {
       console.error('Error deleting user: ', error);
