@@ -6,6 +6,21 @@ import config
 import re
 
 
+def is_formatted(collection: str) -> bool:
+    """
+    Checks if a collection name is formatted already
+
+    Args:
+        collection: The collection name to check
+    """
+    uuid_length = config.UUID_LENGTH
+    pattern = f"^u__[0-9a-f]{uuid_length}_"
+    if re.match(pattern, collection):
+        return True
+    else:
+        return False
+
+
 def format_name(collections: List[str], uuid: str) -> List[str]:
     """
     Formats a list of collection names by adding a UUID to it.
@@ -22,8 +37,11 @@ def format_name(collections: List[str], uuid: str) -> List[str]:
     """
     formatted_collections: List[str] = []
     for col in collections:
-        col_f = f"u__{uuid}_{col}"
-        formatted_collections.append(col_f)
+        if not is_formatted(col):
+            col_f = f"u__{uuid}_{col}"
+            formatted_collections.append(col_f)
+        else:
+            formatted_collections.append(col)
     return formatted_collections
 
 

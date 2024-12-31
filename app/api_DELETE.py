@@ -5,6 +5,7 @@ import os
 # Local Modules
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
+from db_collections import format_name
 from paths import get_paths
 
 import authentication
@@ -93,11 +94,15 @@ async def delete_collection(
             status_code=422, detail="Invalid or missing collection parameter.")
 
     try:
-        # database = get_database()
         database = db.get_db()
+        uuid = db.get_uuid()
+        formatted_collection = format_name(collection, uuid)[0]
+
         # Collection can only have one element in it
         deleted_collection = db_ops.delete_collection(
-            database, collection[0])
+            db=database,
+            collection_name=formatted_collection
+        )
         return deleted_collection
     except Exception as e:
         raise e
