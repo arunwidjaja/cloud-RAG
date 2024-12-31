@@ -122,11 +122,13 @@ async def delete_files(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
         database = db.get_db()
-        # Collection can only have one element in it
+        uuid = db.get_uuid()
+        formatted_collection = format_name(collection, uuid)[0]
+
         deleted_files = db_ops.delete_files(
             database,
             hashes,
-            collection_name=collection[0]
+            collection_name=formatted_collection
         )
         return deleted_files
     except Exception as e:
