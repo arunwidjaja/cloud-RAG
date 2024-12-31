@@ -9,7 +9,7 @@ import shutil
 # Local Modules
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
-from db_collections import format_name
+from db_collections import format_name, unformat_name
 from paths import get_paths
 from query_data import stream_rag_response
 
@@ -134,7 +134,8 @@ async def create_collection(
             collection_name=collection_name,
             embedding_function=ef
         )
-        return collection
+
+        return unformat_name([collection])
     except Exception as e:
         raise Exception(f"Exception occurred when creating a collection: {e}")
 

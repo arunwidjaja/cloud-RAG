@@ -14,7 +14,7 @@ def is_formatted(collection: str) -> bool:
         collection: The collection name to check
     """
     uuid_length = config.UUID_LENGTH
-    pattern = f"^u__[0-9a-f]{uuid_length}_"
+    pattern = f"^u__[0-9a-f]{{{uuid_length}}}_"
     if re.match(pattern, collection):
         return True
     else:
@@ -59,7 +59,7 @@ def unformat_name(collections: List[str]) -> List[str]:
         unformat_name("u__1234567812345678_test") --> "test"
     """
     uuid_length = config.UUID_LENGTH
-    pattern = f"^u__[0-9a-f]{uuid_length}_"
+    pattern = f"^u__[0-9a-f]{{{uuid_length}}}_"
     unformatted_collections: List[str] = []
     for col in collections:
         col_uf = re.sub(pattern, '', col, flags=re.IGNORECASE)

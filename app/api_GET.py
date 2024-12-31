@@ -179,7 +179,11 @@ async def get_collections(
         database = db.get_db()
         uuid = db.get_uuid()
         all_collections = db_ops_utils.get_all_collections_names(database)
-        user_collections = extract_user_collections(all_collections, uuid)
+        user_collections = extract_user_collections(
+            collections=all_collections,
+            uuid=uuid,
+            formatted=False
+        )
         return user_collections
     except Exception as e:
         raise Exception(

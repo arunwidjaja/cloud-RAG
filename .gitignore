@@ -13,9 +13,10 @@ app/_*
 
 # User Data Folders
 archive/
-auth/
+db_auth/
+db_main/
+db_secondary
 chats/
-chroma/
 uploads/
 attachments/
 Sample Documents/

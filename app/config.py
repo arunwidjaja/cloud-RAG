@@ -45,24 +45,24 @@ PATH_DB_AUTH_EFS = EFS_PATH / Path("db_auth")
 
 # Uploads folder
 # Temporary file storage for uploaded documents
-PATH_UPLOADS_LOCAL = CURRENT_PATH / Path('uploads')
-PATH_UPLOADS_EFS = EFS_PATH / Path('uploads')
+PATH_UPLOADS_LOCAL = CURRENT_PATH / Path('data_uploads')
+PATH_UPLOADS_EFS = EFS_PATH / Path('data_uploads')
 
 # Attachments folder
 # Temporary file storage for attached documents
-PATH_ATTACHMENTS_LOCAL = CURRENT_PATH / Path('attachments')
-PATH_ATTACHMENTS_EFS = EFS_PATH / Path('attachments')
+PATH_ATTACHMENTS_LOCAL = CURRENT_PATH / Path('data_attachments')
+PATH_ATTACHMENTS_EFS = EFS_PATH / Path('data_attachments')
 
 # Archived documents folder
 # Uploads are moved here after they are pushed
 # Downloads fetch documents from here
-PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('archive')
-PATH_ARCHIVE_EFS = EFS_PATH / Path('archive')
+PATH_ARCHIVE_LOCAL = CURRENT_PATH / Path('data_archive')
+PATH_ARCHIVE_EFS = EFS_PATH / Path('data_archive')
 
 # Chat history folder
 # User chat history and messages are stored here
-PATH_CHATS_LOCAL = CURRENT_PATH / Path('chats')
-PATH_CHATS_EFS = EFS_PATH / Path('chats')
+PATH_CHATS_LOCAL = CURRENT_PATH / Path('data_chats')
+PATH_CHATS_EFS = EFS_PATH / Path('data_chats')
 
 
 SEC_DESC_2 = """
