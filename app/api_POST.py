@@ -9,6 +9,7 @@ import shutil
 # Local Modules
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
+from db_collections import format_name
 from paths import get_paths
 from query_data import stream_rag_response
 
@@ -121,13 +122,18 @@ async def create_collection(
     """
     print("API CALL: create_collection")
     try:
-        # database = get_database()
         database = db.get_db()
-        collection_name = request.collection_name
+        uuid = db.get_uuid()
+        col = request.collection_name
         ef = request.embedding_function
 
+        collection_name = format_name([col], uuid)[0]
+
         collection = db_ops.create_collection(
-            database, collection_name, ef)
+            db=database,
+            collection_name=collection_name,
+            embedding_function=ef
+        )
         return collection
     except Exception as e:
         raise Exception(f"Exception occurred when creating a collection: {e}")
@@ -139,12 +145,15 @@ async def stream_query(
     db: DatabaseManager = Depends(get_db_instance)
 ):
     database = db.get_db()
+    uuid = db.get_uuid()
     return StreamingResponse(
         stream_rag_response(
             db=database,
+            uuid=uuid,
             query_text=request.query_text,
             chat=request.chat,
-            query_type=request.query_type),
+            query_type=request.query_type
+        ),
         media_type='text/event-stream'
     )
 

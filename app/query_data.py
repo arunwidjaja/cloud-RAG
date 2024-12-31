@@ -12,6 +12,7 @@ import openai
 
 # Local Modules
 from api_MODELS import ChatModel
+from db_collections import extract_user_collections
 
 import config
 import db_ops_utils
@@ -197,6 +198,7 @@ def combine_context(retrieved_docs: List[tuple[Document, float]]) -> List[Dict[s
 
 async def stream_rag_response(
     db: Chroma,
+    uuid: str,
     query_text: str,
     chat: ChatModel,
     query_type: str,
@@ -230,9 +232,12 @@ async def stream_rag_response(
         callbacks=[callback_handler]
     )
 
-    # If collections aren't specified, searches all collections by default
+    # Get the user's collections.
     all_collections = db_ops_utils.get_all_collections_names(db)
-    collections_to_search = collections if collections else all_collections
+    all_user_collections = extract_user_collections(all_collections, uuid)
+
+    # If collections aren't specified, searches all user collections by default.
+    collections_to_search = collections if collections else all_user_collections
 
     # Retrieve relevant documents
     retrieved_docs = search_database(

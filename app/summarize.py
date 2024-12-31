@@ -59,7 +59,7 @@ model = ChatOpenAI(
 
 
 @async_timer
-async def summarize_map_reduce(db: Chroma, doc_list: str | List[str], identifier: str = 'hash', preset: str = 'general') -> str:
+async def summarize_map_reduce(db: Chroma, uuid: str, doc_list: str | List[str], identifier: str = 'hash', preset: str = 'general') -> str:
     """
     Retrieves the specified documents' chunks from the DB and summarizes them with map-reduce.
     By default, accepts a list of file hashes.
@@ -97,7 +97,12 @@ async def summarize_map_reduce(db: Chroma, doc_list: str | List[str], identifier
     # .invoke() requires Documents, not raw text.
     documents: List[Document] = []
     for doc_hash in doc_list:
-        matching_chunks = db.get(where={'source_hash': doc_hash})
+        matching_chunks = db.get(
+            where={
+                'source_hash': doc_hash,
+                'id': uuid
+            }
+        )
 
         for i in range(len(matching_chunks['ids'])):
             document = Document(

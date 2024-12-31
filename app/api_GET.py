@@ -11,6 +11,7 @@ import zipfile
 # Local Modules
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
+from db_collections import extract_user_collections, format_name
 from paths import get_paths
 from summarize import summarize_map_reduce
 
@@ -91,26 +92,26 @@ async def download_files(
 
 
 @router.get("/initiate_push_to_db")
-async def initiate_push_to_db(
-    collection: List[str] = Query(...),
+async def push_db(
+    collections: List[str] = Query(...),
     db: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Updates the database with all the uploaded documents
     """
     print("API CALL: push_files_to_database")
-    if not collection or len(collection) != 1:
+    if not collections or len(collections) != 1:
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        # database = get_database()
         database = db.get_db()
-        user = db.get_uuid()
-        # Collection can only have one element in it
-        pushed_files = await db_ops.push_to_database(
+        uuid = db.get_uuid()
+        formatted_collection_name = format_name(collections, uuid)[0]
+
+        pushed_files = await db_ops.push_db(
             db=database,
-            collection=collection[0],
-            user_id=user
+            collection=formatted_collection_name,
+            user_id=uuid
         )
         return pushed_files
     except Exception as e:
@@ -129,8 +130,10 @@ async def summarize(
     try:
         # database = get_database()
         database = db.get_db()
+        uuid = db.get_uuid()
         summary = await summarize_map_reduce(
             db=database,
+            uuid=uuid,
             doc_list=hashes,
             preset='GENERAL'
         )
@@ -151,8 +154,10 @@ async def analyze_theme(
     try:
         # database = get_database()
         database = db.get_db()
+        uuid = db.get_uuid()
         summary = await summarize_map_reduce(
             db=database,
+            uuid=uuid,
             doc_list=hashes,
             preset='THEMES_INTERVIEWS_1'
         )
@@ -166,14 +171,16 @@ async def get_collections(
     db: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
-    Gets a list of all the collections in the database
+    Gets a list of all the collection names in the database.
     """
     print("API CALL: get_db_files_metadata")
     try:
         # database = get_database()
         database = db.get_db()
-        collections = db_ops_utils.get_all_collections_names(database)
-        return collections
+        uuid = db.get_uuid()
+        all_collections = db_ops_utils.get_all_collections_names(database)
+        user_collections = extract_user_collections(all_collections, uuid)
+        return user_collections
     except Exception as e:
         raise Exception(
             f"Exception occured when getting collections list: {e}")
@@ -210,10 +217,14 @@ async def get_db_files_metadata(
     """
     print("API CALL: get_db_files_metadata")
     try:
-        # database = get_database()
         database = db.get_db()
+        uuid = db.get_uuid()
+        formatted_collections = format_name(collections, uuid)
+
         file_metadata = db_ops_utils.get_db_files_metadata(
-            database, collections)
+            db=database,
+            collection_names=formatted_collections
+        )
         return JSONResponse(content=file_metadata)
     except Exception as e:
         raise Exception(f"Exception occured when getting file list: {e}")
