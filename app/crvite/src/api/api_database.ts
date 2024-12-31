@@ -29,7 +29,7 @@ export const start_push_to_DB = async (uploads: FileData[], collection: string):
       return ['No uploads to push']
     }
     try {
-      const query_collection = [collection].map(collection => `collection=${encodeURIComponent(collection)}`).join('&');
+      const query_collection = [collection].map(collection => `collections=${encodeURIComponent(collection)}`).join('&');
       const query = query_collection
       const url = `${import.meta.env.VITE_API_BASE_URL}/initiate_push_to_db?${query}`
       const response = await fetch(url, {
