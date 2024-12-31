@@ -31,7 +31,7 @@ class DatabaseManager:
             self.uuid = user_id
 
             # Initialize user's DB
-            self.db = init_db.init_db(
+            self.db = init_db.init_db_chroma(
                 collection_name=utils.strip_email(email)
             )
             return
