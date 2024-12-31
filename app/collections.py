@@ -58,7 +58,13 @@ def filter_collections(collections: List[str], uuid: str) -> List[str]:
         uuid: The UUID to filter for.
 
     Returns:
-        The collections belonging to the specified UUID.
+        The formatted collections belonging to the specified UUID.
+
+    Example:
+        filter_collections(
+            ["u__1234567812345678_test, u__8765432187654321_test"],
+            8765432187654321
+        ) --> ["u__8765432187654321_test"]
     """
     pattern = f"^u__{uuid}_"
     matches: List[str] = []
@@ -66,3 +72,33 @@ def filter_collections(collections: List[str], uuid: str) -> List[str]:
         if re.match(pattern, col):
             matches.append(col)
     return matches
+
+
+def extract_user_collections(
+        collections: List[str],
+        uuid: str,
+        formatted: bool = True
+) -> List[str]:
+    """
+    Extract the collections belonging to a specified user from a list of collections.
+
+    Args:
+        collections: The list of collections.
+        uuid: The UUID of the user.
+        formatted: specifies whether to return the formatted or unformatted names.
+
+    Returns:
+        The list of collections belonging to the user.
+
+        Example:
+    filter_collections(
+            ["u__1234567812345678_test, u__8765432187654321_test"],
+            8765432187654321,
+            False
+        ) --> ["test"]
+    """
+    user_collections = filter_collections(collections, uuid)
+    if formatted:
+        return user_collections
+    else:
+        return unformat_name(user_collections)
