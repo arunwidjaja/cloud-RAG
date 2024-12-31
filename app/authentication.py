@@ -215,7 +215,7 @@ class UserAuth:
         conn = sqlite3.connect(self.db_path)
 
         # Generate 16-character user ID and hashes password
-        user_id = secrets.token_hex(8)
+        user_id = secrets.token_hex(int(config.UUID_LENGTH / 2))
         password_hash = bcrypt.hashpw(
             password.encode('utf-8'),
             bcrypt.gensalt(rounds=12)

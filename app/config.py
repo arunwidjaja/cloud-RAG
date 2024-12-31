@@ -113,6 +113,8 @@ HOST = "0.0.0.0"
 PORT_APP = 8000
 PORT_DB = 8001
 
+UUID_LENGTH = 16
+
 
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
 
