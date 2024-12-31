@@ -4,6 +4,7 @@ from enum import auto, Enum
 from pathlib import Path
 
 import os
+import shutil
 
 # Local Modules
 import config
@@ -164,9 +165,28 @@ class PathRegistry:
                 os.makedirs(user_path, exist_ok=True)
                 print(f"...{'/'.join(user_path.parts[-3:])}")
 
+    def delete_user_paths(self, user_id: str):
+        """
+        Deletes contents of user-specific paths.
+        """
+        excluded_paths = {PathType.DB_AUTH,
+                          PathType.DB_MAIN,
+                          PathType.DB_SECONDARY}
+        print("Deleting user data paths:")
+        for path_type, base_path in self._base_paths.items():
+            if path_type not in excluded_paths:
+                user_path = base_path / user_id
+                if os.path.exists(user_path):
+                    print(f"...{'/'.join(user_path.parts[-3:])}")
+                    shutil.rmtree(user_path)
+
 
 # Global instance
 _path_registry = PathRegistry()
+
+
+def delete_user_paths(user_id: str):
+    _path_registry.delete_user_paths(user_id)
 
 
 def initialize_paths():

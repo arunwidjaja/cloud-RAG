@@ -6,10 +6,12 @@ import os
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
 from db_collections import format_name
-from paths import get_paths
+from paths import get_paths, delete_user_paths
 
 import authentication
+import db_collections
 import db_ops
+import db_ops_utils
 import doc_ops_utils
 
 
@@ -20,23 +22,36 @@ router = APIRouter()
 async def delete_account(
     credentials: CredentialsModel,
     db: DatabaseManager = Depends(get_db_instance)
-) -> None:
+) -> bool:
     try:
         auth = authentication.UserAuth()
+        database = db.get_db()
         user_id = auth.validate_user(
             username=credentials.email,
             password=credentials.pwd
         )
         if user_id:
+            # Delete user from authentication database
             auth.delete_user(
                 username=credentials.email,
                 password=credentials.pwd)
-            # delete_user_data.delete_user_data(user_id)
 
+            # Delete user's collections
+            all_collections = db_ops_utils.get_all_collections_names(database)
+            user_collections = db_collections.extract_user_collections(
+                all_collections, user_id)
+            for col in user_collections:
+                db_ops.delete_collection(database, col)
+
+            # Delete user's data
+            delete_user_paths(user_id)
+            return True
+        else:
+            return False
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to register user: {str(e)}"
+            detail=f"Failed to delete user: {str(e)}"
         )
 
 
