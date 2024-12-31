@@ -106,7 +106,7 @@ export function DropdownMenuContext({
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={handleSelect}
+                  onSelect={(value) => handleSelect(value)}
                 >
                   <Check
                     className={cn(

@@ -9,7 +9,7 @@ import shutil
 # Local Modules
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
-from db_collections import format_name, unformat_name
+from db_collections import format_name
 from paths import get_paths
 from query_data import stream_rag_response
 
@@ -116,7 +116,7 @@ async def save_chat(
 async def create_collection(
     request: CollectionModel,
     db: DatabaseManager = Depends(get_db_instance)
-):
+) -> str:
     """
     Create a new collection in the database
     """
@@ -127,15 +127,21 @@ async def create_collection(
         col = request.collection_name
         ef = request.embedding_function
 
-        collection_name = format_name([col], uuid)[0]
+        # format collection name before creating it
+        formatted_collection = format_name([col], uuid)[0]
 
         collection = db_ops.create_collection(
             db=database,
-            collection_name=collection_name,
+            collection_name=formatted_collection,
             embedding_function=ef
         )
 
-        return unformat_name([collection])
+        # if successful, return the original (unformatted) collection name
+        if (collection):
+            return col
+        else:
+            return ""
+
     except Exception as e:
         raise Exception(f"Exception occurred when creating a collection: {e}")
 

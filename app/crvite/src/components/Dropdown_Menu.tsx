@@ -53,10 +53,15 @@ export function DropdownMenu({
     label: item
   }))
 
+  React.useEffect(() => {
+    console.log('hook_items updated:', hook_items);
+    console.log('mapped items:', items);
+  }, [hook_items, items])
+
   const handleSelect = (currentValue: string) => {
-    const newValue = currentValue === selectedValue ? currentValue : currentValue
-    setSelectedValue(newValue)
-    onChange?.(newValue)
+    // const newValue = currentValue === selectedValue ? currentValue : currentValue
+    setSelectedValue(currentValue)
+    onChange?.(currentValue)
     setOpen(false)
   }
 
@@ -85,7 +90,7 @@ export function DropdownMenu({
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={handleSelect}
+                  onSelect={(value) => handleSelect(value)}
                   className="text-text"
                 >
                   <Check
