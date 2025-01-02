@@ -2,6 +2,7 @@
 from langchain_chroma import Chroma
 from langchain_postgres import PGVector
 from sqlalchemy import create_engine
+from sqlalchemy import Engine
 
 import chromadb
 
@@ -47,9 +48,10 @@ def init_db_chroma(collection_name: str, embedding_function: str = 'openai') -> 
         raise
 
 
-def init_db_pgv(collection_name: str, embedding_function: str = 'openai') -> PGVector:
+def init_store_pgv(collection_name: str, embedding_function: str = 'openai') -> PGVector:
     """
-    Creates a PGVector (LangChain) instance that connects to a Postgres DB with pgvector extension.
+    Creates a PGVector (LangChain) instance that connects to a Postgres DB.
+
     Args:
         collection_name: the name of the collection (maps to table name in Postgres)
         embedding_function: the embedding function to use (e.g., 'openai')
@@ -58,6 +60,18 @@ def init_db_pgv(collection_name: str, embedding_function: str = 'openai') -> PGV
     """
     ef = get_embedding_function(embedding_function)
 
+    engine = get_connection_pg()
+    store = PGVector(
+        connection=engine,
+        embeddings=ef,
+        collection_name=collection_name)
+    return store
+
+
+def get_connection_pg() -> Engine:
+    """
+    Returns a connection to the PostgreSQL database.
+    """
     username = config.USERNAME_POSTGRES
     password = config.PASSWORD_POSTGRES
     port = config.PORT_DB_PG
@@ -73,20 +87,10 @@ def init_db_pgv(collection_name: str, embedding_function: str = 'openai') -> PGV
             f"{port}"
             f"/{database}"
         )
-
-        # Create SQLAlchemy engine
         engine = create_engine(connection_string)
-
-        # Initialize PGVector
-        store = PGVector(
-            connection=engine,
-            embeddings=ef,
-            collection_name=collection_name
-        )
-        return store
-
+        return engine
     except Exception as e:
-        print(f"There was an error connecting to the Postgres DB: {e}")
+        print(f"Error connecting to the PostgreSQL DB: {e}")
         raise
 
 

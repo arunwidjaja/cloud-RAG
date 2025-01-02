@@ -1,5 +1,4 @@
 # External Modules
-from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.callbacks import AsyncIteratorCallbackHandler
 from langchain.prompts import ChatPromptTemplate
@@ -11,11 +10,11 @@ import json
 import openai
 
 # Local Modules
+from api_dependencies import DatabaseManager
 from api_MODELS import ChatModel
 from db_collections import extract_user_collections
 
 import config
-import db_ops_utils
 import prompt_templates
 
 openai.api_key = config.OPENAI_API_KEY
@@ -120,14 +119,14 @@ def build_prompt_RAG(
     return (prompt)
 
 
-def search_database(query: str, db: Chroma, collections: List[str]) -> List[tuple[Document, float]]:
+def search_database(query: str, dbm: DatabaseManager, collections: List[str]) -> List[tuple[Document, float]]:
     print(f"Searching for documents relevant to the query: {
           query}")
     aggregated_docs: List[tuple[Document, float]] = []
     coll_list = collections
     for coll_name in coll_list:
         print(f"Searching collection: {coll_name}")
-        collection = db_ops_utils.get_collection(db, coll_name)
+        collection = dbm.get_store(coll_name)
         aggregated_docs_partial = collection.similarity_search_with_relevance_scores(
             query=query,
             k=config.LLM_K
@@ -197,7 +196,7 @@ def combine_context(retrieved_docs: List[tuple[Document, float]]) -> List[Dict[s
 
 
 async def stream_rag_response(
-    db: Chroma,
+    dbm: DatabaseManager,
     uuid: str,
     query_text: str,
     chat: ChatModel,
@@ -208,7 +207,7 @@ async def stream_rag_response(
     Query LLM, stream response and context
 
     Args:
-        db: The Chroma instance
+        dbm: The DatabaseManager
         query_text: The user's query string.
         chat: The messages in the chat prior to the query.
         query_type: this is "question" for now since all queries are by default questions.
@@ -233,7 +232,7 @@ async def stream_rag_response(
     )
 
     # Get the user's collections.
-    all_collections = db_ops_utils.get_all_collections_names(db)
+    all_collections = dbm.get_user_collections()
     all_user_collections = extract_user_collections(all_collections, uuid)
 
     # If collections aren't specified, searches all user collections by default.
@@ -242,7 +241,7 @@ async def stream_rag_response(
     # Retrieve relevant documents
     retrieved_docs = search_database(
         query=query_reconstructed,
-        db=db,
+        dbm=dbm,
         collections=collections_to_search
     )
 

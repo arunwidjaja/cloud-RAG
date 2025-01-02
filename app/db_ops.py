@@ -1,11 +1,12 @@
 # External Modules
 from collections import Counter
-from langchain_chroma import Chroma
+from langchain_postgres import PGVector
 from langchain.schema import Document
+from sqlalchemy import text
 from typing import List
 
 # Local Modules
-from db_ops_utils import generate_placeholder_document
+from api_dependencies import DatabaseManager
 from get_embedding_function import get_embedding_function
 
 import config
@@ -15,45 +16,36 @@ import doc_ops_utils
 import utils
 
 
-def create_collection(db: Chroma, collection_name: str, embedding_function: str = 'openai') -> str:
+def create_collection(dbm: DatabaseManager, collection_name: str, embedding_function: str = 'openai') -> str:
     """
-    Creates a new collection in the DB. Inserts a placeholder file to force Chroma to persist it.
+    Creates a new collection in the DB.
 
     Args:
-        db: the database
+        dbm: the database manager
         collection_name: the name of the collection to create
         embedding_function: the name of the embedding function for the collection
 
     Returns:
         The name of the collection
     """
-    # Create collection
-    chroma_client = db_ops_utils.get_client(db)
+    connection = dbm.get_connection()
     ef = get_embedding_function(embedding_function)
-    chroma_client.create_collection(
-        name=collection_name
-    )
-
-    # Initialize Chroma object
-
-    collection = Chroma(
-        collection_name=collection_name,
-        persist_directory=db_ops_utils.get_persist_directory(db),
-        embedding_function=ef
-    )
 
     try:
-        # Add placeholder document to persist collection
-        placeholder_document = generate_placeholder_document()
-        id = collection.add_documents(placeholder_document)
-        print(f"Added placeholder document: {id}")
+        store = PGVector(
+            connection=connection,
+            embeddings=ef,
+            collection_name=collection_name
+        )
+        if not store:
+            raise Exception("There was an error creating the collection.")
         return collection_name
     except Exception as e:
         print(f"There was an error creating the collection: {str(e)}")
         raise
 
 
-def delete_collection(db: Chroma, collection_name: str) -> str:
+def delete_collection(dbm: DatabaseManager, collection_name: str) -> str:
     """
     Deletes the collection from the db. Deletes all contents as well.
 
@@ -64,19 +56,36 @@ def delete_collection(db: Chroma, collection_name: str) -> str:
     Reteurns:
         The name of the deleted collection
     """
+    db_connection = dbm.get_connection()
 
-    try:
-        client = db_ops_utils.get_client(db)
-        client.delete_collection(collection_name)
-        return collection_name
-    except Exception as e:
-        print(f"There was an error deleting the collection: {e}")
-        return ""
+    # Delete the collection's contents first.
+    store = dbm.get_store(collection_name)
+    ids = db_ops_utils.get_ids_in_collection(dbm, collection_name)
+    store.delete(
+        ids=ids,
+        collection_only=True
+    )
+
+    # Delete the collection's metadata entry
+    with db_connection.connect() as connection:
+        query = text("""
+            DELETE from langchain_pg_collection
+            WHERE name = :name
+        """)
+        result = connection.execute(
+            query,
+            {"name": collection_name}
+        )
+        connection.commit()
+        if result.rowcount > 0:
+            return collection_name
+        else:
+            return ""
 
 
-def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> List[str]:
+def add_chunks_to_collection(dbm: DatabaseManager, chunks: List[Document], collection_name: str) -> List[str]:
     """
-    Saves document chunks to the Chroma DB in the specified collection
+    Saves document chunks to the DB in the specified collection
 
     Args:
         db: the database
@@ -91,11 +100,10 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     chunk_counts: Counter[str] = Counter(
         [getattr(chunk, "metadata")["source"] for chunk in chunks])
 
-    collection = db_ops_utils.get_collection(db, collection_name)
+    collection = dbm.get_store(collection_name)
 
     # Get IDs of existing document chunks
-    existing_items = collection.get()
-    existing_ids = set(existing_items["ids"])
+    existing_ids = db_ops_utils.get_ids_in_collection(dbm, collection_name)
     print(f"Number of existing chunks in DB: {len(existing_ids)}")
 
     # Add documents that aren't already in the database (don't have a matching ID)
@@ -148,13 +156,13 @@ def save_to_chroma(db: Chroma, chunks: List[Document], collection_name: str) -> 
     return utils.extract_file_names(added_documents)
 
 
-def delete_files(db: Chroma, file_hash_list: List[str], collection_name: str) -> List[str]:
+def delete_files(dbm: DatabaseManager, file_hash_list: List[str], collection_name: str) -> List[str]:
     """
     Deletes all chunks associated with the given files from the collection.
     Does not delete the source files from the archive.
 
     Args:
-        db: the database
+        dbm: the database managers
         file_list: list of file hashes
         collection: the collection containing the file chunks
 
@@ -162,40 +170,27 @@ def delete_files(db: Chroma, file_hash_list: List[str], collection_name: str) ->
         The list of file names that were deleted
     """
 
-    collection_db = db_ops_utils.get_collection(db, collection_name)
-    # Gets the actual chromadb collection
-    # LangChain doesn't support collection deletion.
-    # Therefore, deletion needs to be done through chromadb directly.
-    # .delete() must be called on a collection, can't be called on the entire DB.
-    chroma_collection = db_ops_utils.get_collection_chroma(collection_db)
+    store = dbm.get_store(collection_name)
+    file_metadata = db_ops_utils.get_files_metadata(dbm, [collection_name])
 
     deleted_files: List[str] = []
     for file_hash in file_hash_list:
-        file_metadata = chroma_collection.get(
-            where={"source_hash": file_hash},
-        )
-        ids_to_delete = file_metadata['ids']
+        target_hashes = db_ops_utils.get_ids_by_hash(dbm, file_hash)
+        if target_hashes:
+            store.delete(target_hashes)
+            deleted_files.append(file_hash)
 
-        # Delete job needs to be split into batches
-        # Chroma allows a maximum number of embeddings to be modified at once
-        # ids_to_delete refers to all the ids associate with a single collection
-        if ids_to_delete:
-            current_file = ""
-            for i in range(0, len(ids_to_delete), config.MAX_BATCH_SIZE):
-                deletion_batch = ids_to_delete[i: i+config.MAX_BATCH_SIZE]
-                chroma_collection.delete(deletion_batch)
+    # connvert hashes to file names
+    hash_to_name = {metadata["hash"]: metadata["name"]
+                    for metadata in file_metadata}
+    for i, hash in enumerate(deleted_files):
+        if hash in hash_to_name:
+            deleted_files[i] = hash_to_name[hash]
 
-            deleted_file_metadata = file_metadata["metadatas"]
-            if deleted_file_metadata:
-                current_file = str(
-                    deleted_file_metadata[0]["source_base_name"])
-            deleted_files.append(current_file)
-        else:
-            print("No documents found from the specified source.")
     return deleted_files
 
 
-async def push_db(db: Chroma, collection: str, user_id: str) -> List[str]:
+async def push_db(dbm: DatabaseManager, collection: str, user_id: str) -> List[str]:
     """
     Pushes uploads to the database then archives them.
 
@@ -208,7 +203,7 @@ async def push_db(db: Chroma, collection: str, user_id: str) -> List[str]:
         a list of the pushed uploads
     """
     chunks = await doc_ops.process_documents(collection, user_id)
-    documents_list = save_to_chroma(db, chunks, collection)
+    documents_list = add_chunks_to_collection(dbm, chunks, collection)
     doc_ops_utils.archive_all_uploads()
     return documents_list
 

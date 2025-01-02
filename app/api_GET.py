@@ -11,7 +11,7 @@ import zipfile
 # Local Modules
 from api_dependencies import DatabaseManager, get_db_instance
 from api_MODELS import *
-from db_collections import extract_user_collections, format_name
+from db_collections import format_name, unformat_name
 from paths import get_paths
 from summarize import summarize_map_reduce
 
@@ -28,7 +28,7 @@ router = APIRouter()
 async def download_files(
         hashes: List[str] = Query(...),
         collection: List[str] = Query(...),
-        db: DatabaseManager = Depends(get_db_instance)
+        dbm: DatabaseManager = Depends(get_db_instance)
 ):
     """
     Downloads the specified files and returns a list of the downloaded files.
@@ -94,7 +94,7 @@ async def download_files(
 @router.get("/initiate_push_to_db")
 async def push_db(
     collections: List[str] = Query(...),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Updates the database with all the uploaded documents
@@ -104,12 +104,11 @@ async def push_db(
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        database = db.get_db()
-        uuid = db.get_uuid()
+        uuid = dbm.get_uuid()
         formatted_collection_name = format_name(collections, uuid)[0]
 
         pushed_files = await db_ops.push_db(
-            db=database,
+            dbm=dbm,
             collection=formatted_collection_name,
             user_id=uuid
         )
@@ -121,7 +120,7 @@ async def push_db(
 @router.get("/summary")
 async def summarize(
     hashes: List[str] = Query(...),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> str:
     """
     Generates a map-reduce summary of the specified files.
@@ -129,10 +128,9 @@ async def summarize(
     print("API CALL: summarize_files")
     try:
         # database = get_database()
-        database = db.get_db()
-        uuid = db.get_uuid()
+        uuid = dbm.get_uuid()
         summary = await summarize_map_reduce(
-            db=database,
+            dbm=dbm,
             uuid=uuid,
             doc_list=hashes,
             preset='GENERAL'
@@ -145,7 +143,7 @@ async def summarize(
 @router.get("/theme")
 async def analyze_theme(
     hashes: List[str] = Query(...),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> str:
     """
     Generates a map-reduce summary of the specified files.
@@ -153,10 +151,9 @@ async def analyze_theme(
     print("API CALL: summarize_files")
     try:
         # database = get_database()
-        database = db.get_db()
-        uuid = db.get_uuid()
+        uuid = dbm.get_uuid()
         summary = await summarize_map_reduce(
-            db=database,
+            dbm=dbm,
             uuid=uuid,
             doc_list=hashes,
             preset='THEMES_INTERVIEWS_1'
@@ -168,22 +165,15 @@ async def analyze_theme(
 
 @router.get("/collections")
 async def get_collections(
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Gets a list of all the collection names in the database.
     """
     print("API CALL: get_db_files_metadata")
     try:
-        # database = get_database()
-        database = db.get_db()
-        uuid = db.get_uuid()
-        all_collections = db_ops_utils.get_all_collections_names(database)
-        user_collections = extract_user_collections(
-            collections=all_collections,
-            uuid=uuid,
-            formatted=False
-        )
+        user_collections = dbm.get_user_collections()
+        user_collections = unformat_name(user_collections)
         return user_collections
     except Exception as e:
         raise Exception(
@@ -214,19 +204,18 @@ async def get_saved_chats(
 @router.get("/db_files_metadata")
 async def get_db_files_metadata(
     collections: List[str] = Query(...),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ):
     """
     Gets the metadata of all unique files in the database for the given collections
     """
     print("API CALL: get_db_files_metadata")
     try:
-        database = db.get_db()
-        uuid = db.get_uuid()
+        uuid = dbm.get_uuid()
         formatted_collections = format_name(collections, uuid)
 
-        file_metadata = db_ops_utils.get_db_files_metadata(
-            db=database,
+        file_metadata = db_ops_utils.get_files_metadata(
+            dbm=dbm,
             collection_names=formatted_collections
         )
         return JSONResponse(content=file_metadata)
