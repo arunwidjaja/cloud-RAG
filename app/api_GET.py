@@ -182,7 +182,7 @@ async def get_collections(
 
 @router.get("/saved_chats")
 async def get_saved_chats(
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ):
     """
     Gets the JSON data containing all saved chats
@@ -226,7 +226,7 @@ async def get_db_files_metadata(
 @router.get("/uploads_metadata")
 async def get_uploads_metadata(
         is_attachment: bool = Query(False),
-        db: DatabaseManager = Depends(get_db_instance)
+        dbm: DatabaseManager = Depends(get_db_instance)
 ):
     """
     Gets the metadata of all uploads or attachments.

@@ -53,7 +53,7 @@ async def delete_account(
 @router.delete("/delete_chat")
 async def delete_chat(
     chat_id: str = Query(...),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> bool:
     """
     Deletes stored chats
@@ -76,7 +76,7 @@ async def delete_chat(
 async def delete_uploads(
     hashes: List[str] = Query(...),
     is_attachment: bool = Query(False),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Delete the list of uploads from the uploads folder
