@@ -21,6 +21,7 @@ data_uploads/
 data_attachments/
 Sample Documents/
 myenv/
+myenvbackup/
 
 # mypy
 .mypy_cache/
@@ -46,3 +47,4 @@ yarn-error.log*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+node_modules

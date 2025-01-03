@@ -1,5 +1,4 @@
 # External Modules
-from chromadb.api.models.Collection import Collection  # type: ignore
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from typing import Any, List, Tuple
