@@ -18,24 +18,24 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 
 ## Project Stack
 
-- Frontend
-  - React, Vite
-  - TypeScript
-  - Tailwind CSS
 - Backend
   - Python
     - Langchain
     - HuggingFace
     - FastAPI
+- Frontend
+  - React, Vite
+  - TypeScript
+  - Tailwind CSS
 - Deployment
-  - AWS Amplify
-  - AWS Elastic Beanstalk
-  - AWS EC2
+  - AWS
+    - EB, EC2
+    - Amplify
+    - RDS
   - Docker
 - Databases
   - PostgreSQL
   - pgvector
-  - RDS
 
 ## Release Notes
 
