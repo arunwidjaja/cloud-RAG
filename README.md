@@ -33,8 +33,9 @@ It can also be compiled and run locally, but requires OpenAI API keys:
   - AWS EC2
   - Docker
 - Databases
-  - Chroma
-  - SQLite3
+  - PostgreSQL
+  - pgvector
+  - RDS
 
 ## Release Notes
 
