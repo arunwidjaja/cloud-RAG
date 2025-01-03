@@ -105,12 +105,18 @@ load_dotenv()
 SMTP_SERVER = "mail.privateemail.com"
 SMTP_PORT = 587
 SMTP_USERNAME = "verification@ragbase.cloud"
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", default="SMTP_PASSWORD")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", default="smtp_pwd")
 
 OTP_LIFESPAN_MINUTES = 15
 
+USERNAME_POSTGRES = os.getenv("POSTGRES_USERNAME", default="postgres_user")
+PASSWORD_POSTGRES = os.getenv("POSTGRES_PASSWORD", default="postgres_pwd")
+DATABASE = "ragbase"
 HOST = "0.0.0.0"
+HOST_PG = "localhost"
+HOST_PG_RDS = os.getenv("AWS_RDS_ENDPOINT", default="0.0.0.0")
 PORT_APP = 8000
+PORT_DB_PG = 5432
 PORT_DB = 8001
 
 UUID_LENGTH = 16

@@ -83,7 +83,7 @@ async def verify_otp(
 @router.post("/save_chat")
 async def save_chat(
     chat: ChatModel,
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ):
     try:
         chats_path = get_paths().CHATS
@@ -115,15 +115,14 @@ async def save_chat(
 @router.post("/create_collection")
 async def create_collection(
     request: CollectionModel,
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> str:
     """
     Create a new collection in the database
     """
     print("API CALL: create_collection")
     try:
-        database = db.get_db()
-        uuid = db.get_uuid()
+        uuid = dbm.get_uuid()
         col = request.collection_name
         ef = request.embedding_function
 
@@ -131,7 +130,7 @@ async def create_collection(
         formatted_collection = format_name([col], uuid)[0]
 
         collection = db_ops.create_collection(
-            db=database,
+            dbm=dbm,
             collection_name=formatted_collection,
             embedding_function=ef
         )
@@ -149,13 +148,12 @@ async def create_collection(
 @router.post("/stream_query")
 async def stream_query(
     request: QueryModel,
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ):
-    database = db.get_db()
-    uuid = db.get_uuid()
+    uuid = dbm.get_uuid()
     return StreamingResponse(
         stream_rag_response(
-            db=database,
+            dbm=dbm,
             uuid=uuid,
             query_text=request.query_text,
             chat=request.chat,
@@ -169,7 +167,7 @@ async def stream_query(
 async def upload_documents(
     files: List[UploadFile] = File(...),
     is_attachment: bool = Query(False),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ):
     """
     Uploads files to user's data folders.

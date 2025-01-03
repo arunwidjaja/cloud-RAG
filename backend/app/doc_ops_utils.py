@@ -134,15 +134,13 @@ def get_uploads_metadata(is_attachment: bool = False) -> List[FileMetadata]:
                 'name': '',
                 'hash': '',
                 'collection': '',
-                'word_count': 0
+                'word_count': 0,
+                'token_count': 0
             }
             name = os.path.basename(str(f))
             hash = utils.get_hash(str(f))
-            # word_count = utils.get_word_count(f)
-            word_count = 0
 
             current_upload_metadata['name'] = name
             current_upload_metadata['hash'] = hash
-            current_upload_metadata['word_count'] = word_count
             uploads_metadata.append(current_upload_metadata)
     return uploads_metadata

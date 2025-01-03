@@ -3,6 +3,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from transformers import Pipeline, pipeline  # type: ignore
+from pathlib import Path
 from typing import Any, List
 
 # Local Modules
@@ -22,16 +23,25 @@ import utils
 # 3. Add metadatas: add metadata tags to the chunks for easier identification
 
 def set_chunk_metadata(chunk: Document, key: str, value: str | Any) -> None:
+    """
+    Modifies or creates metadata attributes of a given chunk.
+
+    Args:
+        chunk: The chunk to modify.
+        key: The attribute to modify or create.
+        value: The value to assign to the attribute.
+    """
     metadata: dict[str, Any] = getattr(chunk, "metadata")
     metadata[key] = value
     setattr(chunk, "metadata", metadata)
 
 
-async def load_documents() -> List[Document]:
+async def load_documents(path: str = "") -> List[Document]:
     """
     Loads documents from the uploads folder
     """
-    document_path = get_paths().UPLOADS
+
+    document_path = get_paths().UPLOADS if not path else Path(path)
     documents_list: List[Document] = []
 
     print(f"Searching for documents in: {document_path}")

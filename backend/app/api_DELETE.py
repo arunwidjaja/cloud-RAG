@@ -9,9 +9,7 @@ from db_collections import format_name
 from paths import get_paths, delete_user_paths
 
 import authentication
-import db_collections
 import db_ops
-import db_ops_utils
 import doc_ops_utils
 
 
@@ -21,11 +19,10 @@ router = APIRouter()
 @router.delete("/delete_account")
 async def delete_account(
     credentials: CredentialsModel,
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> bool:
     try:
         auth = authentication.UserAuth()
-        database = db.get_db()
         user_id = auth.validate_user(
             username=credentials.email,
             password=credentials.pwd
@@ -37,11 +34,9 @@ async def delete_account(
                 password=credentials.pwd)
 
             # Delete user's collections
-            all_collections = db_ops_utils.get_all_collections_names(database)
-            user_collections = db_collections.extract_user_collections(
-                all_collections, user_id)
-            for col in user_collections:
-                db_ops.delete_collection(database, col)
+            user_cols = dbm.get_user_collections()
+            for col in user_cols:
+                db_ops.delete_collection(dbm, col)
 
             # Delete user's data
             delete_user_paths(user_id)
@@ -58,7 +53,7 @@ async def delete_account(
 @router.delete("/delete_chat")
 async def delete_chat(
     chat_id: str = Query(...),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> bool:
     """
     Deletes stored chats
@@ -81,7 +76,7 @@ async def delete_chat(
 async def delete_uploads(
     hashes: List[str] = Query(...),
     is_attachment: bool = Query(False),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Delete the list of uploads from the uploads folder
@@ -99,7 +94,7 @@ async def delete_uploads(
 @router.delete("/delete_collection")
 async def delete_collection(
     collection: List[str] = Query(...),
-    db: DatabaseManager = Depends(get_db_instance)
+    dbm: DatabaseManager = Depends(get_db_instance)
 ) -> str:
     """
     Deletes the collection from the database
@@ -109,13 +104,12 @@ async def delete_collection(
             status_code=422, detail="Invalid or missing collection parameter.")
 
     try:
-        database = db.get_db()
-        uuid = db.get_uuid()
+        uuid = dbm.get_uuid()
         formatted_collection = format_name(collection, uuid)[0]
 
         # Collection can only have one element in it
         deleted_collection = db_ops.delete_collection(
-            db=database,
+            dbm,
             collection_name=formatted_collection
         )
         return deleted_collection
@@ -127,7 +121,7 @@ async def delete_collection(
 async def delete_files(
         hashes: List[str] = Query(...),
         collection: List[str] = Query(...),
-        db: DatabaseManager = Depends(get_db_instance)
+        dbm: DatabaseManager = Depends(get_db_instance)
 ) -> List[str]:
     """
     Delete the list of files from the Chroma DB
@@ -136,12 +130,11 @@ async def delete_files(
         raise HTTPException(
             status_code=422, detail="Invalid or missing collection parameter.")
     try:
-        database = db.get_db()
-        uuid = db.get_uuid()
+        uuid = dbm.get_uuid()
         formatted_collection = format_name(collection, uuid)[0]
 
         deleted_files = db_ops.delete_files(
-            database,
+            dbm,
             hashes,
             collection_name=formatted_collection
         )

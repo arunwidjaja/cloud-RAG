@@ -1,5 +1,4 @@
 # External Modules
-from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.chains import ReduceDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
@@ -11,9 +10,11 @@ from typing import List
 import asyncio
 
 # Local Modules
+from api_dependencies import DatabaseManager
 from utils import async_timer
 
 import config
+import db_ops_utils
 import prompt_templates
 
 
@@ -59,7 +60,7 @@ model = ChatOpenAI(
 
 
 @async_timer
-async def summarize_map_reduce(db: Chroma, uuid: str, doc_list: str | List[str], identifier: str = 'hash', preset: str = 'general') -> str:
+async def summarize_map_reduce(dbm: DatabaseManager, uuid: str, doc_list: str | List[str], identifier: str = 'hash', preset: str = 'general') -> str:
     """
     Retrieves the specified documents' chunks from the DB and summarizes them with map-reduce.
     By default, accepts a list of file hashes.
@@ -92,24 +93,20 @@ async def summarize_map_reduce(db: Chroma, uuid: str, doc_list: str | List[str],
     reduce_template = templates_preset[1]
     reduce_prompt = ChatPromptTemplate.from_template(reduce_template)
 
-    # Extracts chunks from DB.
+    # Extracts embeddings from the DB.
     # Converts them to Document objects and stores them.
     # .invoke() requires Documents, not raw text.
     documents: List[Document] = []
-    for doc_hash in doc_list:
-        matching_chunks = db.get(
-            where={
-                'source_hash': doc_hash,
-                'id': uuid
-            }
-        )
+    for hash in doc_list:
+        doc_data = db_ops_utils.get_documents_and_metadatas_by_hash(
+            dbm, hash)
 
-        for i in range(len(matching_chunks['ids'])):
-            document = Document(
-                page_content=matching_chunks['documents'][i],
-                metadata=matching_chunks['metadatas'][i]
+        for i, doc in enumerate(doc_data[0]):
+            cur_doc = Document(
+                page_content=doc,
+                metadata=doc_data[1][i]
             )
-            documents.append(document)
+            documents.append(cur_doc)
 
     map_chain = LLMChain(
         llm=model,
