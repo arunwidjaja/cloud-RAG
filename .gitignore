@@ -11,7 +11,6 @@
 # Utility or temporary files not necessary for the app
 app/_*
 
-# User Data Folders
 db_auth/
 db_main/
 db_secondary
@@ -20,11 +19,10 @@ data_chats/
 data_uploads/
 data_attachments/
 Sample Documents/
-myenv/
-myenvbackup/
 
-# mypy
-.mypy_cache/
+# Dev Folders
+myenv/
+.vscode/
 
 # React.JS (Frontend Files)
 
