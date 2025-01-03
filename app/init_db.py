@@ -75,7 +75,7 @@ def get_connection_pg() -> Engine:
     username = config.USERNAME_POSTGRES
     password = config.PASSWORD_POSTGRES
     port = config.PORT_DB_PG
-    host = config.HOST_PG
+    host = config.HOST_PG_RDS
     database = config.DATABASE
 
     try:

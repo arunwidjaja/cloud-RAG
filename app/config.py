@@ -114,6 +114,7 @@ PASSWORD_POSTGRES = os.getenv("POSTGRES_PASSWORD", default="postgres_pwd")
 DATABASE = "ragbase"
 HOST = "0.0.0.0"
 HOST_PG = "localhost"
+HOST_PG_RDS = os.getenv("AWS_RDS_ENDPOINT", default="0.0.0.0")
 PORT_APP = 8000
 PORT_DB_PG = 5432
 PORT_DB = 8001
