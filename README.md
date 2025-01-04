@@ -30,7 +30,6 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 - Deployment
   - AWS
     - EB, EC2
-    - Amplify
     - RDS
   - Docker
 - Databases
@@ -42,6 +41,22 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_2.PNG" />
 
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.4_1.PNG" />
+
+### 2025.01.03 - v0.6
+- Migration from ChromaDB -> PostgreSQL + pgvector
+- Hosting now on RDS
+- Client enhancments
+  - Attachments, chat editing 
+- User account enhancements
+  - Chat exports, account deletion  
+- PDF support
+
+Happy 2025! 🎉 New year, New Database:
+
+December has been busy and RAGbase has undergone some restructuring.
+While ChromaDB has been excellent for early prototyping, RAGbase has moved to PostgreSQL, primarily for native AWS RDS support.
+PostgreSQL also offers support for rich metadata (JSON) and more flexibility with direct DB manipulation via queries.
+Backend now runs on a Docker EC2 platform for smoother deployments going forward.
 
 ### 2024.12.05 - v0.5
 - cloud-RAG has a new home and a new name: RAGbase!
@@ -63,7 +78,6 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 - Migration to React.JS
 
 ### 2024.11.04 - v0.2
-#### Feature Summary
 - Document summary shortcut
 - Theme analysis shortcut
 - File download from context
