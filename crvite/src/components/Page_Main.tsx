@@ -92,7 +92,7 @@ function MainApp() {
                         <div className="flex flex-1 flex-row font-bold items-center">
                             <img src={LOGO_PLACEHOLDER} className='w-10 h-10 m-4'></img>
                             <div className="text-2xl font-bold text-text">
-                                Cloud RAG<sub className='text-text text-s font-mono'>0.5</sub>
+                                Cloud RAG<sub className='text-text text-s font-mono'>0.6</sub>
                             </div>
                             <ProfileBadge></ProfileBadge>
                         </div>
