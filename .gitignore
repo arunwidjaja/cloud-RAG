@@ -1,3 +1,7 @@
+# Deployment Files
+Dockerrun.aws.json
+.elasticbeanstalk/
+
 # File Types
 *.db
 *.env
@@ -18,7 +22,6 @@ data_archive/
 data_chats/
 data_uploads/
 data_attachments/
-Sample Documents/
 
 # Dev Folders
 myenv/

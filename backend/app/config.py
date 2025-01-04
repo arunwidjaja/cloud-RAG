@@ -122,7 +122,7 @@ PORT_DB = 8001
 UUID_LENGTH = 16
 
 
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY']  # OpenAI API Key
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', default="")  # OpenAI API Key
 
 SEC_DESC_END = """
 
