@@ -7,6 +7,7 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import OneTimePasscode from './OneTimePasscode';
 function RegisterPage() {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,8 +23,8 @@ function RegisterPage() {
         }
         else {
             try {
-                const success = await register(email, password);
-                if(success) {
+                const success = await register(username, email, password);
+                if (success) {
                     setShowOTP(true);
                 }
             } catch (err) {
@@ -47,6 +48,14 @@ function RegisterPage() {
                 <div className='m-1'>Register to set up your database</div>
                 <form
                     onSubmit={handleRegister}>
+                    <Input
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        type="text"
+                        placeholder="username"
+                        className='bg-gray-200 m-1'>
+                    </Input>
                     <Input
                         required
                         value={email}

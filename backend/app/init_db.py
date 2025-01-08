@@ -69,11 +69,11 @@ def get_connection_pg() -> Engine:
     """
     Returns a connection to the PostgreSQL database.
     """
-    username = config.USERNAME_POSTGRES
-    password = config.PASSWORD_POSTGRES
-    port = config.PORT_DB_PG
-    host = config.HOST_PG_RDS
-    database = config.DATABASE
+    username = config.USERNAME_DB_MAIN
+    password = config.PASSWORD_DB_MAIN
+    port = config.PORT_DB_MAIN_RDS
+    host = config.HOST_DB_MAIN_RDS
+    database = config.DB_MAIN
 
     try:
         connection_string = (

@@ -102,6 +102,7 @@ application.include_router(api_POST)
 
 # Run main to test locally on localhost:8000
 if __name__ == "__main__":
-    print(f"Running the FastAPI server locally on port {config.PORT_APP}")
+    print(f"Running the FastAPI server locally on port {
+          config.PORT_APP_LOCAL}")
     uvicorn.run("application:application",
-                host=config.HOST, port=config.PORT_APP)
+                host=config.HOST_APP_LOCAL, port=config.PORT_APP_LOCAL)

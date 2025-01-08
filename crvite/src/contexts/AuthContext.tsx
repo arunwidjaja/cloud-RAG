@@ -20,9 +20,9 @@ export const createUser = (id: string, email: string): User => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
 
-    const login = async (email: string, password: string) => {
+    const login = async (username: string, email: string, password: string) => {
         try {
-            const user_id = await start_login(email, password);
+            const user_id = await start_login(username, email, password);
             if (user_id) {
                 const user = createUser(user_id, email)
                 setUser(user);
@@ -36,9 +36,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const register = async(email: string, password: string): Promise<boolean> => {
+    const register = async(username: string, email: string, password: string): Promise<boolean> => {
         try {
-            const success = await start_register(email, password);
+            const success = await start_register(username, email, password);
             if (success) {
                 return true
             } else {

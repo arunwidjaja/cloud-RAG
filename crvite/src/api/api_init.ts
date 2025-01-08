@@ -56,10 +56,11 @@ export const start_session = async (): Promise<void> => {
     console.error('Error starting session: ', error);
   }
 }
-export const start_login = async (email: string, password: string): Promise<string> => {
+export const start_login = async (username: string, email: string, password: string): Promise<string> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/login`
     const data = {
+      'username': username,
       'email': email,
       'pwd': password
     };
@@ -99,10 +100,11 @@ export const start_logout = async (): Promise<boolean> => {
     return false;
   }
 }
-export const start_register = async (email: string, password: string): Promise<string> => {
+export const start_register = async (username: string, email: string, password: string): Promise<string> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/register`
     const data = {
+      'username': username,
       'email': email,
       'pwd': password
     };

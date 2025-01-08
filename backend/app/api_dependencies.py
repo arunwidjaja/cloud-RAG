@@ -29,16 +29,11 @@ class DatabaseManager:
             return None
         try:
             # Get the user's email
-            email = self.auth.query_user_data(
-                user_id=user_id, value="username")
+            email = self.auth.get_user_data(
+                uuid=user_id, value="username")
 
             # Initialize the user's id
             self.uuid = user_id
-
-            # Initialize user's DB
-            # self.db = init_db.init_db_chroma(
-            #     collection_name=utils.strip_email(email)
-            # )
 
             # Connect to the database.
             self.db_connection = init_db.get_connection_pg()

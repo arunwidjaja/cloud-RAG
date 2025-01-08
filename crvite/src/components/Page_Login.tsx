@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 
 function LoginPage() {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -14,7 +15,7 @@ function LoginPage() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await login(email, password);
+            await login(username, email, password);
         } catch (err) {
             console.log('Error occurred while logging in');
         }
@@ -35,6 +36,14 @@ function LoginPage() {
                 <div className='m-1'>Log in to your database</div>
                 <form
                     onSubmit={handleLogin}>
+                    <Input
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        type="text"
+                        placeholder="username"
+                        className='bg-gray-200 m-1'>
+                    </Input>
                     <Input
                         required
                         value={email}

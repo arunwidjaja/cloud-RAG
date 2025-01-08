@@ -39,6 +39,7 @@ class QueryModel(BaseModel):
 
 
 class CredentialsModel(BaseModel):
+    username: str
     email: str
     pwd: str
 

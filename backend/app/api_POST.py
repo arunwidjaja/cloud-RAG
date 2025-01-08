@@ -26,7 +26,11 @@ async def login(
 ):
     try:
         auth = authentication.UserAuth()
-        return auth.validate_user(username=credentials.email, password=credentials.pwd)
+        success = auth.validate_user(
+            username=credentials.username,
+            password=credentials.pwd
+        )
+        return success
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -42,6 +46,7 @@ async def register(
     try:
         auth = authentication.UserAuth()
         return auth.register_user(
+            username=credentials.username,
             email=credentials.email,
             password=credentials.pwd,
             background_tasks=background_tasks)
@@ -70,7 +75,7 @@ async def verify_otp(
 ) -> bool:
     try:
         auth = authentication.UserAuth()
-        return await auth.verify_email(
+        return await auth.verify_otp(
             email=otp.email,
             otp=otp.otp)
     except Exception as e:

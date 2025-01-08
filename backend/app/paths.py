@@ -36,9 +36,6 @@ class PathType(Enum):
     ARCHIVE = auto()
     ATTACHMENTS = auto()
     CHATS = auto()
-    DB_AUTH = auto()
-    DB_MAIN = auto()
-    DB_SECONDARY = auto()
     UPLOADS = auto()
 
 
@@ -57,18 +54,6 @@ class UserPathsWrapper:
     @property
     def CHATS(self) -> Path:
         return self._paths[PathType.CHATS]
-
-    @property
-    def DB_AUTH(self) -> Path:
-        return self._paths[PathType.DB_AUTH]
-
-    @property
-    def DB_MAIN(self) -> Path:
-        return self._paths[PathType.DB_MAIN]
-
-    @property
-    def DB_SECONDARY(self) -> Path:
-        return self._paths[PathType.DB_SECONDARY]
 
     @property
     def UPLOADS(self) -> Path:
@@ -90,18 +75,6 @@ class PathRegistry:
                 config.PATH_CHATS_LOCAL,
                 config.PATH_CHATS_EFS
             ),
-            PathType.DB_AUTH: PathConfig(
-                config.PATH_DB_AUTH_LOCAL,
-                config.PATH_DB_AUTH_EFS
-            ),
-            PathType.DB_MAIN: PathConfig(
-                config.PATH_DB_MAIN_LOCAL,
-                config.PATH_DB_MAIN_EFS
-            ),
-            PathType.DB_SECONDARY: PathConfig(
-                config.PATH_DB_SECONDARY_LOCAL,
-                config.PATH_DB_SECONDARY_EFS
-            ),
             PathType.UPLOADS: PathConfig(
                 config.PATH_UPLOADS_LOCAL,
                 config.PATH_UPLOADS_EFS
@@ -122,7 +95,7 @@ class PathRegistry:
         Checks if the current path has the word 'var' in it.
         AWS EFS paths start with 'var'.
         """
-        return StorageType.EFS if 'var' in str(config.CURRENT_PATH) else StorageType.LOCAL
+        return StorageType.EFS if 'var' in str(config.PATH_CURRENT) else StorageType.LOCAL
 
     def initialize_paths(self):
         """
@@ -139,11 +112,6 @@ class PathRegistry:
             if not os.path.exists(base_path):
                 os.makedirs(base_path)
 
-        print(f"Initializing authentication DB:")
-        auth_db = self._base_paths[PathType.DB_AUTH] / "users.db"
-        print(f"...{'/'.join(auth_db.parts[-3:])}")
-        auth_db.touch()
-
         self._user_paths = self._base_paths.copy()
 
     def set_user_paths(self, user_id: str):
@@ -154,31 +122,23 @@ class PathRegistry:
         self._user_paths = self._base_paths.copy()
 
         print("Initializing user's data paths:")
-        # Skip over database paths since they are shared among users
-        excluded_paths = {PathType.DB_AUTH,
-                          PathType.DB_MAIN,
-                          PathType.DB_SECONDARY}
         for path_type, base_path in self._base_paths.items():
-            if path_type not in excluded_paths:
-                user_path = base_path / user_id
-                self._user_paths[path_type] = user_path
-                os.makedirs(user_path, exist_ok=True)
-                print(f"...{'/'.join(user_path.parts[-3:])}")
+            user_path = base_path / user_id
+            self._user_paths[path_type] = user_path
+            os.makedirs(user_path, exist_ok=True)
+            print(f"...{'/'.join(user_path.parts[-3:])}")
 
     def delete_user_paths(self, user_id: str):
         """
         Deletes contents of user-specific paths.
         """
-        excluded_paths = {PathType.DB_AUTH,
-                          PathType.DB_MAIN,
-                          PathType.DB_SECONDARY}
         print("Deleting user data paths:")
         for path_type, base_path in self._base_paths.items():
-            if path_type not in excluded_paths:
-                user_path = base_path / user_id
-                if os.path.exists(user_path):
-                    print(f"...{'/'.join(user_path.parts[-3:])}")
-                    shutil.rmtree(user_path)
+            print(f"Checking {path_type} folder...")
+            user_path = base_path / user_id
+            if os.path.exists(user_path):
+                print(f"...{'/'.join(user_path.parts[-3:])}")
+                shutil.rmtree(user_path)
 
 
 # Global instance
