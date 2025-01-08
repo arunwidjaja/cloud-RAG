@@ -18,23 +18,12 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 
 ## Project Stack
 
-- Backend
-  - Python
-    - Langchain
-    - HuggingFace
-    - FastAPI
-- Frontend
-  - React, Vite
-  - TypeScript
-  - Tailwind CSS
-- Deployment
-  - AWS
-    - EB, EC2
-    - RDS
-  - Docker
-- Databases
-  - PostgreSQL
-  - pgvector
+| Frontend | [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#) [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff)](#) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#) [![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](#) [![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?logo=html5&logoColor=white)](#) |
+|:----------:|:-------------|
+| **Backend** | [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](#) [![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?logo=fastapi&logoColor=white)](#) [![GraphQL](https://img.shields.io/badge/GraphQL-E10098.svg?logo=graphql&logoColor=white)](#)|
+| **Database** | [![Postgres](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)](#) [![RDS](https://img.shields.io/badge/RDS-527FFF.svg?logo=amazonrds&logoColor=white)](#)||
+| **DevOps** | [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)](#) [![S3](https://img.shields.io/badge/S3-569A31.svg?logo=amazons3&logoColor=white)](#) [![EC2](https://img.shields.io/badge/EC2-FF9900.svg?logo=amazonec2&logoColor=white)](#) 
+
 
 ## Release Notes
 
