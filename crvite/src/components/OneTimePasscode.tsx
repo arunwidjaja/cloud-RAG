@@ -19,7 +19,7 @@ function OneTimePasscode({ email }: { email: string }) {
         setValue('')
         const success = await start_verify_otp(otp, email);
         if (success) {
-            alert("Your email have been verified! Please log in.")
+            alert("Your email has been verified! Please log in.")
         }
     }
     useEffect(() => {

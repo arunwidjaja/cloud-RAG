@@ -25,7 +25,7 @@ class UserAuth:
         # email server configuration
         self.smtp_server: str = config.SERVER_SMTP
         self.smtp_port: int = config.PORT_SMTP
-        self.smtp_username: str = config.USERNAMAE_SMTP
+        self.smtp_username: str = config.USERNAME_SMTP
         self.smtp_password: str = config.PASSWORD_SMTP
         self.otp_lifespan_minutes: int = config.OTP_LIFESPAN_MINUTES
 

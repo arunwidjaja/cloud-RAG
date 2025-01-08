@@ -115,7 +115,7 @@ Email Server Configuration
 # Email server configuration
 SERVER_SMTP = "mail.privateemail.com"
 PORT_SMTP = 587
-USERNAMAE_SMTP = "verification@ragbase.cloud"
+USERNAME_SMTP = "verification@ragbase.cloud"
 PASSWORD_SMTP = os.getenv("SMTP_PASSWORD", default="smtp_pwd")
 
 SEC_DESC_6 = """
