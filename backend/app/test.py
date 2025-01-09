@@ -1,12 +1,12 @@
-from api_dependencies import DatabaseManager
+from backend.app.database_manager import DatabaseManager
 
 import asyncio
 import pprint
 
 # Local Modules
-import db_collections
+import collection_utils
 import doc_ops
-import db_ops
+import database_operations
 import db_ops_utils
 
 
@@ -33,7 +33,7 @@ async def test_push():
     Pushes test documents to the database.
     """
     # Create the test collection
-    db_ops.create_collection(test_dbmg, test_coll_formatted[0])
+    database_operations.create_collection(test_dbmg, test_coll_formatted[0])
 
     # run doc pipeline on test documents
     docs = await doc_ops.load_documents(docs_path)
@@ -51,7 +51,8 @@ async def test_push():
     )
 
     # save to database
-    db_ops.add_chunks_to_collection(test_dbmg, chunks, test_coll_formatted[0])
+    database_operations.add_chunks_to_collection(
+        test_dbmg, chunks, test_coll_formatted[0])
 
 
 def test_get_file_metadata():

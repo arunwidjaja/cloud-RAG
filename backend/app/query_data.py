@@ -10,7 +10,7 @@ import json
 import openai
 
 # Local Modules
-from api_dependencies import DatabaseManager
+from database_manager import DatabaseManager
 from api_MODELS import ChatModel
 from db_collections import extract_user_collections
 
@@ -126,7 +126,7 @@ def search_database(query: str, dbm: DatabaseManager, collections: List[str]) ->
     coll_list = collections
     for coll_name in coll_list:
         print(f"Searching collection: {coll_name}")
-        collection = dbm.get_store(coll_name)
+        collection = dbm.get_collection(coll_name)
         aggregated_docs_partial = collection.similarity_search_with_relevance_scores(
             query=query,
             k=config.LLM_K

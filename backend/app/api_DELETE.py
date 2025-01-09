@@ -3,14 +3,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 import os
 
 # Local Modules
-from api_dependencies import DatabaseManager, get_db_instance
+from database_manager import DatabaseManager, get_db_instance
 from api_MODELS import *
-from db_collections import format_name
+from collection_utils import format_name
 from paths import get_paths, delete_user_paths
 
-import authentication
-import db_ops
-import doc_ops_utils
+import authentication_manager
+import database_operations
+import document_utils
 
 
 router = APIRouter()
@@ -22,7 +22,7 @@ async def delete_account(
     dbm: DatabaseManager = Depends(get_db_instance)
 ) -> bool:
     try:
-        auth = authentication.UserAuth()
+        auth = authentication_manager.AuthenticationManager()
         user_id = auth.validate_user(
             username=credentials.email,
             password=credentials.pwd
@@ -36,7 +36,7 @@ async def delete_account(
             # Delete user's collections
             user_cols = dbm.get_user_collections()
             for col in user_cols:
-                db_ops.delete_collection(dbm, col)
+                database_operations.delete_collection(dbm, col)
 
             # Delete user's data
             delete_user_paths(user_id)
@@ -85,7 +85,7 @@ async def delete_uploads(
         raise HTTPException(
             status_code=422, detail="Invalid or missing hashes parameter.")
     try:
-        deleted_files = doc_ops_utils.delete_uploads(hashes, is_attachment)
+        deleted_files = document_utils.delete_uploads(hashes, is_attachment)
         return deleted_files
     except Exception as e:
         raise e
@@ -108,7 +108,7 @@ async def delete_collection(
         formatted_collection = format_name(collection, uuid)[0]
 
         # Collection can only have one element in it
-        deleted_collection = db_ops.delete_collection(
+        deleted_collection = database_operations.delete_collection(
             dbm,
             collection_name=formatted_collection
         )
@@ -133,7 +133,7 @@ async def delete_files(
         uuid = dbm.get_uuid()
         formatted_collection = format_name(collection, uuid)[0]
 
-        deleted_files = db_ops.delete_files(
+        deleted_files = database_operations.delete_files(
             dbm,
             hashes,
             collection_name=formatted_collection

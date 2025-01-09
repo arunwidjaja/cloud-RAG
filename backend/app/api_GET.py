@@ -9,15 +9,15 @@ import os
 import zipfile
 
 # Local Modules
-from api_dependencies import DatabaseManager, get_db_instance
+from database_manager import DatabaseManager, get_db_instance
 from api_MODELS import *
-from db_collections import format_name, unformat_name
+from collection_utils import format_name, unformat_name
 from paths import get_paths
 from summarize import summarize_map_reduce
 
-import db_ops_utils
-import db_ops
-import doc_ops_utils
+import database_utils
+import database_operations
+import document_utils
 import utils
 
 
@@ -107,7 +107,7 @@ async def push_db(
         uuid = dbm.get_uuid()
         formatted_collection_name = format_name(collections, uuid)[0]
 
-        pushed_files = await db_ops.push_db(
+        pushed_files = await database_operations.push_db(
             dbm=dbm,
             collection=formatted_collection_name,
             user_id=uuid
@@ -214,7 +214,7 @@ async def get_db_files_metadata(
         uuid = dbm.get_uuid()
         formatted_collections = format_name(collections, uuid)
 
-        file_metadata = db_ops_utils.get_files_metadata(
+        file_metadata = database_utils.get_files_metadata(
             dbm=dbm,
             collection_names=formatted_collections
         )
@@ -235,7 +235,7 @@ async def get_uploads_metadata(
     print(f"Fetching metadata of {
           "attachments." if is_attachment else "uploads."}")
     try:
-        uploads_metadata = doc_ops_utils.get_uploads_metadata(is_attachment)
+        uploads_metadata = document_utils.get_uploads_metadata(is_attachment)
         return JSONResponse(content=uploads_metadata)
     except Exception as e:
         raise Exception(f"Exception occured when fetching uploads: {e}")

@@ -7,14 +7,14 @@ import os
 import shutil
 
 # Local Modules
-from api_dependencies import DatabaseManager, get_db_instance
+from database_manager import DatabaseManager, get_db_instance
 from api_MODELS import *
-from db_collections import format_name
+from collection_utils import format_name
 from paths import get_paths
 from query_data import stream_rag_response
 
-import authentication
-import db_ops
+import authentication_manager
+import database_operations
 import utils
 
 router = APIRouter()
@@ -25,7 +25,7 @@ async def login(
     credentials: CredentialsModel
 ):
     try:
-        auth = authentication.UserAuth()
+        auth = authentication_manager.AuthenticationManager()
         success = auth.validate_user(
             username=credentials.username,
             password=credentials.pwd
@@ -44,7 +44,7 @@ async def register(
     background_tasks: BackgroundTasks
 ):
     try:
-        auth = authentication.UserAuth()
+        auth = authentication_manager.AuthenticationManager()
         return auth.register_user(
             username=credentials.username,
             email=credentials.email,
@@ -60,7 +60,7 @@ async def register(
 @router.post("/resend_otp")
 async def resent_otp(email: str):
     try:
-        auth = authentication.UserAuth()
+        auth = authentication_manager.AuthenticationManager()
         auth.update_otp(email)
     except Exception as e:
         raise HTTPException(
@@ -74,7 +74,7 @@ async def verify_otp(
     otp: OTPModel
 ) -> bool:
     try:
-        auth = authentication.UserAuth()
+        auth = authentication_manager.AuthenticationManager()
         return await auth.verify_otp(
             email=otp.email,
             otp=otp.otp)
@@ -134,7 +134,7 @@ async def create_collection(
         # format collection name before creating it
         formatted_collection = format_name([col], uuid)[0]
 
-        collection = db_ops.create_collection(
+        collection = database_operations.create_collection(
             dbm=dbm,
             collection_name=formatted_collection,
             embedding_function=ef

@@ -10,11 +10,11 @@ from typing import List
 import asyncio
 
 # Local Modules
-from api_dependencies import DatabaseManager
+from database_manager import DatabaseManager
 from utils import async_timer
 
 import config
-import db_ops_utils
+import database_utils
 import prompt_templates
 
 
@@ -98,7 +98,7 @@ async def summarize_map_reduce(dbm: DatabaseManager, uuid: str, doc_list: str | 
     # .invoke() requires Documents, not raw text.
     documents: List[Document] = []
     for hash in doc_list:
-        doc_data = db_ops_utils.get_documents_and_metadatas_by_hash(
+        doc_data = database_utils.get_documents_and_metadatas_by_hash(
             dbm, hash)
 
         for i, doc in enumerate(doc_data[0]):

@@ -2,66 +2,52 @@
 from fastapi import Depends, HTTPException
 from langchain_postgres import PGVector
 from starlette.requests import Request
-from sqlalchemy import Engine, text
+from sqlalchemy import create_engine, Engine, text
 from typing import List
 
 # Local Modules
-from db_collections import format_name, extract_user_collections
+from collection_utils import extract_user_collections
+from get_embedding_function import get_embedding_function
 
-import authentication
-import init_db
-import utils
+import authentication_manager
+import config
 
 
 class DatabaseManager:
     def __init__(self):
-        self.auth = authentication.UserAuth()
+        self.auth = authentication_manager.AuthenticationManager()
         self.store = None
-        self.db_connection = None
+        self.db_connection = self.create_connection()
         self.uuid = None
         print("DatabaseManager Initialized")
 
-    def initialize_db(self, user_id: str) -> None:
+    def create_connection(self) -> Engine:
         """
-        Initializes the database for the given user
+        Returns a connection to the PostgreSQL database.
         """
-        if not user_id:
-            return None
+        username = config.USERNAME_DB_MAIN
+        password = config.PASSWORD_DB_MAIN
+        port = config.PORT_DB_MAIN_RDS
+        host = config.HOST_DB_MAIN_RDS
+        database = config.DB_MAIN
+
         try:
-            # Get the user's email
-            email = self.auth.get_user_data(
-                uuid=user_id, value="username")
-
-            # Initialize the user's id
-            self.uuid = user_id
-
-            # Connect to the database.
-            self.db_connection = init_db.get_connection_pg()
-
-            # Initialize a LangChain object with the default collection
-            # Default collection is based on the user's email
-            default_collection = format_name(
-                collections=[utils.strip_email(email)],
-                uuid=user_id)[0]
-
-            self.store = init_db.init_store_pgv(
-                collection_name=default_collection
+            connection_string = (
+                f"postgresql+psycopg2://"
+                f"{username}:"
+                f"{password}"
+                f"@{host}:"
+                f"{port}"
+                f"/{database}"
             )
-            return
+            engine = create_engine(connection_string)
+            return engine
         except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to initialize database: {str(e)}"
-            )
+            print(f"Error connecting to the PostgreSQL DB: {e}")
+            raise
 
     def get_connection(self) -> Engine:
-        if self.db_connection is not None:
-            return self.db_connection
-        else:
-            raise HTTPException(
-                status_code=500,
-                detail="DB connection not initialized!"
-            )
+        return self.db_connection
 
     def cleanup_current_connection(self) -> None:
         """
@@ -81,13 +67,17 @@ class DatabaseManager:
                 status_code=500, detail="Collection not initialized!")
         return self.store
 
-    def get_store(self, collection: str) -> PGVector:
+    def get_collection(self, collection: str, embedding_function: str = 'openai') -> PGVector:
         """
         Returns a LangChain instance pointing to the specified collection.
         """
         all_user_collections = self.get_user_collections()
         if collection in all_user_collections:
-            store = init_db.init_store_pgv(collection)
+            store = PGVector(
+                connection=self.db_connection,
+                embeddings=get_embedding_function(embedding_function),
+                collection_name=collection
+            )
             return store
         else:
             raise HTTPException(
@@ -122,19 +112,13 @@ class DatabaseManager:
         """
         user_cols: List[str]
         uuid = self.get_uuid()
-        if self.db_connection is not None:
-            with self.db_connection.connect() as connection:
-                cols = connection.execute(
-                    text("SELECT name FROM langchain_pg_collection;")
-                )
-                all_cols = [row[0] for row in cols]
-            user_cols = extract_user_collections(all_cols, uuid)
-            return user_cols
-        else:
-            raise HTTPException(
-                status_code=401,
-                detail="Not connected to DB yet."
+        with self.db_connection.connect() as connection:
+            cols = connection.execute(
+                text("SELECT name FROM langchain_pg_collection;")
             )
+            all_cols = [row[0] for row in cols]
+        user_cols = extract_user_collections(all_cols, uuid)
+        return user_cols
 
 
 async def get_current_user_id(request: Request) -> str:

@@ -5,7 +5,7 @@ from typing import Any, List, Tuple
 
 
 # Local Modules
-from api_dependencies import DatabaseManager
+from database_manager import DatabaseManager
 from custom_types import FileMetadata
 
 

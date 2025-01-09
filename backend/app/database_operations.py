@@ -6,13 +6,14 @@ from sqlalchemy import text
 from typing import List
 
 # Local Modules
-from api_dependencies import DatabaseManager
+from database_manager import DatabaseManager
 from get_embedding_function import get_embedding_function
 
 import config
-import db_ops_utils
-import doc_ops
-import doc_ops_utils
+import database_utils
+
+import document_pipeline
+import document_utils
 import utils
 
 
@@ -59,8 +60,8 @@ def delete_collection(dbm: DatabaseManager, collection_name: str) -> str:
     db_connection = dbm.get_connection()
 
     # Delete the collection's contents first.
-    store = dbm.get_store(collection_name)
-    ids = db_ops_utils.get_ids_in_collection(dbm, collection_name)
+    store = dbm.get_collection(collection_name)
+    ids = database_utils.get_ids_in_collection(dbm, collection_name)
     store.delete(
         ids=ids,
         collection_only=True
@@ -100,10 +101,10 @@ def add_chunks_to_collection(dbm: DatabaseManager, chunks: List[Document], colle
     chunk_counts: Counter[str] = Counter(
         [getattr(chunk, "metadata")["source"] for chunk in chunks])
 
-    collection = dbm.get_store(collection_name)
+    collection = dbm.get_collection(collection_name)
 
     # Get IDs of existing document chunks
-    existing_ids = db_ops_utils.get_ids_in_collection(dbm, collection_name)
+    existing_ids = database_utils.get_ids_in_collection(dbm, collection_name)
     print(f"Number of existing chunks in DB: {len(existing_ids)}")
 
     # Add documents that aren't already in the database (don't have a matching ID)
@@ -170,12 +171,12 @@ def delete_files(dbm: DatabaseManager, file_hash_list: List[str], collection_nam
         The list of file names that were deleted
     """
 
-    store = dbm.get_store(collection_name)
-    file_metadata = db_ops_utils.get_files_metadata(dbm, [collection_name])
+    store = dbm.get_collection(collection_name)
+    file_metadata = database_utils.get_files_metadata(dbm, [collection_name])
 
     deleted_files: List[str] = []
     for file_hash in file_hash_list:
-        target_hashes = db_ops_utils.get_ids_by_hash(dbm, file_hash)
+        target_hashes = database_utils.get_ids_by_hash(dbm, file_hash)
         if target_hashes:
             store.delete(target_hashes)
             deleted_files.append(file_hash)
@@ -202,9 +203,9 @@ async def push_db(dbm: DatabaseManager, collection: str, user_id: str) -> List[s
     Returns:
         a list of the pushed uploads
     """
-    chunks = await doc_ops.process_documents(collection, user_id)
+    chunks = await document_pipeline.process_documents(collection, user_id)
     documents_list = add_chunks_to_collection(dbm, chunks, collection)
-    doc_ops_utils.archive_all_uploads()
+    document_utils.archive_all_uploads()
     return documents_list
 
 

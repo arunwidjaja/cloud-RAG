@@ -6,17 +6,15 @@ from fastapi import BackgroundTasks
 from sqlalchemy import create_engine, Engine, text
 from sqlalchemy.orm import Session
 
-import base64
 import bcrypt
-import hashlib
-import random
 import smtplib
-import string
-
 import config
 
+# Local Modules
+from authentication_utils import generate_otp, generate_uuid
 
-class UserAuth:
+
+class AuthenticationManager:
     def __init__(self):
         """
         Initializes the User Authentication system.
@@ -31,7 +29,6 @@ class UserAuth:
         self.otp_lifespan_minutes: int = config.OTP_LIFESPAN_MINUTES
 
         # authentication db configuration
-        self.encoding: str = config.ENCODING
         self.db_username: str = config.USERNAME_DB_AUTH
         self.db_password: str = config.PASSWORD_DB_AUTH
         self.db_port: int = config.PORT_DB_AUTH_RDS
@@ -40,10 +37,10 @@ class UserAuth:
         self.db_table_users = config.TABLE_USERS
         self.db_table_verification = config.TABLE_VERIFICATION
 
-        self.db_connection = self.get_connection()
+        self.db_connection = self.create_connection()
         print("Authentication DB connection initialized.")
 
-    def get_connection(self) -> Engine:
+    def create_connection(self) -> Engine:
         """
         Gets the connection to the authentication database
 
@@ -67,79 +64,6 @@ class UserAuth:
             print(f"Error connecting to the Authentication DB: {e}")
             raise
 
-    def generate_otp(self, length: int = 6) -> str:
-        """
-        Generates a random OTP of specified length
-
-        Returns:
-            OTP string
-        """
-        otp = ''.join(random.choices(string.digits, k=length))
-        return otp
-
-    def generate_uuid(self, username: str, email: str) -> str:
-        """
-        Generates a UUID of specified length.
-        This is NOT compatible with PostgreSQL UUID type.
-        The UUID is always the same given the same username and email.
-
-        Args:
-            username: username
-            email: email
-
-        Returns:
-            UUID string
-        """
-        length = config.UUID_LENGTH
-
-        # strip and combined username and email
-        username_stripped = username.strip().lower()
-        email_stripped = email.strip().lower()
-        combined = f"{username_stripped}{email_stripped}"
-
-        # hash, make URL safe, and truncate to desired length
-        hash_obj = hashlib.sha256(combined.encode(self.encoding))
-        hash_b64 = base64.urlsafe_b64encode(
-            hash_obj.digest()).decode(self.encoding)
-        hash_b64 = hash_b64.rstrip('=')[:length]
-
-        uuid = hash_b64.ljust(length, '0')
-
-        return uuid
-
-    def get_user_data(self, uuid: str, value: str) -> str:
-        """
-        Get the requested value from the user table based on the id
-
-        Args:
-            uuid (str): The UUID to look up
-            value (str): The column name to retrieve
-
-        Returns:
-            str: The requested value
-
-        Raises:
-            ValueError: If the value (column) doesn't exist
-            Exception: If the user is not found or other database errors
-        """
-        # Fetches the requested data
-        query_get_data = text(f"""
-            SELECT {value}
-            FROM {self.db_table_users}
-            WHERE id = :uuid
-        """)
-        try:
-            with Session(self.db_connection) as session:
-                result = session.execute(query_get_data, {"uuid": uuid})
-                row = result.first()
-                if row is None:
-                    raise Exception(f"User with UUID {uuid} not found")
-                else:
-                    val: str = row[0]
-                    return val
-        except Exception as e:
-            raise Exception(f"Error retrieving user data: {str(e)}")
-
     def validate_user(self, username: str, password: str) -> str | None:
         """
         Validates user credentials.
@@ -154,6 +78,7 @@ class UserAuth:
 
         # Fetches UUID and hashed password
         print(f"Validating user: {username}...")
+        encoding = config.ENCODING
         query_get_creds = text(f"""
             SELECT id, pwd_hash
             FROM {self.db_table_users}
@@ -176,7 +101,7 @@ class UserAuth:
                 uuid, pwd_hash = row
                 print(f"Checking password against hash...")
                 is_valid = bcrypt.checkpw(
-                    password.encode(self.encoding),
+                    password.encode(encoding),
                     bytes(pwd_hash)
                 )
                 return uuid if is_valid else None
@@ -191,7 +116,7 @@ class UserAuth:
         Args:
             email: email
         """
-        otp = self.generate_otp()
+        otp = generate_otp()
         cur_time = datetime.now(timezone.utc)
         exp_time = timedelta(minutes=self.otp_lifespan_minutes)
         otp_expiry = cur_time + exp_time
@@ -304,13 +229,14 @@ class UserAuth:
             FALSE if they are not.
         """
         # Generates UUID and hash password
-        uuid = self.generate_uuid(username, email)
+        encoding = config.ENCODING
+        uuid = generate_uuid(username, email)
         password_hash = bcrypt.hashpw(
-            password.encode(self.encoding),
+            password.encode(encoding),
             bcrypt.gensalt(rounds=12)
         )
         # Generates an OTP
-        otp = self.generate_otp()
+        otp = generate_otp()
         otp_expiry = datetime.now(
             timezone.utc) + timedelta(minutes=self.otp_lifespan_minutes)
 
@@ -432,6 +358,39 @@ class UserAuth:
         except Exception as e:
             print(f"Error sending verification email: {e}")
             return False
+
+    def get_user_data(self, uuid: str, value: str) -> str:
+        """
+        Get the requested value from the user table based on the id
+
+        Args:
+            uuid (str): The UUID to look up
+            value (str): The column name to retrieve
+
+        Returns:
+            str: The requested value
+
+        Raises:
+            ValueError: If the value (column) doesn't exist
+            Exception: If the user is not found or other database errors
+        """
+        # Fetches the requested data
+        query_get_data = text(f"""
+            SELECT {value}
+            FROM {self.db_table_users}
+            WHERE id = :uuid
+        """)
+        try:
+            with Session(self.db_connection) as session:
+                result = session.execute(query_get_data, {"uuid": uuid})
+                row = result.first()
+                if row is None:
+                    raise Exception(f"User with UUID {uuid} not found")
+                else:
+                    val: str = row[0]
+                    return val
+        except Exception as e:
+            raise Exception(f"Error retrieving user data: {str(e)}")
 
 
 def main():
