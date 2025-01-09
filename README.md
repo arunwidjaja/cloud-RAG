@@ -27,7 +27,7 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 
 ## Release Notes
 
-<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/README_files/v0.6.PNG" />
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/assets/readme/v0.6.PNG" />
 
 ### 2025.01.03 - v0.6
 - Migration from ChromaDB -> PostgreSQL + pgvector
