@@ -22,6 +22,7 @@ class UserAuth:
         Initializes the User Authentication system.
         Connects to email server and authentication database.
         """
+        print("Initializing UserAuth...")
         # email server configuration
         self.smtp_server: str = config.SERVER_SMTP
         self.smtp_port: int = config.PORT_SMTP
@@ -40,7 +41,7 @@ class UserAuth:
         self.db_table_verification = config.TABLE_VERIFICATION
 
         self.db_connection = self.get_connection()
-        print("User Authentication DB initialized.")
+        print("Authentication DB connection initialized.")
 
     def get_connection(self) -> Engine:
         """
@@ -57,7 +58,9 @@ class UserAuth:
                 f"@{self.db_host}:"
                 f"{self.db_port}"
                 f"/{self.db}"
+                f"?sslmode=require&host={self.db_host}"
             )
+
             engine = create_engine(connection_string)
             return engine
         except Exception as e:
@@ -150,13 +153,16 @@ class UserAuth:
         """
 
         # Fetches UUID and hashed password
+        print(f"Validating user: {username}...")
         query_get_creds = text(f"""
             SELECT id, pwd_hash
             FROM {self.db_table_users}
             WHERE username = :username
         """)
         try:
+            print(f"Starting auth DB session for validation...")
             with Session(self.db_connection) as session:
+                print("Executing validation query...")
                 result = session.execute(
                     query_get_creds,
                     {"username": username}
@@ -164,16 +170,19 @@ class UserAuth:
                 # Returns none if username isn't found.
                 row = result.first()
                 if row is None:
+                    print(f"Couldn't find {username} in the DB.")
                     return None
 
                 uuid, pwd_hash = row
+                print(f"Checking password against hash...")
                 is_valid = bcrypt.checkpw(
                     password.encode(self.encoding),
                     bytes(pwd_hash)
                 )
                 return uuid if is_valid else None
-        except (ValueError, TypeError):
-            return None
+        except Exception as e:
+            print(str(e))
+            raise Exception(f"Error validating user: {e}")
 
     def update_otp(self, email: str) -> None:
         """

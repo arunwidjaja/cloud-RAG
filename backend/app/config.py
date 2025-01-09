@@ -116,7 +116,7 @@ Email Server Configuration
 SERVER_SMTP = "mail.privateemail.com"
 PORT_SMTP = 587
 USERNAME_SMTP = "verification@ragbase.cloud"
-PASSWORD_SMTP = os.getenv("SMTP_PASSWORD", default="smtp_pwd")
+PASSWORD_SMTP = os.getenv("PASSWORD_SMTP", default="smtp_pwd")
 
 SEC_DESC_6 = """
 =====================================
@@ -130,10 +130,10 @@ UUID_LENGTH = 16
 ENCODING = 'utf-8'
 
 DB_AUTH = "ragbase"
-HOST_DB_AUTH_RDS = os.getenv("AWS_RDS_ENDPOINT", default="0.0.0.0")
+HOST_DB_AUTH_RDS = os.getenv("HOST_DB_AUTH_RDS", default="0.0.0.0")
 PORT_DB_AUTH_RDS = 5432
-USERNAME_DB_AUTH = os.getenv("POSTGRES_USERNAME", default="postgres_user")
-PASSWORD_DB_AUTH = os.getenv("POSTGRES_PASSWORD", default="postgres_pwd")
+USERNAME_DB_AUTH = os.getenv("USERNAME_DB_AUTH", default="postgres_user")
+PASSWORD_DB_AUTH = os.getenv("PASSWORD_DB_AUTH", default="postgres_pwd")
 
 TABLE_USERS = "users"
 TABLE_VERIFICATION = "verification"
@@ -148,10 +148,10 @@ Embedding Database Configuration
 DB_MAIN = "ragbase"
 HOST_DB_MAIN_LOCAL = "localhost"
 PORT_DB_MAIN_LOCAL = 8001
-HOST_DB_MAIN_RDS = os.getenv("AWS_RDS_ENDPOINT", default="0.0.0.0")
+HOST_DB_MAIN_RDS = os.getenv("HOST_DB_MAIN_RDS", default="0.0.0.0")
 PORT_DB_MAIN_RDS = 5432
-USERNAME_DB_MAIN = os.getenv("POSTGRES_USERNAME", default="postgres_user")
-PASSWORD_DB_MAIN = os.getenv("POSTGRES_PASSWORD", default="postgres_pwd")
+USERNAME_DB_MAIN = os.getenv("USERNAME_DB_MAIN", default="postgres_user")
+PASSWORD_DB_MAIN = os.getenv("PASSWORD_DB_MAIN", default="postgres_pwd")
 
 SEC_DESC_8 = """
 =========================
