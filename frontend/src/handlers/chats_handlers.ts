@@ -16,8 +16,8 @@ export const update_chats = () => {
 export const save_chats = async() => {
     const current_chats = useChatsStore.getState().chats;
     for (const chat of current_chats) {
-        const success = await start_save_chat(chat);
-        if(success){console.log(`Chat saved: ${chat.id}`)}
+        const saved_chat = await start_save_chat(chat);
+        if(saved_chat){console.log(`Chat saved: ${saved_chat}`)}
     }
 }
 

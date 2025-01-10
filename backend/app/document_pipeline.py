@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, List
 
 # Local Modules
-from doc_ops_utils import get_token_count
+from document_utils import get_token_count
 from paths import get_paths
 
 import config

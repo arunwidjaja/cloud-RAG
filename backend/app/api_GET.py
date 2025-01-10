@@ -1,17 +1,16 @@
 from io import BytesIO
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
-from pathlib import Path
 from typing import List
 
-import json
 import os
 import zipfile
 
 # Local Modules
-from database_manager import DatabaseManager, get_db_instance
 from api_MODELS import *
+from chats import get_chats
 from collection_utils import format_name, unformat_name
+from database_manager import DatabaseManager, get_db_instance
 from paths import get_paths
 from summarize import summarize_map_reduce
 
@@ -180,23 +179,38 @@ async def get_collections(
             f"Exception occured when getting collections list: {e}")
 
 
+# @router.get("/saved_chats")
+# async def get_saved_chats(
+#     dbm: DatabaseManager = Depends(get_db_instance)
+# ):
+#     """
+#     Gets the JSON data containing all saved chats
+#     """
+#     print("API CALL: get_saved_chats")
+#     all_chats: List[ChatModel] = []
+#     try:
+#         chats_path = get_paths().CHATS
+#         for chat_name in os.listdir(chats_path):
+#             chat_path = Path(chats_path) / chat_name
+#             with open(chat_path, 'r') as chat:
+#                 json_content: ChatModel = json.load(chat)
+#                 all_chats.append(json_content)
+#         return all_chats
+#     except Exception as e:
+#         raise Exception(f"Exception occurred when getting chat history: {e}")
+
 @router.get("/saved_chats")
 async def get_saved_chats(
     dbm: DatabaseManager = Depends(get_db_instance)
-):
+) -> List[ChatModel]:
     """
     Gets the JSON data containing all saved chats
     """
     print("API CALL: get_saved_chats")
-    all_chats: List[ChatModel] = []
+
     try:
-        chats_path = get_paths().CHATS
-        for chat_name in os.listdir(chats_path):
-            chat_path = Path(chats_path) / chat_name
-            with open(chat_path, 'r') as chat:
-                json_content: ChatModel = json.load(chat)
-                all_chats.append(json_content)
-        return all_chats
+        chats = get_chats(dbm)
+        return chats
     except Exception as e:
         raise Exception(f"Exception occurred when getting chat history: {e}")
 

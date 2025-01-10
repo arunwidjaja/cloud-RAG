@@ -12,7 +12,7 @@ import openai
 # Local Modules
 from database_manager import DatabaseManager
 from api_MODELS import ChatModel
-from db_collections import extract_user_collections
+from collection_utils import extract_user_collections
 
 import config
 import prompt_templates

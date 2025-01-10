@@ -11,6 +11,7 @@ import smtplib
 import config
 
 # Local Modules
+from schema import User, Verification
 from authentication_utils import generate_otp, generate_uuid
 
 
@@ -389,6 +390,35 @@ class AuthenticationManager:
                 else:
                     val: str = row[0]
                     return val
+        except Exception as e:
+            raise Exception(f"Error retrieving user data: {str(e)}")
+
+    def get_user_data_2(self, uuid: str, value: str) -> str:
+        """
+        Get the requested value from the user table based on the id using SQLAlchemy ORM
+        Args:
+            uuid (str): The UUID to look up
+            value (str): The column name to retrieve
+        Returns:
+            str: The requested value
+        Raises:
+            ValueError: If the value (column) doesn't exist
+            Exception: If the user is not found or other database errors
+        """
+        try:
+            # Verify that the requested column exists in the User model
+            if not hasattr(User, value):
+                raise ValueError(
+                    f"Column '{value}' does not exist in User table")
+
+            with Session(self.db_connection) as session:
+                user = session.query(User).filter(User.id == uuid).first()
+
+                if user is None:
+                    raise Exception(f"User with UUID {uuid} not found")
+
+                val: str = getattr(user, value)
+                return val
         except Exception as e:
             raise Exception(f"Error retrieving user data: {str(e)}")
 

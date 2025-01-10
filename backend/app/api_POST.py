@@ -2,18 +2,18 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 
-import json
 import os
 import shutil
 
 # Local Modules
-from database_manager import DatabaseManager, get_db_instance
 from api_MODELS import *
+from database_manager import DatabaseManager, get_db_instance
 from collection_utils import format_name
 from paths import get_paths
 from query_data import stream_rag_response
 
 import authentication_manager
+import chats
 import database_operations
 import utils
 
@@ -85,31 +85,45 @@ async def verify_otp(
         )
 
 
+# @router.post("/save_chat")
+# async def save_chat(
+#     chat: ChatModel,
+#     dbm: DatabaseManager = Depends(get_db_instance)
+# ):
+#     try:
+#         chats_path = get_paths().CHATS
+
+#         # Create the file path using the chat ID
+#         file_path = chats_path / f"{chat.id}.json"
+
+#         # Convert the chat object to JSON and save it
+#         with open(file_path, "w", encoding="utf-8") as f:
+#             json.dump(
+#                 chat.model_dump(),
+#                 f,
+#                 ensure_ascii=False,
+#                 indent=2
+#             )
+
+#         return {
+#             "status": "success",
+#             "message": f"Chat saved successfully with ID: {chat.id}",
+#         }
+
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"Failed to save chat: {str(e)}"
+#         )
+
 @router.post("/save_chat")
 async def save_chat(
     chat: ChatModel,
     dbm: DatabaseManager = Depends(get_db_instance)
-):
+) -> str:
     try:
-        chats_path = get_paths().CHATS
-
-        # Create the file path using the chat ID
-        file_path = chats_path / f"{chat.id}.json"
-
-        # Convert the chat object to JSON and save it
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(
-                chat.model_dump(),
-                f,
-                ensure_ascii=False,
-                indent=2
-            )
-
-        return {
-            "status": "success",
-            "message": f"Chat saved successfully with ID: {chat.id}",
-        }
-
+        saved_chat = chats.save_chat(dbm, chat)
+        return saved_chat
     except Exception as e:
         raise HTTPException(
             status_code=500,

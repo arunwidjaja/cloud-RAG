@@ -14,11 +14,17 @@ import config
 
 
 class DatabaseManager:
+    """
+    Class for managing the connection to the database.
+    Database currently contains embeddings, user chats, and authentication.
+    Authentication is split into a different class even though it's the same DB.
+    This is in case authentication gets moved to a different database later.
+    """
+
     def __init__(self):
         self.auth = authentication_manager.AuthenticationManager()
-        self.store = None
         self.db_connection = self.create_connection()
-        self.uuid = None
+        self.uuid = ""
         print("DatabaseManager Initialized")
 
     def create_connection(self) -> Engine:
@@ -43,8 +49,14 @@ class DatabaseManager:
             engine = create_engine(connection_string)
             return engine
         except Exception as e:
-            print(f"Error connecting to the PostgreSQL DB: {e}")
-            raise
+            print(f"Error connecting to the vector database: {e}")
+            raise HTTPException(
+                status_code=404,
+                detail="Couldn't connect to the vector database."
+            )
+
+    def set_uuid(self, uuid: str) -> None:
+        self.uuid = uuid
 
     def get_connection(self) -> Engine:
         return self.db_connection
@@ -53,19 +65,10 @@ class DatabaseManager:
         """
         Cleans the current database connection
         """
-        if self.store is not None:
-            self.store = None
-        self.uuid = None
+        self.db_connection.dispose()
+        self.uuid = ""
+        self.auth = None
         print("Database connection cleaned up")
-
-    def get_current_store(self) -> PGVector:
-        """
-        Returns a LangChain instance pointing to the current collection.
-        """
-        if self.store is None:
-            raise HTTPException(
-                status_code=500, detail="Collection not initialized!")
-        return self.store
 
     def get_collection(self, collection: str, embedding_function: str = 'openai') -> PGVector:
         """
@@ -101,7 +104,7 @@ class DatabaseManager:
         """
         Return the user's uuid.
         """
-        if self.uuid is None:
+        if not self.uuid:
             raise HTTPException(
                 status_code=500, detail="User not initialized")
         return self.uuid

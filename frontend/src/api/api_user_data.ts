@@ -1,7 +1,7 @@
 import { current_user_id, start_logout } from "./api_init";
 import { Chat } from "@/types/types";
 
-export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
+export const start_save_chat = async (current_chat: Chat): Promise<string> => {
   const chat = JSON.stringify(current_chat)
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/save_chat`
@@ -15,11 +15,11 @@ export const start_save_chat = async (current_chat: Chat): Promise<boolean> => {
     });
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
-      return true
+      return await response.json();
     }
   } catch (error) {
     console.error('Error saving chat: ', error);
-    return false
+    return ""
   }
 }
 export const start_delete_chat = async (chat_id: string): Promise<boolean> => {

@@ -55,8 +55,8 @@ async def start_session(request: StartSessionModel, request2: Request):
     """
     user_id = request.user_id
     init_db.init_paths(user_id)
-    db_manager = request2.app.state.db_manager
-    db_manager.initialize_db(user_id)
+    db_manager: DatabaseManager = request2.app.state.db_manager
+    db_manager.set_uuid(user_id)
     return {"status": "success", "user_id": request.user_id}
 
 
@@ -66,7 +66,7 @@ async def logout(request: Request):
     Handles user logout by cleaning up the database connection
     """
     try:
-        db_manager = request.app.state.db_manager
+        db_manager: DatabaseManager = request.app.state.db_manager
         db_manager.cleanup_current_connection()
         # return {"status": "success"}
         return True
