@@ -17,7 +17,7 @@ import document_utils
 import utils
 
 
-def create_collection(dbm: DatabaseManager, collection_name: str, embedding_function: str = 'openai') -> str:
+def create_collection(dbm: DatabaseManager, collection_name: str, embedding_function: str = config.DEFAULT_EMBEDDING) -> str:
     """
     Creates a new collection in the DB.
 

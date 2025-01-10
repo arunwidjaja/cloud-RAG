@@ -1,19 +1,12 @@
 # External Modules
 from datetime import datetime
-from enum import Enum
 from fastapi import HTTPException
 from typing import Dict, List
 
 import asyncio
 
 # Local Modules
-
-
-class ProcessingStatus(Enum):
-    PENDING = "pending"
-    PROCESSING = "processing"
-    COMPLETED = "completed"
-    FAILED = "failed"
+from custom_types import ProcessingStatus
 
 
 class DocumentProcessor:
@@ -24,6 +17,9 @@ class DocumentProcessor:
     async def process_document(self, doc_id: str, file_content: bytes):
         """
         Process a single document.
+
+        Args:
+            doc_id: A temporary ID only used to track the document during a single session.
         """
         try:
             self.processing_status[doc_id] = ProcessingStatus.PROCESSING

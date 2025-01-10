@@ -7,6 +7,7 @@ from typing import List
 
 # Local Modules
 from collection_utils import extract_user_collections
+from custom_types import ReservedCollections
 from get_embedding_function import get_embedding_function
 
 import authentication_manager
@@ -55,8 +56,14 @@ class DatabaseManager:
                 detail="Couldn't connect to the vector database."
             )
 
-    def set_uuid(self, uuid: str) -> None:
+    def init_user(self, uuid: str) -> None:
+        """Assigns UUID and creates attachments collection"""
         self.uuid = uuid
+        PGVector(
+            connection=self.db_connection,
+            embeddings=get_embedding_function(config.DEFAULT_EMBEDDING),
+            collection_name=str(ReservedCollections.ATTACHMENTS)
+        )
 
     def get_connection(self) -> Engine:
         return self.db_connection
@@ -70,7 +77,7 @@ class DatabaseManager:
         self.auth = None
         print("Database connection cleaned up")
 
-    def get_collection(self, collection: str, embedding_function: str = 'openai') -> PGVector:
+    def get_collection(self, collection: str, embedding_function: str = config.DEFAULT_EMBEDDING) -> PGVector:
         """
         Returns a LangChain instance pointing to the specified collection.
         """

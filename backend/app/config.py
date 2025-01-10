@@ -4,6 +4,9 @@ from pathlib import Path
 
 import os
 
+# Local Modules
+import custom_types
+
 SEC_DESC_START = """
 __________________________________________________________
 
@@ -71,7 +74,8 @@ Vector Database Constants
 =========================
 """
 
-DEFAULT_COLLECTION_NAME = "CloudRag"
+DEFAULT_EMBEDDING = str(custom_types.Embeddings.OPENAI)
+
 DEFAULT_USER_ID = "0"
 CHUNK_SIZE = 450
 CHUNK_OVERLAP = 100

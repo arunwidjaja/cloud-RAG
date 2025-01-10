@@ -2,6 +2,7 @@
 from typing import List
 
 # Local Modules
+from custom_types import ReservedCollections
 import config
 import re
 
@@ -25,6 +26,8 @@ def format_name(collections: List[str], uuid: str) -> List[str]:
     """
     Formats a list of collection names by adding a UUID to it.
 
+    This skips over names that are already formatted or are reserved names.
+
     Args:
         collections: The list of collection names to format.
         uuid: The UUID to format collections with.
@@ -37,7 +40,12 @@ def format_name(collections: List[str], uuid: str) -> List[str]:
     """
     formatted_collections: List[str] = []
     for col in collections:
-        if not is_formatted(col):
+        # Check for special cases
+        reserved = col in [name.value for name in ReservedCollections]
+        formatted = is_formatted(col)
+
+        # Format name
+        if not formatted and not reserved:
             col_f = f"u__{uuid}_{col}"
             formatted_collections.append(col_f)
         else:

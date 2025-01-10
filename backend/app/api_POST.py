@@ -175,7 +175,6 @@ async def upload_documents(
 
         try:
             # Save the file to the specified directory
-            print(f"Copying {file} to {file_path}")
             with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
             saved_files.append(utils.extract_file_name(file_path))

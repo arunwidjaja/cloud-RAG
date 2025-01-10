@@ -56,7 +56,7 @@ async def start_session(request: StartSessionModel, request2: Request):
     user_id = request.user_id
     init_db.init_paths(user_id)
     db_manager: DatabaseManager = request2.app.state.db_manager
-    db_manager.set_uuid(user_id)
+    db_manager.init_user(user_id)
     return {"status": "success", "user_id": request.user_id}
 
 
