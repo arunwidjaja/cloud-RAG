@@ -1,5 +1,5 @@
 # External Modules
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 
 import os
@@ -154,6 +154,7 @@ async def stream_query(
 @router.post("/upload_documents")
 async def upload_documents(
     files: List[UploadFile] = File(...),
+    file_ids: List[str] = Form(...),
     is_attachment: bool = Query(False),
     dbm: DatabaseManager = Depends(get_db_instance)
 ):
@@ -161,7 +162,8 @@ async def upload_documents(
     Uploads files to user's data folders.
     is_attachment determines whether to send them to uploads or attachments folder.
     """
-    print(f"Files received:\n{[(file.filename) for file in files]}")
+    for file, id in zip(files, file_ids):
+        print(f"Received file: {file.filename}: {id}")
     print(f"Uploading documents as {
           "attachments." if is_attachment else "uploads."}")
     saved_files: List[str] = []

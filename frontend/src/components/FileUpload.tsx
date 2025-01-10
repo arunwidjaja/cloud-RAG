@@ -16,6 +16,9 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
     const internalRef = useRef<HTMLInputElement>(null);
     const upload_window = (forwardedRef as React.RefObject<HTMLInputElement>) || internalRef;
 
+    // Generates a temporary file ID for tracking file progress
+    const generate_id = () => `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const accept_uploads = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
 
@@ -37,6 +40,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append('files', files[i]);
+            formData.append('file_ids', generate_id())
         }
         try {
             const uploaded_files = await start_upload(formData, is_attachment);
@@ -47,7 +51,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
                 upload_window.current.value = '';
             }
             if (!is_attachment) { refresh_uploads() };
-            if (is_attachment) {refresh_attachments() };
+            if (is_attachment) { refresh_attachments() };
         } catch (error) {
             console.error('Error upload files: ', error);
         }
