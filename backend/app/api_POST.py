@@ -85,37 +85,6 @@ async def verify_otp(
         )
 
 
-# @router.post("/save_chat")
-# async def save_chat(
-#     chat: ChatModel,
-#     dbm: DatabaseManager = Depends(get_db_instance)
-# ):
-#     try:
-#         chats_path = get_paths().CHATS
-
-#         # Create the file path using the chat ID
-#         file_path = chats_path / f"{chat.id}.json"
-
-#         # Convert the chat object to JSON and save it
-#         with open(file_path, "w", encoding="utf-8") as f:
-#             json.dump(
-#                 chat.model_dump(),
-#                 f,
-#                 ensure_ascii=False,
-#                 indent=2
-#             )
-
-#         return {
-#             "status": "success",
-#             "message": f"Chat saved successfully with ID: {chat.id}",
-#         }
-
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=500,
-#             detail=f"Failed to save chat: {str(e)}"
-#         )
-
 @router.post("/save_chat")
 async def save_chat(
     chat: ChatModel,

@@ -9,11 +9,11 @@ import { MessageCirclePlus, Trash2 } from 'lucide-react';
 import { set_messages } from '@/handlers/message_handlers';
 
 export const handle_delete_chat = async (chat_id: string) => {
-    const success = await start_delete_chat(chat_id);
-    if (success) {
+    const deleted_chat = await start_delete_chat(chat_id);
+    if (deleted_chat) {
         refresh_chats();
         start_new_chat();
-        add_log("Deleted chat: " + chat_id)
+        add_log("Deleted chat: " + deleted_chat)
 
     }
     else { add_log('Unable to delete chat') }

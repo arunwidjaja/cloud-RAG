@@ -22,7 +22,7 @@ export const start_save_chat = async (current_chat: Chat): Promise<string> => {
     return ""
   }
 }
-export const start_delete_chat = async (chat_id: string): Promise<boolean> => {
+export const start_delete_chat = async (chat_id: string): Promise<string> => {
   try {
     const query = `chat_id=${encodeURIComponent(chat_id)}`;
     const url = `${import.meta.env.VITE_API_BASE_URL}/delete_chat?${query}`
@@ -35,11 +35,11 @@ export const start_delete_chat = async (chat_id: string): Promise<boolean> => {
     })
     if (!response.ok) { throw new Error('Network response was not ok'); }
     else {
-      return true
+      return await response.json()
     }
   } catch (error) {
     console.error('Error deleting chats: ', error);
-    return false
+    return ""
   }
 }
 export const fetch_saved_chats = async (): Promise<Chat[]> => {

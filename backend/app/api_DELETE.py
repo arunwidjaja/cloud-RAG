@@ -1,14 +1,14 @@
 # External Modules
 from fastapi import APIRouter, Depends, HTTPException, Query
-import os
 
 # Local Modules
-from database_manager import DatabaseManager, get_db_instance
 from api_MODELS import *
 from collection_utils import format_name
-from paths import get_paths, delete_user_paths
+from database_manager import DatabaseManager, get_db_instance
+from paths import delete_user_paths
 
 import authentication_manager
+import chats
 import database_operations
 import document_utils
 
@@ -54,22 +54,15 @@ async def delete_account(
 async def delete_chat(
     chat_id: str = Query(...),
     dbm: DatabaseManager = Depends(get_db_instance)
-) -> bool:
+) -> str:
     """
     Deletes stored chats
     """
-    chats_path = get_paths().CHATS
-    chat_path = chats_path / f"{chat_id}.json"
-
-    if not os.path.exists(chat_path):
-        return False
     try:
-        if os.path.isfile(chat_path):
-            os.remove(chat_path)
-            return True
+        deleted_chat = chats.delete_chat(dbm, chat_id)
+        return deleted_chat
     except Exception as e:
         raise e
-    return False
 
 
 @router.delete("/delete_uploads")

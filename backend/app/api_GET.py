@@ -179,26 +179,6 @@ async def get_collections(
             f"Exception occured when getting collections list: {e}")
 
 
-# @router.get("/saved_chats")
-# async def get_saved_chats(
-#     dbm: DatabaseManager = Depends(get_db_instance)
-# ):
-#     """
-#     Gets the JSON data containing all saved chats
-#     """
-#     print("API CALL: get_saved_chats")
-#     all_chats: List[ChatModel] = []
-#     try:
-#         chats_path = get_paths().CHATS
-#         for chat_name in os.listdir(chats_path):
-#             chat_path = Path(chats_path) / chat_name
-#             with open(chat_path, 'r') as chat:
-#                 json_content: ChatModel = json.load(chat)
-#                 all_chats.append(json_content)
-#         return all_chats
-#     except Exception as e:
-#         raise Exception(f"Exception occurred when getting chat history: {e}")
-
 @router.get("/saved_chats")
 async def get_saved_chats(
     dbm: DatabaseManager = Depends(get_db_instance)

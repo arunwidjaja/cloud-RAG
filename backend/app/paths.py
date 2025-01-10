@@ -35,7 +35,6 @@ class PathConfig:
 class PathType(Enum):
     ARCHIVE = auto()
     ATTACHMENTS = auto()
-    CHATS = auto()
     UPLOADS = auto()
 
 
@@ -52,10 +51,6 @@ class UserPathsWrapper:
         return self._paths[PathType.ATTACHMENTS]
 
     @property
-    def CHATS(self) -> Path:
-        return self._paths[PathType.CHATS]
-
-    @property
     def UPLOADS(self) -> Path:
         return self._paths[PathType.UPLOADS]
 
@@ -70,10 +65,6 @@ class PathRegistry:
             PathType.ATTACHMENTS: PathConfig(
                 config.PATH_ATTACHMENTS_LOCAL,
                 config.PATH_ATTACHMENTS_EFS
-            ),
-            PathType.CHATS: PathConfig(
-                config.PATH_CHATS_LOCAL,
-                config.PATH_CHATS_EFS
             ),
             PathType.UPLOADS: PathConfig(
                 config.PATH_UPLOADS_LOCAL,
