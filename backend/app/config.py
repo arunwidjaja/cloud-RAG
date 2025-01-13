@@ -74,7 +74,7 @@ Vector Database Constants
 =========================
 """
 
-DEFAULT_EMBEDDING = str(custom_types.Embeddings.OPENAI)
+DEFAULT_EMBEDDING = str(custom_types.Embeddings.OPENAI.value)
 
 DEFAULT_USER_ID = "0"
 CHUNK_SIZE = 450

@@ -1,20 +1,40 @@
+import React from 'react';
 import { forwardRef, useRef, ChangeEvent, ForwardedRef } from "react";
+
+// Handlers
 import { refresh_attachments, refresh_uploads } from "../handlers/file_handlers";
 import { add_log } from "../handlers/log_handlers";
-import React from 'react';
+
+// API
 import { start_upload } from "@/api/api_files";
+
+// Hooks
+import { use_current_collection } from '@/hooks/hooks_database';
 
 type FileUploadWindowProps = {
     // Flag to differentiate between query attachments and files meant to be upload to DB
     is_attachment?: boolean;
 };
 
-export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowProps>((
-    { is_attachment = false },
+export const FileUploadWindow = forwardRef<
+    HTMLInputElement,
+    FileUploadWindowProps
+>((
+    {
+        is_attachment = false,
+    },
     forwardedRef: ForwardedRef<HTMLInputElement>
 ) => {
     const internalRef = useRef<HTMLInputElement>(null);
     const upload_window = (forwardedRef as React.RefObject<HTMLInputElement>) || internalRef;
+    let target_collection: string;
+
+    if (is_attachment) {
+        target_collection = "attachments";
+    } else {
+        target_collection = use_current_collection();
+    }
+
 
     // Generates a temporary file ID for tracking file progress
     const generate_id = () => `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -36,17 +56,22 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
                 return;
             }
         }
-        // Adds files to FormData
+        // Adds files and metadata to FormData
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append('files', files[i]);
             formData.append('file_ids', generate_id())
+            formData.append('collection', target_collection)
         }
         try {
             const uploaded_files = await start_upload(formData, is_attachment);
-            uploaded_files.forEach((uploaded_file) => {
-                add_log(`${is_attachment ? "Attached" : "Uploaded"} File: ` + uploaded_file);
-            })
+            uploaded_files.forEach(
+                (uploaded_file) => {
+                    add_log(`${is_attachment ? "Attached" : "Uploaded"} File: ` + uploaded_file);
+                }
+            )
+
+            // Resets the uploads after they are uploaded.
             if (upload_window.current) {
                 upload_window.current.value = '';
             }
@@ -60,7 +85,7 @@ export const FileUploadWindow = forwardRef<HTMLInputElement, FileUploadWindowPro
     return (
         <input
             type="file"
-            ref={forwardedRef}  // Use the original forwardedRef here
+            ref={forwardedRef}
             onChange={accept_uploads}
             style={{ display: 'none' }}
             multiple

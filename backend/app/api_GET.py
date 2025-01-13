@@ -15,7 +15,6 @@ from paths import get_paths
 from summarize import summarize_map_reduce
 
 import database_utils
-import database_operations
 import document_utils
 import utils
 
@@ -90,30 +89,29 @@ async def download_files(
         raise Exception(f"Exception occurred when downloading files: {e}")
 
 
-@router.get("/initiate_push_to_db")
-async def push_db(
-    collections: List[str] = Query(...),
-    dbm: DatabaseManager = Depends(get_db_instance)
-) -> List[str]:
-    """
-    Updates the database with all the uploaded documents
-    """
-    print("API CALL: push_files_to_database")
-    if not collections or len(collections) != 1:
-        raise HTTPException(
-            status_code=422, detail="Invalid or missing collection parameter.")
-    try:
-        uuid = dbm.get_uuid()
-        formatted_collection_name = format_name(collections, uuid)[0]
+# @router.get("/initiate_push_to_db")
+# async def push_db(
+#     collections: List[str] = Query(...),
+#     dbm: DatabaseManager = Depends(get_db_instance)
+# ) -> List[str]:
+#     """
+#     Updates the database with all the uploaded documents
+#     """
+#     print("API CALL: push_files_to_database")
+#     if not collections or len(collections) != 1:
+#         raise HTTPException(
+#             status_code=422, detail="Invalid or missing collection parameter.")
+#     try:
+#         uuid = dbm.get_uuid()
+#         formatted_collection_name = format_name(collections, uuid)[0]
 
-        pushed_files = await database_operations.push_db(
-            dbm=dbm,
-            collection=formatted_collection_name,
-            user_id=uuid
-        )
-        return pushed_files
-    except Exception as e:
-        raise Exception(f"Exception occured when pushing files: {e}")
+#         pushed_files = await database_operations.push_db(
+#             dbm=dbm,
+#             collection=formatted_collection_name,
+#         )
+#         return pushed_files
+#     except Exception as e:
+#         raise Exception(f"Exception occured when pushing files: {e}")
 
 
 @router.get("/summary")

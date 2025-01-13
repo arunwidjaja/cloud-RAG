@@ -1,13 +1,16 @@
 # External Modules
+from asyncio import Task
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 
+import asyncio
 import os
 import shutil
 
 # Local Modules
 from api_MODELS import *
 from database_manager import DatabaseManager, get_db_instance
+from document_processor import DocumentHandler, get_document_handler
 from collection_utils import format_name
 from paths import get_paths
 from query_data import stream_rag_response
@@ -15,7 +18,6 @@ from query_data import stream_rag_response
 import authentication_manager
 import chats
 import database_operations
-import utils
 
 router = APIRouter()
 
@@ -153,34 +155,50 @@ async def stream_query(
 
 @router.post("/upload_documents")
 async def upload_documents(
-    files: List[UploadFile] = File(...),
-    file_ids: List[str] = Form(...),
+    files: List[UploadFile] = File(...),  # List of files uploaded by the user
+    file_ids: List[str] = Form(...),  # List of temporary file IDs for tracking
+    collection: str = Form(...),  # Collection to push to
     is_attachment: bool = Query(False),
-    dbm: DatabaseManager = Depends(get_db_instance)
-):
+    dbm: DatabaseManager = Depends(get_db_instance),
+    doc_handler: DocumentHandler = Depends(get_document_handler)
+) -> List[str]:
     """
     Uploads files to user's data folders.
     is_attachment determines whether to send them to uploads or attachments folder.
     """
+    tasks: List[Task[str]] = []
+
+    uuid = dbm.get_uuid()
+    coll = format_name([collection], uuid)[0]
+
+    if is_attachment:
+        uploads_path = get_paths().ATTACHMENTS
+        print("Uploading docs as uploads.")
+    else:
+        uploads_path = get_paths().UPLOADS
+        print("Uploading docs as attachments.")
+
     for file, id in zip(files, file_ids):
-        print(f"Received file: {file.filename}: {id}")
-    print(f"Uploading documents as {
-          "attachments." if is_attachment else "uploads."}")
-    saved_files: List[str] = []
-    uploads_path = (get_paths().ATTACHMENTS
-                    if is_attachment
-                    else
-                    get_paths().UPLOADS)
+        print(f"Processing file {file.filename}: {id}")
 
-    for file in files:
+        # Save file to disk
         file_path = os.path.join(str(uploads_path), str(file.filename))
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-        try:
-            # Save the file to the specified directory
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-            saved_files.append(utils.extract_file_name(file_path))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to upload {
-                                file.filename}: {str(e)}")
-    return saved_files
+        # Add file to async job
+        task = asyncio.create_task(
+            doc_handler.process_document(
+                dbm=dbm,
+                collection=coll,
+                file_path=file_path,
+                file_id=id
+            )
+        )
+        tasks.append(task)
+
+    # Process files concurrently
+    processed_files = await asyncio.gather(*tasks)
+
+    print(f"All files processed!")
+    return processed_files

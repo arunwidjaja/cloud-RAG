@@ -62,7 +62,7 @@ class DatabaseManager:
         PGVector(
             connection=self.db_connection,
             embeddings=get_embedding_function(config.DEFAULT_EMBEDDING),
-            collection_name=str(ReservedCollections.ATTACHMENTS)
+            collection_name=str(ReservedCollections.ATTACHMENTS.value)
         )
 
     def get_connection(self) -> Engine:

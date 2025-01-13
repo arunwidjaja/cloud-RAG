@@ -21,7 +21,9 @@ import { refresh_attachments } from '@/handlers/file_handlers';
 import { Attachment } from './Attachment';
 
 const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): void => {
-    if (attachmentRef && attachmentRef.current) { attachmentRef.current.click(); }
+    if (attachmentRef && attachmentRef.current) {
+        attachmentRef.current.click();
+    }
 }
 
 interface TextInputProps {
