@@ -16,13 +16,25 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 3. LLM performance can be tweaked by configuring parameters in <code>/app/config.py</code> and templates in <code>/app/prompt_templates.py</code>
 
 
-## Project Stack
+## Technical Stack
 
 | Frontend | [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#) [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff)](#) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#) [![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](#) [![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?logo=html5&logoColor=white)](#) |
 |:----------:|:-------------|
 | **Backend** | [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#) [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](#) [![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?logo=fastapi&logoColor=white)](#) [![GraphQL](https://img.shields.io/badge/GraphQL-E10098.svg?logo=graphql&logoColor=white)](#)|
 | **Database** | [![Postgres](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)](#) [![RDS](https://img.shields.io/badge/RDS-527FFF.svg?logo=amazonrds&logoColor=white)](#)||
 | **DevOps** | [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)](#) [![S3](https://img.shields.io/badge/S3-569A31.svg?logo=amazons3&logoColor=white)](#) [![EC2](https://img.shields.io/badge/EC2-FF9900.svg?logo=amazonec2&logoColor=white)](#) 
+
+## Announcements
+
+### 2025.01.15
+
+RAGbase is officially part of AWS Startups! The Founders program will provide funding for service usage across all AWS platforms.
+
+Hardware and cost limitations are one of the biggest obstacles in deploying new capabilities.
+
+Several exciting features in the development pipeline that will greatly benefit from this partnership include image embedding, document annotation, and migration of user data to a NoSQL platform for greater flexibility.
+
+Keep an eye out for RAGbase on Startup Showcase! The page will be launching soon.
 
 
 ## Release Notes
