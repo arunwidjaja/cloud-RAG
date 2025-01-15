@@ -28,7 +28,7 @@ It can also be compiled and run locally, but requires OpenAI API keys:
 
 ### 2025.01.15
 
-RAGbase is officially part of AWS Startups! The Founders program will provide funding for service usage across all AWS platforms.
+RAGbase has officially joined AWS Startups! The Founders program will provide funding for service usage across all AWS platforms.
 
 Hardware and cost limitations are one of the biggest obstacles in deploying new capabilities.
 
