@@ -261,7 +261,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
             <canvas ref={canvasRef} />
             <div
               ref={highlightLayerRef}
-              className="absolute top-0 left-0 pointer-events-none border border-red-600"
+              className="absolute top-0 left-0 pointer-events-none"
             />
           </div>
         </div>

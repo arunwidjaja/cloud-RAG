@@ -131,7 +131,7 @@ function MainApp() {
                             <ChatInterface></ChatInterface>
                         </div>
                         {/* Right Pane */}
-                        <div className='p-2'>
+                        <div className='p-2 w-1/2'>
                             <Tabs_Section></Tabs_Section>
                         </div>
                         <Toaster></Toaster>
