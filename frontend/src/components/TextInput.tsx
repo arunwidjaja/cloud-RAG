@@ -4,12 +4,12 @@ import { start_stream_query } from '../api/api_llm_calls';
 import { ContextData } from '@/types/types';
 
 // Handlers
-import { add_message, update_message } from '../handlers/message_handlers';
-import { set_current_retrieved, set_retrieved_files } from '@/handlers/retrieved_handlers';
+import { add_message, update_message } from '../handlers/handlers_messages';
+import { set_current_retrieved, set_retrieved_files } from '@/handlers/handlers_retrieved';
 
 // Stores
 import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
-import { get_current_chat, save_chats, update_chats } from '@/handlers/chats_handlers';
+import { get_current_chat, save_chats, update_chats } from '@/handlers/handlers_chats';
 
 // Components
 import { Paperclip } from 'lucide-react';
@@ -17,7 +17,7 @@ import { FileUploadWindow } from './FileUpload';
 
 // Hooks
 import { use_attachments } from '@/hooks/hooks_files';
-import { refresh_attachments } from '@/handlers/file_handlers';
+import { refresh_attachments } from '@/handlers/handlers_files';
 import { Attachment } from './Attachment';
 
 const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): void => {

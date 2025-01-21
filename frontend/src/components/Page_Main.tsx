@@ -3,10 +3,10 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Handlers
-import { refresh_files, refresh_uploads } from '@/handlers/file_handlers';
-import { refresh_collections } from '@/handlers/collection_handlers';
-import { handle_select_preset, handle_run_preset } from '@/handlers/preset_handlers';
-import { refresh_chats } from '@/handlers/chats_handlers';
+import { refresh_files, refresh_uploads } from '@/handlers/handlers_files';
+import { refresh_collections } from '@/handlers/handlers_collections';
+import { handle_select_preset, handle_run_preset } from '@/handlers/handlers_presets';
+import { refresh_chats } from '@/handlers/handlers_chats';
 
 // Components
 import { Tabs_Section } from '@/components/Tabs_Section';
@@ -21,7 +21,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
 
 // Hooks
-import { use_presets } from '@/hooks/hooks';
+import { use_presets } from '@/hooks/hooks_misc';
 import { start_session } from '@/api/api_init';
 
 // Constants
@@ -56,7 +56,7 @@ function MainApp() {
 
     return (
         <ThemeProvider>
-            <div className="container_parent max-w-full max-h-full flex flex-row overflow-hidden absolute">
+            <div className="container_parent flex flex-row absolute max-w-full max-h-full overflow-hidden">
                 {/* Left Pane */}
                 <div className='min-h-full max-h-full w-64 flex flex-col bg-accent'>
                     <div id="fillerdiv" className="h-14"></div>
@@ -87,7 +87,12 @@ function MainApp() {
                 {/* Title Bar + Main Content */}
                 <div className='flex flex-col flex-1'>
                     {/* Title Bar */}
-                    <header className="w-full bg-primary pl-3 pt-3 mb-0 flex flex-row h-20">
+                    <header
+                        className={`
+                            flex flex-row h-20 w-full
+                            pl-3 pt-3 mb-0
+                            bg-primary
+                    `}>
                         {/* App Title */}
                         <div className="flex flex-1 flex-row font-bold items-center">
                             <img src={LOGO_PLACEHOLDER} className='w-10 h-10 m-4'></img>
@@ -99,14 +104,19 @@ function MainApp() {
                     </header>
 
                     {/* Main Content */}
-                    <div className="container flex flex-row max-w-full p-0 bg-gradient-to-t from-secondary to-primary to-50%">
+                    <div
+                        className={`
+                            container flex flex-row max-w-full
+                            p-0
+                            bg-gradient-to-t from-secondary to-primary to-50%
+                    `}>
                         {/* Conversation Pane */}
                         <div
                             id="conversationarea"
                             className={`
                                 flex flex-col flex-1
                                 p-3
-                            `}>
+                        `}>
                             {/* Gradient for overflow */}
                             <div className="relative">
                                 <div className="max-h-24 overflow-hidden">

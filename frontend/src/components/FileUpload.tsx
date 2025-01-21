@@ -2,8 +2,8 @@ import React from 'react';
 import { forwardRef, useRef, ChangeEvent, ForwardedRef } from "react";
 
 // Handlers
-import { refresh_attachments, refresh_uploads } from "../handlers/file_handlers";
-import { add_log } from "../handlers/log_handlers";
+import { refresh_attachments, refresh_uploads } from "../handlers/handlers_files";
+import { add_log } from "../handlers/handlers_logs";
 
 // API
 import { start_upload } from "@/api/api_files";

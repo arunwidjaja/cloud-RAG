@@ -2,7 +2,7 @@ import { fetch_saved_chats, start_save_chat } from "@/api/api_user_data";
 import { Chat } from "@/types/types";
 
 import useChatsStore from "@/stores/chatsStore";
-import { set_messages } from "./message_handlers";
+import { set_messages } from "./handlers_messages";
 
 
 export const update_chats = () => {

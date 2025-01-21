@@ -1,6 +1,6 @@
 import { forwardRef, useRef, ChangeEvent, ForwardedRef } from "react";
-import { refresh_uploads } from "../handlers/file_handlers";
-import { add_log } from "../handlers/log_handlers";
+import { refresh_uploads } from "../handlers/handlers_files";
+import { add_log } from "../handlers/handlers_logs";
 import React from 'react';
 import { start_upload } from "@/api/api_files";
 

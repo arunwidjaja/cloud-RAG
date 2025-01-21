@@ -19,9 +19,9 @@ import {
 } from "@/components/ui/popover"
 import { ContextData } from "@/types/types"
 import { createDefaultFileData } from "@/stores/filesStore"
-import { handle_select_retrieved } from "@/handlers/retrieved_handlers"
+import { handle_select_retrieved } from "@/handlers/handlers_retrieved"
 import { createContextData } from "@/stores/retrievedStore"
-import { get_file_data } from "@/handlers/retrieved_handlers"
+import { get_file_data } from "@/handlers/handlers_retrieved"
 
 export type ComboboxItem = {
   value: string

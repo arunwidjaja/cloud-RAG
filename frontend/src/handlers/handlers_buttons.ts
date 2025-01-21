@@ -3,9 +3,9 @@ import {
   refresh_uploads,
   get_selected_files,
   get_uploads
-} from '../handlers/file_handlers';
-import { add_log } from '../handlers/log_handlers';
-import { select_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './collection_handlers';
+} from './handlers_files';
+import { add_log } from './handlers_logs';
+import { select_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './handlers_collections';
 import useCollectionsStore from '../stores/collectionsStore';
 import {
   start_file_deletion,

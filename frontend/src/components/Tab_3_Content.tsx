@@ -10,7 +10,7 @@ import { Upload } from 'lucide-react';
 import Spinner from './Spinner';
 
 // Handlers
-import { handle_choose_collection } from "@/handlers/button_handlers"
+import { handle_choose_collection } from "@/handlers/handlers_buttons"
 
 // Hooks
 import { use_collections } from '@/hooks/hooks_database';

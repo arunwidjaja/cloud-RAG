@@ -1,12 +1,12 @@
 
-import { handle_select_chat, refresh_chats } from '@/handlers/chats_handlers';
+import { handle_select_chat, refresh_chats } from '@/handlers/handlers_chats';
 import { Chat } from '@/types/types';
 
 import { use_chats } from '@/hooks/hooks_user_data';
 import { start_delete_chat } from '@/api/api_user_data';
-import { add_log } from '@/handlers/log_handlers';
+import { add_log } from '@/handlers/handlers_logs';
 import { MessageCirclePlus, Trash2 } from 'lucide-react';
-import { set_messages } from '@/handlers/message_handlers';
+import { set_messages } from '@/handlers/handlers_messages';
 
 export const handle_delete_chat = async (chat_id: string) => {
     const deleted_chat = await start_delete_chat(chat_id);

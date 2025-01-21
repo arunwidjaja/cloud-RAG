@@ -1,4 +1,4 @@
-import { get_current_collection } from "@/handlers/collection_handlers";
+import { get_current_collection } from "@/handlers/handlers_collections";
 import { current_user_id } from "./api_init";
 import { FileData } from "@/types/types";
 
@@ -171,5 +171,24 @@ export const start_file_deletion = async (file_deletion_list: FileData[], collec
   } catch (error) {
     console.error('An error while deleting files from the collection: ', error)
     return [];
+  }
+}
+export const stream_pdf = async (pdf_id: string): Promise<ArrayBuffer | null> => {
+  try {
+      const query = `pdf_id=${encodeURIComponent(pdf_id)}`
+      const url = `${import.meta.env.VITE_API_BASE_URL}/pdf?${query}`
+      const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+              'Accept': 'application/pdf',
+              'uuid': current_user_id
+          }
+      });
+      const data = await response.arrayBuffer();
+      console.log('PDF data received:', data.byteLength); // Should show the size of the PDF
+      return data
+  } catch (error) {
+      console.error("Error fetching PDF: ", error);
+      return null;
   }
 }

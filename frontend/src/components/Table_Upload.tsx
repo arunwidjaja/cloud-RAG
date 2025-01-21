@@ -29,8 +29,8 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { use_uploads, use_selected_uploads } from "@/hooks/hooks_files";
-import { set_selected_uploads } from "@/handlers/file_handlers"
-import { handle_remove_selected_uploads } from "@/handlers/button_handlers";
+import { set_selected_uploads } from "@/handlers/handlers_files"
+import { handle_remove_selected_uploads } from "@/handlers/handlers_buttons";
 
 
 

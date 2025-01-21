@@ -9,9 +9,9 @@ import { Dialog, DialogTrigger, DialogContent, DialogDescription, DialogHeader, 
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { useState } from 'react';
-import { handle_create_collection } from '@/handlers/button_handlers';
+import { handle_create_collection } from '@/handlers/handlers_buttons';
 import { DropdownMenu } from "./Dropdown_Menu"
-import { use_embeddings_store } from "@/hooks/hooks"
+import { use_embeddings_store } from "@/hooks/hooks_misc"
 
 export function CollectionCreationButton() {
   const [collectionName, setCollectionName] = useState('New Collection');

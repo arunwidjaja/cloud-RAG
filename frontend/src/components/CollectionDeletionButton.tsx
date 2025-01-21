@@ -8,7 +8,7 @@ import { Button } from "./ui/button"
 import { Dialog, DialogTrigger, DialogContent, DialogDescription, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog"
 
 import { useState } from 'react';
-import { handle_delete_collection } from '@/handlers/button_handlers';
+import { handle_delete_collection } from '@/handlers/handlers_buttons';
 
 
 export function CollectionDeletionButton() {

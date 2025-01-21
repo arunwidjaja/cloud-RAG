@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card } from '@/components/ui/card';
 import * as pdfjsLib from 'pdfjs-dist';
 import { PDFDocumentProxy } from 'pdfjs-dist';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
-import { use_current_context, use_current_page } from '@/hooks/hooks_files';
-import { set_current_page } from '@/handlers/handlers_files';
-import { findExactMatches } from '@/utils/phrase';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/node_modules/pdfjs-dist/build/pdf.worker.mjs';
+
+// Components
+import { Card } from '@/components/ui/card';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
+
+// Hooks
+import { use_current_page, use_current_retrieved } from '@/hooks/hooks_retrieved';
+
+// Handlers
+import { set_current_page } from '@/handlers/handlers_retrieved';
+
 
 interface PDFViewerProps {
   pdf_stream: ArrayBuffer | null;
@@ -31,10 +37,9 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
   const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
   const [textItems, setTextItems] = useState<TextItem[]>([]);
 
-
-
   const currentPage = use_current_page()
-  const currentContext = use_current_context()
+  const currently_retrieved_file = use_current_retrieved()
+  // const currentContext = use_current_context()
 
   // Load PDF document when pdf_stream changes
   useEffect(() => {
@@ -123,7 +128,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
   }, [currentPage, scale, pdfDoc]); // Rerenders when user zooms, changes page, or changes doc
 
   useEffect(() => {
-    if (!currentContext || !highlightLayerRef.current || !textItems.length || !pdfDoc) return;
+    if (!currently_retrieved_file || !highlightLayerRef.current || !textItems.length || !pdfDoc) return;
 
     const renderHighlights = async () => {
       const page = await pdfDoc.getPage(currentPage);
@@ -134,9 +139,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
 
       highlightLayer.innerHTML = ''; // Clear existing highlights
 
-      const page_text = currentContext.toLowerCase();
-
-      // const matches = findExactMatches(textItems, currentContext)
+      const page_text = currently_retrieved_file.text.toLowerCase();
 
       textItems.forEach((item) => {
         const text = item.str.toLowerCase();
@@ -171,7 +174,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
     };
 
     renderHighlights();
-  }, [currentContext, textItems, scale, currentPage, pdfDoc]);
+  }, [currently_retrieved_file, textItems, scale, currentPage, pdfDoc]);
 
   const handleZoomIn = () => setScale(prev => Math.min(prev + 0.1, 3));
   const handleZoomOut = () => setScale(prev => Math.max(prev - 0.1, 0.5));

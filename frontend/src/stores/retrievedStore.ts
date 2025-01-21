@@ -10,9 +10,11 @@ interface ContextData {
 interface RetrievedState {
     retrieved: ContextData[];
     current_retrieved: ContextData;
+    selected_page: number;
 
     setRetrieved: (retrieved: ContextData[]) => void;
     setCurrentRetrieved: (currentRetrieved: ContextData) => void;
+    setSelectedPage: (newPage: number) => void;
 }
 
 export const createContextData = (file: FileData, text: string): ContextData => ({
@@ -30,8 +32,12 @@ export const createDefaultContextData = (): ContextData => ({
 const useRetrievedStore = create<RetrievedState>()((set) => ({
     retrieved: [],
     current_retrieved: createDefaultContextData(),
+    selected_page: 1,
     setCurrentRetrieved: (newCurrentRetrieved: ContextData) => set({current_retrieved: newCurrentRetrieved}),
-    setRetrieved: (newRetrieved: ContextData[]) => set({retrieved: newRetrieved})
+    setRetrieved: (newRetrieved: ContextData[]) => set({retrieved: newRetrieved}),
+    setSelectedPage: (newPage) => {
+        set({ selected_page: newPage })
+      }
 }));
 
 export default useRetrievedStore

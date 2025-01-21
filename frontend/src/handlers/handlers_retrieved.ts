@@ -38,3 +38,8 @@ export const handle_download_retrieved_file = (): void => {
     const collection = current_retrieved.file.collection;
     start_file_download([current_retrieved.file], collection);
 }
+
+export const set_current_page = (new_page: number) => {
+    const setCurrentPage = useRetrievedStore.getState().setSelectedPage;
+    setCurrentPage(new_page)
+}
