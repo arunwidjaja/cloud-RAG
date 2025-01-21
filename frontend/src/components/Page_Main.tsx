@@ -101,11 +101,21 @@ function MainApp() {
                     {/* Main Content */}
                     <div className="container flex flex-row max-w-full p-0 bg-gradient-to-t from-secondary to-primary to-50%">
                         {/* Conversation Pane */}
-                        <div id="conversationarea" className="flex flex-col flex-1 p-3">
+                        <div
+                            id="conversationarea"
+                            className={`
+                                flex flex-col flex-1
+                                p-3
+                            `}>
                             {/* Gradient for overflow */}
                             <div className="relative">
                                 <div className="max-h-24 overflow-hidden">
-                                    <div className="absolute top-0 bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-transparent to-primary from-0 to-80%"></div>
+                                    <div
+                                        className={`
+                                            absolute top-0 bottom-0 left-0 right-0
+                                            h-24
+                                            bg-gradient-to-t from-transparent to-primary from-0 to-80%
+                                    `}></div>
                                 </div>
                             </div>
                             <ChatInterface></ChatInterface>
