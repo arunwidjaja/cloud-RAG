@@ -56,7 +56,18 @@ async def load_documents(path: str = "") -> List[Document]:
                 print("Invalid format. Skipping this file.")
     except Exception as e:
         raise Exception(f"Exception occured when loading files: {e}")
+    return documents_list
 
+
+def load_document(file_path: str) -> List[Document]:
+    """
+    Loads documents from the uploads folder
+    """
+    documents_list: List[Document] = []
+
+    loader = PyPDFLoader(file_path)
+    for page in loader.load():
+        documents_list.append(page)
     return documents_list
 
 
@@ -246,6 +257,20 @@ async def process_documents(collection: str, user_id: str) -> List[Document]:
         collection: The collection that the documents will be added to.
     """
     documents = await load_documents()
+    chunks = chunk_text(documents)
+    add_user_ids(chunks, user_id)
+    add_token_count(chunks)
+    add_chunk_ids(chunks)
+    add_source_hash(chunks)
+    add_source_base_name(chunks)
+    add_word_count(chunks)
+    add_sentiment(chunks)
+    add_collection(chunks, collection)
+    return chunks
+
+
+def process_document(file_path: str, collection: str, user_id: str) -> List[Document]:
+    documents = load_document(file_path)
     chunks = chunk_text(documents)
     add_user_ids(chunks, user_id)
     add_token_count(chunks)

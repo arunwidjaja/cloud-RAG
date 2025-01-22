@@ -7,7 +7,7 @@ import { fetch_db_files_metadata } from "@/api/api_files"
 import { use_current_collection } from '@/hooks/hooks_database';
 import { use_selected_files } from '@/hooks/hooks_files';
 import { use_files } from '@/hooks/hooks_files';
-import { set_selected_files } from "@/handlers/file_handlers"
+import { set_selected_files } from "@/handlers/handlers_files"
 import { FileData } from "@/types/types"
 import {
   ColumnDef,
@@ -42,7 +42,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/button_handlers"
+import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/handlers_buttons"
 import { FileUploadWindow2 } from './FileUpload2';
 
 export function FileTable() {

@@ -1,44 +1,46 @@
 import { useRef, useState } from 'react';
+import { RefObject } from 'react';
 
 // Components
 import { DropdownMenu } from "./Dropdown_Menu"
 import { UploadTable } from "./Table_Upload"
-import { SimpleTooltip } from "./SimpleTooltip"
 import { Button } from "./ui/button"
 import { FileUploadWindow } from "./FileUpload"
 import { Upload } from 'lucide-react';
 import Spinner from './Spinner';
 
 // Handlers
-import { handle_push_uploads, handle_choose_collection, handle_accept_uploads, handle_remove_selected_uploads } from "@/handlers/button_handlers"
+import { handle_choose_collection } from "@/handlers/handlers_buttons"
 
 // Hooks
 import { use_collections } from '@/hooks/hooks_database';
 import { use_selected_uploads } from '@/hooks/hooks_files';
-
-
-
-
+import { use_current_collection } from '@/hooks/hooks_database';
 
 
 export function Tab_3_Content() {
     const uploadRef = useRef(null);
     const selected_uploads = use_selected_uploads();
+    const current_collection = use_current_collection();
     const [isLoading, setIsLoading] = useState(false);
 
-    const handle_click_push_uploads = async () => {
-        setIsLoading(true);
-        try {
-            await handle_push_uploads();
-        } finally {
-            setIsLoading(false);
+    // Launches upload window
+    const handle_accept_uploads = (uploadRef: RefObject<HTMLInputElement>): void => {
+        if (current_collection) {
+            if (uploadRef && uploadRef.current) {
+                uploadRef.current.click();
+            }
+        }
+        else {
+            alert("Please select a collection to upload to.")
         }
     };
+
 
     return (
         <div id="contentdiv"
             className={`relative h-full overflow-auto flex flex-col ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
-
+            <FileUploadWindow ref={uploadRef} />
             {/* Loading Spinner Element */}
             {isLoading && <div className='absolute top-1/3 left-1/2'><Spinner></Spinner></div>}
 
@@ -65,27 +67,11 @@ export function Tab_3_Content() {
             </div>
             <UploadTable></UploadTable>
             <div id="upload_buttons" className='mt-auto'>
-                <FileUploadWindow ref={uploadRef} />
                 <Button
                     className='w-full mt-4 mb-1 bg-text hover:bg-highlight'
                     onClick={() => handle_accept_uploads(uploadRef)}>
                     <Upload></Upload>
                 </Button>
-
-                <div className='grid grid-cols-2'>
-                    <SimpleTooltip className='bg-text text-text2' content="Pushes all uploads to the current Collection">
-                        <Button id="pushbtn"
-                            onClick={handle_click_push_uploads}
-                            className="mr-1 bg-accent text-text hover:bg-highlight hover:text-text2">
-                            Push
-                        </Button>
-                    </SimpleTooltip>
-                    <Button
-                        className="ml-1 bg-accent text-text hover:bg-highlight hover:text-text2"
-                        onClick={() => handle_remove_selected_uploads(selected_uploads)}>
-                        Remove Uploads
-                    </Button>
-                </div>
             </div>
         </div>
     )

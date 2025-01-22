@@ -1,8 +1,8 @@
-import { use_current_retrieved } from "@/hooks/hooks";
+import { use_current_retrieved } from "@/hooks/hooks_misc";
 import { Button } from "./ui/button";
 // import { LoremIpsum } from 'lorem-ipsum';
 
-import { handle_download_retrieved_file } from "@/handlers/retrieved_handlers";
+import { handle_download_retrieved_file } from "@/handlers/handlers_retrieved";
 
 // const lorem = new LoremIpsum();
 // const filler_text = lorem.generateWords(500);

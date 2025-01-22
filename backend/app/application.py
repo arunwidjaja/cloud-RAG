@@ -11,6 +11,7 @@ import init_db
 
 from api_DELETE import router as api_DELETE
 from database_manager import DatabaseManager
+from document_processor import DocumentHandler
 from api_GET import router as api_GET
 from api_MODELS import StartSessionModel
 from api_POST import router as api_POST
@@ -25,7 +26,9 @@ async def lifespan(application: FastAPI):
 
     try:
         db_manager = DatabaseManager()
+        doc_handler = DocumentHandler()
         application.state.db_manager = db_manager
+        application.state.doc_handler = doc_handler
         yield
     except Exception as e:
         print(f"FastAPI startup error: {e}")
@@ -53,10 +56,14 @@ async def start_session(request: StartSessionModel, request2: Request):
         request: the Pydantic request from frontend
         request2: used to access FastAPI state information
     """
+    # Get the user's ID and initialize their file paths
     user_id = request.user_id
     init_db.init_paths(user_id)
+
+    # Update database manager with user's info
     db_manager: DatabaseManager = request2.app.state.db_manager
-    db_manager.set_uuid(user_id)
+    db_manager.init_user(user_id)
+
     return {"status": "success", "user_id": request.user_id}
 
 

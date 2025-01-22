@@ -2,7 +2,7 @@ import useFilesStore from '../stores/filesStore';
 import {
     set_selected_files,
     set_selected_uploads
-} from '../handlers/file_handlers';
+} from '../handlers/handlers_files';
 import { FileData } from '../types/types';
 import React from 'react';
 

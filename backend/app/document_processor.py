@@ -1,44 +1,49 @@
 # External Modules
 from datetime import datetime
-from enum import Enum
 from fastapi import HTTPException
+from starlette.requests import Request
 from typing import Dict, List
 
 import asyncio
 
 # Local Modules
+from custom_types import ProcessingStatus
+from database_manager import DatabaseManager
+from database_operations import push_db_2
+import utils
 
 
-class ProcessingStatus(Enum):
-    PENDING = "pending"
-    PROCESSING = "processing"
-    COMPLETED = "completed"
-    FAILED = "failed"
-
-
-class DocumentProcessor:
+class DocumentHandler:
     def __init__(self):
         self.processing_status: Dict[str, ProcessingStatus] = {}
         self.processing_lock = asyncio.Lock()
 
-    async def process_document(self, doc_id: str, file_content: bytes):
+    async def process_document(
+        self,
+        dbm: DatabaseManager,
+        collection: str,
+        file_path: str,
+        file_id: str
+    ) -> str:
         """
         Process a single document.
+
+        Args:
+            doc_id: A temporary ID only used to track the document during a single session.
         """
         try:
-            self.processing_status[doc_id] = ProcessingStatus.PROCESSING
-
-            # Simulate document processing - replace with your actual processing logic
-            await asyncio.sleep(5)
+            self.processing_status[file_id] = ProcessingStatus.PROCESSING
+            await push_db_2(dbm, collection, file_path)
 
             # Update status to completed
-            self.processing_status[doc_id] = ProcessingStatus.COMPLETED
+            self.processing_status[file_id] = ProcessingStatus.COMPLETED
+            return utils.extract_file_name(file_path)
 
         except Exception as e:
-            self.processing_status[doc_id] = ProcessingStatus.FAILED
+            self.processing_status[file_id] = ProcessingStatus.FAILED
             raise e
 
-    async def wait_for_completion(self, doc_ids: List[str], timeout: float = 30.0) -> bool:
+    async def wait_for_completion(self, doc_ids: List[str], timeout: float = 300.0) -> bool:
         """
         Wait for the completion of multiple documents' processing.
         Returns True if all documents completed successfully, False if timeout occurred.
@@ -66,3 +71,8 @@ class DocumentProcessor:
 
             # Wait a bit before checking again
             await asyncio.sleep(0.5)
+
+
+async def get_document_handler(request: Request) -> DocumentHandler:
+    doc_handler: DocumentHandler = request.app.state.doc_handler
+    return doc_handler

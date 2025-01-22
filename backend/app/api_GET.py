@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 from typing import List
 
+import aiofiles
 import os
 import zipfile
 
@@ -15,7 +16,6 @@ from paths import get_paths
 from summarize import summarize_map_reduce
 
 import database_utils
-import database_operations
 import document_utils
 import utils
 
@@ -90,30 +90,29 @@ async def download_files(
         raise Exception(f"Exception occurred when downloading files: {e}")
 
 
-@router.get("/initiate_push_to_db")
-async def push_db(
-    collections: List[str] = Query(...),
-    dbm: DatabaseManager = Depends(get_db_instance)
-) -> List[str]:
-    """
-    Updates the database with all the uploaded documents
-    """
-    print("API CALL: push_files_to_database")
-    if not collections or len(collections) != 1:
-        raise HTTPException(
-            status_code=422, detail="Invalid or missing collection parameter.")
-    try:
-        uuid = dbm.get_uuid()
-        formatted_collection_name = format_name(collections, uuid)[0]
+# @router.get("/initiate_push_to_db")
+# async def push_db(
+#     collections: List[str] = Query(...),
+#     dbm: DatabaseManager = Depends(get_db_instance)
+# ) -> List[str]:
+#     """
+#     Updates the database with all the uploaded documents
+#     """
+#     print("API CALL: push_files_to_database")
+#     if not collections or len(collections) != 1:
+#         raise HTTPException(
+#             status_code=422, detail="Invalid or missing collection parameter.")
+#     try:
+#         uuid = dbm.get_uuid()
+#         formatted_collection_name = format_name(collections, uuid)[0]
 
-        pushed_files = await database_operations.push_db(
-            dbm=dbm,
-            collection=formatted_collection_name,
-            user_id=uuid
-        )
-        return pushed_files
-    except Exception as e:
-        raise Exception(f"Exception occured when pushing files: {e}")
+#         pushed_files = await database_operations.push_db(
+#             dbm=dbm,
+#             collection=formatted_collection_name,
+#         )
+#         return pushed_files
+#     except Exception as e:
+#         raise Exception(f"Exception occured when pushing files: {e}")
 
 
 @router.get("/summary")
@@ -193,6 +192,54 @@ async def get_saved_chats(
         return chats
     except Exception as e:
         raise Exception(f"Exception occurred when getting chat history: {e}")
+
+
+@router.get("/pdf")
+async def get_pdf(
+    pdf_id: str = Query(...),  # The ID is just the file hash.
+    dbm: DatabaseManager = Depends(get_db_instance)
+) -> StreamingResponse:
+    """
+    Streams the user's PDF.
+    """
+    if not pdf_id:
+        raise HTTPException(
+            status_code=422,
+            detail="Invalid or missing PDF ID."
+        )
+    try:
+        pdfs_path = get_paths().ARCHIVE
+        pdf_hashes = utils.get_hash_dir(str(pdfs_path))
+
+        pdf_path = pdf_hashes.get(pdf_id)
+        if pdf_path:
+            # Raise Error if PDF not found
+            if not os.path.exists(pdf_path):
+                raise HTTPException(status_code=404, detail="PDF not found.")
+
+            # Get PDF file name and generate headers
+            pdf_name = os.path.basename(pdf_path)
+            headers = {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': f'inline; filename="{pdf_name}"'
+            }
+
+            # File streaming function
+            async def iterfile():
+                async with aiofiles.open(pdf_path, 'rb') as f:
+                    while chunk := await f.read(8192):  # 8KB chunks
+                        yield chunk
+            # Stream the file
+            return StreamingResponse(
+                iterfile(),
+                headers=headers,
+                media_type='application/pdf'
+            )
+        else:
+            raise Exception(f"Invalid PDF ID.")
+    except Exception as e:
+        print(str(e))
+        raise Exception(f"Exception occurred while fetching the PDF: {e}")
 
 
 @router.get("/db_files_metadata")

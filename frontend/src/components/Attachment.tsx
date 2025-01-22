@@ -1,5 +1,5 @@
 import { start_upload_deletion } from "@/api/api_files"
-import { refresh_attachments } from "@/handlers/file_handlers"
+import { refresh_attachments } from "@/handlers/handlers_files"
 import { FileData } from "@/types/types"
 import { X } from "lucide-react"
 

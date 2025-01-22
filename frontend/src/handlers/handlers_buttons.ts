@@ -3,25 +3,21 @@ import {
   refresh_uploads,
   get_selected_files,
   get_uploads
-} from '../handlers/file_handlers';
-import { add_log } from '../handlers/log_handlers';
-import { select_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './collection_handlers';
+} from './handlers_files';
+import { add_log } from './handlers_logs';
+import { select_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './handlers_collections';
 import useCollectionsStore from '../stores/collectionsStore';
 import {
   start_file_deletion,
   start_file_download,
   start_upload_deletion
 } from '../api/api_files';
-import { start_push_to_DB } from '@/api/api_database';
 import { FileData } from "../types/types";
-import { RefObject } from 'react';
 
 
 
-// Accepts user uploads
-export const handle_accept_uploads = (uploadRef: RefObject<HTMLInputElement>): void => {
-  if (uploadRef && uploadRef.current) { uploadRef.current.click(); }
-};
+
+
 
 // Removes selected uploads from the upload list
 export const handle_remove_selected_uploads = async (uploads_to_remove: FileData[]) => {
@@ -44,28 +40,6 @@ export const handle_download_selected_files = async () => {
   downloaded_files.forEach(element => {
     add_log("Downloaded file: " + element)
   });
-};
-
-// Pushes all uploads to the DB
-export const handle_push_uploads = async () => {
-  const current_collection = get_current_collection();
-  if(!current_collection) {
-    alert("Please select a collection to push your documents to first.");
-    return;
-  }
-  const uploads = await get_uploads();
-  if (uploads[0].hash){
-    const pushed_uploads = await start_push_to_DB(uploads, current_collection);
-    refresh_files();
-    refresh_uploads();
-    
-    pushed_uploads.forEach(element => {
-      add_log("Pushed upload: " + element)
-    });
-  }
-  else {
-    add_log("Upload files first")
-  }
 };
 
 // Deletes the selected files from the DB

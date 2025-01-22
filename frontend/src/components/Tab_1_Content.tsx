@@ -1,6 +1,9 @@
+// Components
+import { PDFPanel } from "@/components/Panel_PDF"
 import { DropdownMenuContext } from "./Dropdown_Menu_Context"
-import { FileDisplay } from "./FileDisplay"
-import { use_retrieved_files } from "@/hooks/hooks"
+
+// Hooks
+import { use_retrieved_files } from "@/hooks/hooks_retrieved"
 
 export function Tab_1_Content() {
     return (
@@ -17,7 +20,7 @@ export function Tab_1_Content() {
                     className='flex-1 mt-1'>
                 </DropdownMenuContext>
             </div>
-            <FileDisplay></FileDisplay>
+            <PDFPanel></PDFPanel>
         </div>
     )
 }

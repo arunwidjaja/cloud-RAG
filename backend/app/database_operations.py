@@ -17,7 +17,7 @@ import document_utils
 import utils
 
 
-def create_collection(dbm: DatabaseManager, collection_name: str, embedding_function: str = 'openai') -> str:
+def create_collection(dbm: DatabaseManager, collection_name: str, embedding_function: str = config.DEFAULT_EMBEDDING) -> str:
     """
     Creates a new collection in the DB.
 
@@ -84,7 +84,7 @@ def delete_collection(dbm: DatabaseManager, collection_name: str) -> str:
             return ""
 
 
-def add_chunks_to_collection(dbm: DatabaseManager, chunks: List[Document], collection_name: str) -> List[str]:
+async def add_chunks_to_collection(dbm: DatabaseManager, chunks: List[Document], collection_name: str) -> List[str]:
     """
     Saves document chunks to the DB in the specified collection
 
@@ -144,7 +144,7 @@ def add_chunks_to_collection(dbm: DatabaseManager, chunks: List[Document], colle
             new_chunks_batch = new_chunks[i: i+config.MAX_BATCH_SIZE]
             new_chunk_ids_batch = new_chunk_ids[i: i+config.MAX_BATCH_SIZE]
             print(f"{i} of {len(new_chunks)} complete...", end="\r")
-            collection.add_documents(new_chunks_batch, ids=new_chunk_ids_batch)
+            await collection.aadd_documents(new_chunks_batch, ids=new_chunk_ids_batch)
 
     # Print the summary
     if (new_chunks):
@@ -191,20 +191,19 @@ def delete_files(dbm: DatabaseManager, file_hash_list: List[str], collection_nam
     return deleted_files
 
 
-async def push_db(dbm: DatabaseManager, collection: str, user_id: str) -> List[str]:
-    """
-    Pushes uploads to the database then archives them.
+async def push_db_2(dbm: DatabaseManager, collection: str, file_path: str = "") -> List[str]:
+    file_name = utils.extract_file_name(file_path)
+    print(f"Started processing file: {file_name}")
 
-    Args:
-        db: The database
-        file_hash_list: The list of hashes of files to push
-        collection: The collection to push the documents to
+    # chunks = await document_pipeline.process_documents(collection, dbm.get_uuid())
+    chunks = document_pipeline.process_document(
+        collection=collection,
+        user_id=dbm.get_uuid(),
+        file_path=file_path
+    )
+    documents_list = await add_chunks_to_collection(dbm, chunks, collection)
 
-    Returns:
-        a list of the pushed uploads
-    """
-    chunks = await document_pipeline.process_documents(collection, user_id)
-    documents_list = add_chunks_to_collection(dbm, chunks, collection)
+    print(f"Finished processing file: {file_name}")
     document_utils.archive_all_uploads()
     return documents_list
 
