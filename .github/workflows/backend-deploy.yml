@@ -35,10 +35,13 @@ jobs:
         run: |
           if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
             echo "EB_ENVIRONMENT=ragbase-env" >> $GITHUB_ENV
+            echo "EB_APPLICATION=ragbase" >> $GITHUB_ENV
           else
             echo "EB_ENVIRONMENT=rb-dev" >> $GITHUB_ENV
+            echo "EB_APPLICATION=ragbase" >> $GITHUB_ENV
           fi
           echo "IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+          echo "ECR_REGISTRY=509399637296.dkr.ecr.us-east-1.amazonaws.com" >> $GITHUB_ENV
           
       - name: Build and push Docker image
         working-directory: ./backend
@@ -52,6 +55,30 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install awsebcli
+
+      - name: Configure Elastic Beanstalk
+        working-directory: ./backend
+        run: |
+          mkdir -p .elasticbeanstalk
+          echo "branch-defaults:
+            main:
+              environment: ${{ env.EB_ENVIRONMENT }}
+          environment-defaults:
+            ${{ env.EB_ENVIRONMENT }}:
+              branch: null
+              repository: null
+          global:
+            application_name: ${{ env.EB_APPLICATION }}
+            default_ec2_keyname: null
+            default_platform: Docker
+            default_region: us-east-1
+            include_git_submodules: true
+            instance_profile: null
+            platform_name: null
+            platform_version: null
+            profile: null
+            sc: null
+            workspace_type: Application" > .elasticbeanstalk/config.yml
           
       - name: Deploy to Elastic Beanstalk
         working-directory: ./backend
