@@ -2,7 +2,6 @@ import {
   refresh_files,
   refresh_uploads,
   get_selected_files,
-  get_uploads
 } from './handlers_files';
 import { add_log } from './handlers_logs';
 import { select_collection, create_collection, delete_collection, get_all_collections, get_current_collection } from './handlers_collections';

@@ -14,15 +14,13 @@ import { handle_choose_collection } from "@/handlers/handlers_buttons"
 
 // Hooks
 import { use_collections } from '@/hooks/hooks_database';
-import { use_selected_uploads } from '@/hooks/hooks_files';
 import { use_current_collection } from '@/hooks/hooks_database';
 
 
 export function Tab_3_Content() {
     const uploadRef = useRef(null);
-    const selected_uploads = use_selected_uploads();
     const current_collection = use_current_collection();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading] = useState(false);
 
     // Launches upload window
     const handle_accept_uploads = (uploadRef: RefObject<HTMLInputElement>): void => {

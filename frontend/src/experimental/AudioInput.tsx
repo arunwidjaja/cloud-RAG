@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Mic, Square } from 'lucide-react';
 
 const AudioRecorder = () => {
