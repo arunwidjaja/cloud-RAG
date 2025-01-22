@@ -1,4 +1,4 @@
-import { use_current_retrieved } from "@/hooks/hooks_misc";
+import { use_current_retrieved } from "@/hooks/hooks_retrieved";
 import { Button } from "./ui/button";
 // import { LoremIpsum } from 'lorem-ipsum';
 
