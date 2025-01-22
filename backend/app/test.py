@@ -1,4 +1,3 @@
-# test
 from backend.app.database_manager import DatabaseManager
 
 import asyncio
