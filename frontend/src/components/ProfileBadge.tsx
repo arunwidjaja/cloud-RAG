@@ -103,7 +103,11 @@ export const ProfileBadge = () => {
                         </div>
                         <div>
                             <Avatar className="m-1">
-                                <AvatarImage src={LOGO_PLACEHOLDER} />
+                                <AvatarImage
+                                    src={LOGO_PLACEHOLDER}
+                                    className={`
+                                        text-sm
+                                    `}/>
                                 <AvatarFallback className='bg-accent text-text'>{user?.email.substring(0, 2)}</AvatarFallback>
                             </Avatar>
                         </div>

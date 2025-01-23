@@ -44,14 +44,27 @@ interface ChatPreviewProps {
 export const ChatPreview = ({ subject, chat }: ChatPreviewProps) => {
     return (
         <div
-            className='flex flex-row items-center hover:bg-highlight hover:text-text2 p-1 text-text text-sm rounded-md font-sans ml-3'>
+            className={`
+                flex flex-row items-center
+                p-1 ml-3
+                text-sm rounded-md font-sans font-bold
+                text-text
+                hover:bg-highlight hover:text-text2 
+            `}>
             <Trash2
-                className='text-warning w-6 h-6 mr-1 opacity-50 hover:cursor-pointer hover:opacity-100 flex-shrink-0'
+                className={`
+                    flex-shrink-0
+                    w-6 h-6 mr-1
+                    text-warning 
+                    opacity-50
+                    hover:cursor-pointer
+                    hover:opacity-100 
+                `}
                 onClick={() => handle_delete_chat(chat.id)}>
             </Trash2>
             <div
                 onClick={() => handle_select_chat(chat)}
-                className='min-w-0 truncate hover:cursor-pointer hover:font-bold'>
+                className='min-w-0 truncate hover:cursor-pointer'>
                 {subject}
             </div>
         </div>
@@ -64,7 +77,14 @@ export const ChatHistory = () => {
         <div className='flex-1'>
             <div
             onClick={start_new_chat}
-            className='mb-4 text-highlight flex flex-row items-center rounded-md mr-1 p-1 ml-3 hover:bg-highlight hover:cursor-pointer hover:text-text2'>
+            className={`
+                flex flex-row items-center
+                p-1 mr-1 ml-3 mb-4
+                text-highlight rounded-md 
+                hover:bg-highlight
+                hover:cursor-pointer
+                hover:text-text2
+            `}>
                 <MessageCirclePlus
                     className='hover:cursor-pointer'>
                 </MessageCirclePlus>
@@ -77,9 +97,24 @@ export const ChatHistory = () => {
                 Recent Chats
             </div>
             <div id="chathistory" className="flex-1 min-h-0 w-full mb-2">
-                <div className='flex flex-col h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+                <div className={`
+                        flex flex-col
+                        h-full
+                        overflow-y-auto
+                        [&::-webkit-scrollbar]:hidden
+                        [-ms-overflow-style:none]
+                        [scrollbar-width:none]
+                    `}>
                     <div
-                        className='mr-1 overflow-auto whitespace-nowrap [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-thumb]:rounded-full'>
+                        className={`
+                            overflow-auto
+                            mr-1
+                            whitespace-nowrap
+                            [&::-webkit-scrollbar]:h-1.5
+                            [&::-webkit-scrollbar-track]:bg-transparent
+                            [&::-webkit-scrollbar-thumb]:bg-accent
+                            [&::-webkit-scrollbar-thumb]:rounded-full
+                        `}>
                         {chat_history.map((chat, index) => (
                             <ChatPreview
                                 key={index}

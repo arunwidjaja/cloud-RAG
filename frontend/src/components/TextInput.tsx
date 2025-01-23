@@ -12,7 +12,7 @@ import { createAnswerMessage, createInputMessage } from '../stores/messageStore'
 import { get_current_chat, save_chats, update_chats } from '@/handlers/handlers_chats';
 
 // Components
-import { Paperclip } from 'lucide-react';
+import { Mic, Mic2, Paperclip } from 'lucide-react';
 import { FileUploadWindow } from './FileUpload';
 
 // Hooks
@@ -129,11 +129,14 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
             className={`
                 flex flex-row justify-center
                 mt-2
+                
             `}>
             <div
                 className={`
-                    relative flex flex-col items-center
+                    flex flex-col relative
+                    items-center
                     w-3/4
+                    
                 `}>
                 <div
                     id="attachments_section"
@@ -145,12 +148,12 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
                         text-text2
                         ${attachments.length > 0 ? "visible" : "hidden"}
                     `}>
-                        {attachments.map((attachment, index)=>(
-                            <Attachment
-                                key={index}
-                                file={attachment}
-                            />
-                        ))}
+                    {attachments.map((attachment, index) => (
+                        <Attachment
+                            key={index}
+                            file={attachment}
+                        />
+                    ))}
                 </div>
                 <textarea
                     id='userinput'
@@ -166,26 +169,39 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
                         [&::-webkit-scrollbar]:hidden
                         [-ms-overflow-style:'none']
                         [scrollbar-width:'none']
-                `} />
-                <div
+                    `} />
+            </div>
+            <div
+                id='textinputcontrols'
+                className={`
+                    flex flex-col
+                    justify-end
+                    
+                `}>
+                <FileUploadWindow
+                    is_attachment={true}
+                    ref={attachmentRef}>
+                </FileUploadWindow>
+                <Paperclip
+                    onClick={() => handle_accept_attachments(attachmentRef)}
                     className={`
-                        flex-col
-                        absolute right-0 bottom-0 justify-center
+                        shrink-0
+                        m-1
+                        text-text opacity-50
+                        hover:cursor-pointer
+                        hover:opacity-100
                     `}>
-                    <FileUploadWindow
-                        is_attachment={true}
-                        ref={attachmentRef}>
-                    </FileUploadWindow>
-                    <Paperclip
-                        onClick={() => handle_accept_attachments(attachmentRef)}
-                        className={`
-                            m-1
-                            text-text opacity-50
-                            hover:cursor-pointer
-                            hover:opacity-100
-                        `}>
-                    </Paperclip>
-                </div>
+                </Paperclip>
+                <Mic
+                    onClick={()=>alert("Implement Audio Parsing!")}
+                    className={`
+                        shrink-0
+                        m-1
+                        text-text opacity-50
+                        hover:cursor-pointer
+                        hover:opacity-100
+                    `}>
+                </Mic>
             </div>
         </div>
     )
