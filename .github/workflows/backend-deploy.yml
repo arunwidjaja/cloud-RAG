@@ -85,4 +85,4 @@ jobs:
         run: |
           # Update Dockerrun.aws.json with new image tag
           sed -i 's|"Image": ".*"|"Image": "${{ env.ECR_REGISTRY }}/ragbase:${{ env.IMAGE_TAG }}"|' Dockerrun.aws.json
-          eb deploy ${{ env.EB_ENVIRONMENT }} --timeout 20
+          eb deploy ${{ env.EB_ENVIRONMENT }} --timeout 15
