@@ -99,16 +99,15 @@ export const ProfileBadge = () => {
                         <ChevronDown
                             className="m-2"></ChevronDown>
                         <div className='pr-2'>
-                            {user?.email}
+                            {user?.username}
                         </div>
                         <div>
                             <Avatar className="m-1">
                                 <AvatarImage
-                                    src={LOGO_PLACEHOLDER}
                                     className={`
                                         text-sm
                                     `}/>
-                                <AvatarFallback className='bg-accent text-text'>{user?.email.substring(0, 2)}</AvatarFallback>
+                                <AvatarFallback className='bg-accent text-text'>{user?.username.substring(0, 2)}</AvatarFallback>
                             </Avatar>
                         </div>
                     </div>

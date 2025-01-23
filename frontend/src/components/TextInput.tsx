@@ -12,7 +12,7 @@ import { createAnswerMessage, createInputMessage } from '../stores/messageStore'
 import { get_current_chat, save_chats, update_chats } from '@/handlers/handlers_chats';
 
 // Components
-import { Mic, Mic2, Paperclip } from 'lucide-react';
+import { Mic, Paperclip } from 'lucide-react';
 import { FileUploadWindow } from './FileUpload';
 
 // Hooks

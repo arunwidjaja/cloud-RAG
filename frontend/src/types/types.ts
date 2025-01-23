@@ -48,13 +48,13 @@ export interface ChatsState {
 }
 
 export interface User {
+    username: string;
     id: string;
-    email: string;
 }
 
 export interface AuthContextType {
     user: User | null;
-    login: (username: string, email: string, password: string) => Promise<void>;
+    login: (username: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string) => Promise<boolean>;
     delete_account: (email: string, password: string) => Promise<void>;
     logout: () => void;

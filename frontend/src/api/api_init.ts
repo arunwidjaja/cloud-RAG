@@ -56,12 +56,11 @@ export const start_session = async (): Promise<void> => {
     console.error('Error starting session: ', error);
   }
 }
-export const start_login = async (username: string, email: string, password: string): Promise<string> => {
+export const start_login = async (username: string, password: string): Promise<string> => {
   try {
     const url = `${import.meta.env.VITE_API_BASE_URL}/login`
     const data = {
       'username': username,
-      'email': email,
       'pwd': password
     };
     const response = await fetch(url, {

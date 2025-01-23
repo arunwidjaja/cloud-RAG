@@ -7,7 +7,6 @@ import { Input } from './ui/input';
 
 function LoginPage() {
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const { login, isAuthenticated } = useAuth();
@@ -15,7 +14,7 @@ function LoginPage() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await login(username, email, password);
+            await login(username, password);
         } catch (err) {
             console.log('Error occurred while logging in');
         }
@@ -42,14 +41,6 @@ function LoginPage() {
                         onChange={(e) => setUsername(e.target.value)}
                         type="text"
                         placeholder="username"
-                        className='bg-gray-200 m-1'>
-                    </Input>
-                    <Input
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        placeholder="email"
                         className='bg-gray-200 m-1'>
                     </Input>
                     <Input
