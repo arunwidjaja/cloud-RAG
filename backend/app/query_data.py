@@ -10,9 +10,10 @@ import json
 import openai
 
 # Local Modules
-from database_manager import DatabaseManager
 from api_MODELS import ChatModel
 from collection_utils import extract_user_collections
+from database_manager import DatabaseManager
+from document_utils import extract_page
 
 import config
 import prompt_templates
@@ -144,7 +145,7 @@ def search_database(query: str, dbm: DatabaseManager, collections: List[str]) ->
     return retrieved_docs
 
 
-def combine_context(retrieved_docs: List[tuple[Document, float]]) -> List[Dict[str, str]]:
+def parse_context(retrieved_docs: List[tuple[Document, float]]) -> List[Dict[str, str]]:
     """
     Consolidates all of the contexts from a list of retrieved Documents.
 
@@ -166,32 +167,21 @@ def combine_context(retrieved_docs: List[tuple[Document, float]]) -> List[Dict[s
             # store source and context in dictionary
             context = dict.fromkeys(['context', 'source', 'source_hash'], "")
 
-            doc_source_hash: str = getattr(doc[0], 'metadata')['source_hash']
-            doc_source: str = getattr(doc[0], 'metadata')['source_base_name']
             doc_collection: str = getattr(doc[0], 'metadata')['collection']
             doc_context: str = doc[0].page_content
+            doc_id: str = getattr(doc[0], 'metadata')['id']
+            doc_source: str = getattr(doc[0], 'metadata')['source_base_name']
+            doc_source_hash: str = getattr(doc[0], 'metadata')['source_hash']
 
-            context['source_hash'] = doc_source_hash
-            context['source'] = doc_source
+            doc_page = extract_page(doc_id)
+
             context['collection'] = doc_collection
             context['context'] = doc_context
+            context['page'] = doc_page
+            context['source'] = doc_source
+            context['source_hash'] = doc_source_hash
 
-            # merge contexts from sources that have already been added
-            source_is_duplicate = False
-            for entry in contexts:
-                hash_existing: str = entry['source_hash']
-                if hash_existing == doc_source_hash:
-                    entry['context'] = (
-                        entry['context'] +
-                        '...\n\n...' +
-                        doc_context
-                    )
-                    source_is_duplicate = True
-                    break
-
-            # append to list of contexts
-            if not source_is_duplicate:
-                contexts.append(context)
+            contexts.append(context)
     return contexts
 
 
@@ -252,7 +242,7 @@ async def stream_rag_response(
     )
 
     # Aggregate context into a single list
-    contexts = combine_context(retrieved_docs)
+    contexts = parse_context(retrieved_docs)
     context_strings = [data['context'] for data in contexts]
 
     # Build the prompt with the context
@@ -275,18 +265,24 @@ async def stream_rag_response(
     llm_message_id = getattr(llm_response, 'id')
     print(f"LLM Response {llm_message_id}:\n{llm_message}")
 
-    # Yield formatted string containing names of source files used.
-    # This will be outputted after the response finishes streaming.
-    yield "\n\nSources:\n" + "\n".join(
-        f"{ctx['source']}"
-        for ctx in contexts
-    )
+    sources: List[str] = []
+    for ctx in contexts:
+        sources.append(ctx['source'])
+    sources = list(set(sources))
+
+    yield "\n\nSources:\n" + "\n".join(sources)
 
     # Yield full context data, including metadata.
     # Need this for front-end processing.
     yield "\n\nMETADATA:" + json.dumps({
+        "message": llm_message,
         "contexts": contexts
     })
+
+    print(f"Context used for this response: ")
+    for ctx in contexts:
+        print(f"{ctx['source']}, page {ctx['page']}:")
+        print(f"{ctx['context']}")
 
 
 def main():

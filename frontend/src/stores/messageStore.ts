@@ -2,26 +2,26 @@ import { create } from 'zustand';
 import { ContextData } from '../types/types';
 import { generate_message_id } from '@/utils/utils';
 
-// Base Message interface with common properties
-interface BaseMessage {
+// InputMessage is for user inputs
+interface InputMessage{
     id: string;
+    type: string;
     text: string;
 }
 
-// InputMessage is for user inputs
-interface InputMessage extends BaseMessage {
-    type: string;
-}
-
 // AnswerMessage is for any responses not containing context information
-interface AnswerMessage extends BaseMessage {
+interface AnswerMessage {
+    id: string;
     type: string;
+    text: string;
 }
 
 // ContextMessage is for RAG responses with associated context information
-interface ContextMessage extends BaseMessage {
+interface ContextMessage{
+    id: string;
     type: string;
-    context_list: ContextData[];
+    text: string;
+    content: ContextData[];
 }
 
 // Union type for all message types
@@ -40,20 +40,20 @@ interface MessageState {
 export const createInputMessage = (text: string): InputMessage => ({
     id: generate_message_id('msg'),
     type: 'input',
-    text
+    text: text
 });
 
 export const createAnswerMessage = (text: string): AnswerMessage => ({
     id: generate_message_id('msg'),
     type: 'answer',
-    text
+    text: text
 });
 
-export const createContextMessage = (text: string, context_list: ContextData[]): ContextMessage => ({
+export const createContextMessage = (context_list: ContextData[]): ContextMessage => ({
     id: generate_message_id('msg'),
     type: 'context',
-    text,
-    context_list
+    text: 'Context Used:',
+    content: context_list
 });
 
 // Store implementation

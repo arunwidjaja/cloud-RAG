@@ -6,6 +6,7 @@ export type MetadataCallback = (metadata: any) => void;
 interface RawContext {
   collection: string;
   context: string;
+  page: string;
   source: string;
   source_hash: string;
 }
@@ -63,6 +64,7 @@ export const start_stream_query = async (
 
             const context_parsed: ContextData[] = metadata_raw.contexts.map((ctx: RawContext) => ({
               text: ctx.context,
+              page: ctx.page,
               file: {
                 hash: ctx.source_hash,
                 name: ctx.source,

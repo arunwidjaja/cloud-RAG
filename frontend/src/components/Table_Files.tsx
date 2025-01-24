@@ -43,7 +43,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { handle_delete_selected_files, handle_download_selected_files } from "@/handlers/handlers_buttons"
-import { FileUploadWindow2 } from './FileUpload2';
+import { FileUploadWindow } from './FileUpload';
 
 export function FileTable() {
   const uploadRef = useRef(null);
@@ -257,7 +257,7 @@ export function FileTable() {
           </TableBody>
         </Table>
       </div>
-      <FileUploadWindow2 ref={uploadRef} />
+      <FileUploadWindow ref={uploadRef} />
       {/* Pagination */}
       <div id='pagination' className="flex items-center justify-end space-x-2 py-4">
         <div className="space-x-2">

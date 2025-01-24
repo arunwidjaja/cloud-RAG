@@ -2,10 +2,6 @@
 import useEmbeddingsStore from "@/stores/embeddingsStore";
 import usePresetsStore from "@/stores/presetsStore";
 
-
-
-
-
 export const use_embeddings_store = (): string[] => {
     const presets = useEmbeddingsStore((state) => state.presets);
     return presets;

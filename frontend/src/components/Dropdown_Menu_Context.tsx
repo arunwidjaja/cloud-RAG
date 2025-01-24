@@ -18,15 +18,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ContextData } from "@/types/types"
-import { createDefaultFileData } from "@/stores/filesStore"
-import { handle_select_retrieved } from "@/handlers/handlers_retrieved"
-import { createContextData } from "@/stores/retrievedStore"
-import { get_file_data } from "@/handlers/handlers_retrieved"
+import { handle_select_context } from "@/handlers/handlers_retrieval"
+// import { createContextData } from "@/stores/retrievalStore"
+// import { get_file_data } from "@/handlers/handlers_retrieval"
 
 export type ComboboxItem = {
   value: string
   label: string
-  text: string
+  item: ContextData
 }
 
 type useHook = () => ContextData[]
@@ -58,15 +57,16 @@ export function DropdownMenuContext({
   const items: ComboboxItem[] = hook_items.map(item => ({
     value: item.file.hash,
     label: item.file.name,
-    text: item.text
+    item: item
   }))
 
   const defaultOnChange = React.useCallback((value: string) => {
     const selectedItem = items.find(item => item.value === value)
     if (selectedItem) {
-      handle_select_retrieved(createContextData(get_file_data(selectedItem.value),selectedItem.text))
+      handle_select_context(selectedItem.item)
     } else {
-      handle_select_retrieved(createContextData(createDefaultFileData(),""))
+      console.log("Else block in ddmcontext on change")
+      // handle_select_context(createContextData(createDefaultFileData(),""))
     }
   }, [items])
 

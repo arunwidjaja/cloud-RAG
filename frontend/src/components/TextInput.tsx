@@ -5,10 +5,10 @@ import { ContextData } from '@/types/types';
 
 // Handlers
 import { add_message, update_message } from '../handlers/handlers_messages';
-import { set_current_retrieved, set_retrieved_files } from '@/handlers/handlers_retrieved';
+import { set_retrieved_context } from '@/handlers/handlers_retrieval';
 
 // Stores
-import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
+import { createAnswerMessage, createContextMessage, createInputMessage } from '../stores/messageStore';
 import { get_current_chat, save_chats, update_chats } from '@/handlers/handlers_chats';
 
 // Components
@@ -76,6 +76,23 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
         }
     }
 
+    const udpate_message_with_chunk = (chunk: string) => {
+        streamingMessageRef.current += chunk;
+        // Update message state after streaming finished
+        const updated_message = createAnswerMessage(streamingMessageRef.current);
+        update_message(updated_message);
+    }
+    const update_message_with_metadata = (metadata: any) => {
+        const ctxs: ContextData[] = metadata.contexts;
+        set_retrieved_context(ctxs)
+        add_message(createContextMessage(ctxs))
+        console.log("Context Retrieved:")
+        for(const c of ctxs) {
+            console.log("Page " + c.page)
+            console.log("Context:" + c.text)
+        }
+    }
+
     // Makes an API call and starts streaming the LLM response
     const handle_streaming_response = async (): Promise<void> => {
         setIsStreaming(true); // Flag to disable text field while response is streaming
@@ -94,19 +111,8 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
         try {
             await start_stream_query(
                 user_input,
-                (chunk: string) => {
-                    streamingMessageRef.current += chunk;
-                    // Update the last message with the new content
-                    const updated_message = createAnswerMessage(streamingMessageRef.current);
-                    update_message(updated_message);
-                },
-                (metadata) => {
-                    console.log('Received metadata: ', metadata);
-                    const ai_reply_context: ContextData[] = metadata.contexts;
-
-                    set_retrieved_files(ai_reply_context)
-                    set_current_retrieved(ai_reply_context[0])
-                },
+                udpate_message_with_chunk,
+                (metadata) => update_message_with_metadata(metadata),
                 current_chat,
                 'question'
             );

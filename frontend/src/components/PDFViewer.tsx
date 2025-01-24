@@ -8,10 +8,7 @@ import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 
 // Hooks
-import { use_current_page, use_current_retrieved } from '@/hooks/hooks_retrieved';
-
-// Handlers
-import { set_current_page } from '@/handlers/handlers_retrieved';
+import { use_current_context } from '@/hooks/hooks_retrieval';
 
 
 interface PDFViewerProps {
@@ -36,13 +33,17 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
   const [error, setError] = useState<string>('');
   const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
   const [textItems, setTextItems] = useState<TextItem[]>([]);
+  const [page, setPage] = useState<number>(0);
 
-  const currentPage = use_current_page()
-  const currently_retrieved_file = use_current_retrieved()
-  // const currentContext = use_current_context()
+  const currentContext = use_current_context()
+
+  // if(currentContext) {
+  //   setPage(Number(currentContext.page))
+  // }
 
   // Load PDF document when pdf_stream changes
   useEffect(() => {
+    console.log("Loading PDF...")
     const loadPDF = async () => {
       if (!pdf_stream) {
         setError('');
@@ -74,12 +75,14 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
 
   // Render page and extract text content
   useEffect(() => {
+    console.log("Rendering page...")
     const renderPage = async () => {
       if (!pdfDoc || !canvasRef.current || !highlightLayerRef.current) return;
 
       try {
         setLoading(true);
-        const page = await pdfDoc.getPage(currentPage);
+
+        const pdf_page = await pdfDoc.getPage(page);
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
 
@@ -88,7 +91,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
         }
 
         // Scale is set to 1.0 by default at the top of the component.
-        const viewport = page.getViewport({ scale });
+        const viewport = pdf_page.getViewport({ scale });
         const height = viewport.height;
         const width = viewport.width;
         
@@ -106,7 +109,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
 
         // Get text content.
         // This parses out the PDF and stores position information for each word.
-        const textContent = await page.getTextContent();
+        const textContent = await pdf_page.getTextContent();
         const items = textContent.items.map((item: any) => ({
           str: item.str,
           pos_x: item.transform[4],
@@ -116,7 +119,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
         }));
         setTextItems(items);        
 
-        await page.render(renderContext).promise;
+        await pdf_page.render(renderContext).promise;
         setLoading(false);
       } catch (err) {
         console.error('Error rendering page:', err);
@@ -125,21 +128,21 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
       }
     };
     renderPage();
-  }, [currentPage, scale, pdfDoc]); // Rerenders when user zooms, changes page, or changes doc
+  }, [page, scale, pdfDoc]); // Rerenders when user zooms, changes page, or changes doc
 
   useEffect(() => {
-    if (!currently_retrieved_file || !highlightLayerRef.current || !textItems.length || !pdfDoc) return;
+    if (!currentContext || !highlightLayerRef.current || !textItems.length || !pdfDoc) return;
 
     const renderHighlights = async () => {
-      const page = await pdfDoc.getPage(currentPage);
-      const viewport = page.getViewport({ scale });
+      const pdf_page = await pdfDoc.getPage(page);
+      const viewport = pdf_page.getViewport({ scale });
       const highlightLayer = highlightLayerRef.current;
 
       if (!highlightLayer) return;
 
       highlightLayer.innerHTML = ''; // Clear existing highlights
 
-      const page_text = currently_retrieved_file.text.toLowerCase();
+      const page_text = currentContext.text.toLowerCase();
 
       textItems.forEach((item) => {
         const text = item.str.toLowerCase();
@@ -174,12 +177,12 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
     };
 
     renderHighlights();
-  }, [currently_retrieved_file, textItems, scale, currentPage, pdfDoc]);
+  }, [currentContext, textItems, scale, page, pdfDoc]);
 
   const handleZoomIn = () => setScale(prev => Math.min(prev + 0.1, 3));
   const handleZoomOut = () => setScale(prev => Math.max(prev - 0.1, 0.5));
-  const handleNextPage = () => set_current_page(Math.min(currentPage + 1, numPages));
-  const handlePrevPage = () => set_current_page(Math.max(currentPage - 1, 1));
+  const handleNextPage = () => setPage(Math.min(page + 1, numPages));
+  const handlePrevPage = () => setPage(Math.max(page - 1, 1));
 
   return (
     <Card className="flex flex-1 min-h-0 min-w-0 justify-center p-4 bg-accent border-none">
@@ -194,7 +197,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
                   `}>
           <button
             onClick={handlePrevPage}
-            disabled={currentPage <= 1}
+            disabled={page <= 1}
             className={`
               p-2 m-1
               bg-text text-text2 rounded-lg
@@ -205,11 +208,11 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
             <ChevronLeft></ChevronLeft>
           </button>
           <span className='text-sm'>
-            Page: {currentPage} of {numPages}
+            Page: {page} of {numPages}
           </span>
           <button
             onClick={handleNextPage}
-            disabled={currentPage >= numPages}
+            disabled={page >= numPages}
             className={`
               p-2 m-1
               bg-text text-text2 rounded-lg

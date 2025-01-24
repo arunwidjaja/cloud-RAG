@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List
 
 import os
+import re
 import shutil
 import tiktoken
 
@@ -144,3 +145,22 @@ def get_uploads_metadata(is_attachment: bool = False) -> List[FileMetadata]:
             current_upload_metadata['hash'] = hash
             uploads_metadata.append(current_upload_metadata)
     return uploads_metadata
+
+
+def extract_page(chunk_id: str) -> str:
+    """
+    Extracts the page number from the chunk
+
+    Args:
+        chunk_id: Chunk ID. Formatted as "filename:pagenum:chunknum"
+
+    Returns:
+        The page number formatted as a string
+    """
+    pattern = r'^[^:]+:(\d+):'
+    match = re.search(pattern, chunk_id)
+    if match:
+        page_num = match.group(1)
+        return page_num
+    else:
+        raise Exception("Invalid chunk ID!")

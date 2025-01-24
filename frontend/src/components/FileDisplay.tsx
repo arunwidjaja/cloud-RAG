@@ -1,15 +1,15 @@
-import { use_current_retrieved } from "@/hooks/hooks_retrieved";
+import { use_current_context } from "@/hooks/hooks_retrieval";
 import { Button } from "./ui/button";
 // import { LoremIpsum } from 'lorem-ipsum';
 
-import { handle_download_retrieved_file } from "@/handlers/handlers_retrieved";
+import { handle_download_retrieved_file } from "@/handlers/handlers_retrieval";
 
 // const lorem = new LoremIpsum();
 // const filler_text = lorem.generateWords(500);
 
 
 export function FileDisplay({ }) {
-    const retrieved = use_current_retrieved();
+    const retrieved = use_current_context();
 
     const retrieved_context = retrieved.text;
     const retrieved_id = retrieved.file.hash;

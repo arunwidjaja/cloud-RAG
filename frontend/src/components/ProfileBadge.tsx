@@ -1,6 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
-import { LOGO_PLACEHOLDER } from "@/constants/constants";
 import { start_delete_account } from "@/api/api_user_data";
 
 // Components
