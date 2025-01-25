@@ -86,10 +86,9 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
         const ctxs: ContextData[] = metadata.contexts;
         set_retrieved_context(ctxs)
         add_message(createContextMessage(ctxs))
-        console.log("Context Retrieved:")
         for(const c of ctxs) {
-            console.log("Page " + c.page)
-            console.log("Context:" + c.text)
+            console.log("Context from Page " + c.page + ":")
+            console.log(c.text)
         }
     }
 

@@ -1,9 +1,10 @@
 // Components
-import { Panel_PDF } from "@/components/Panel_PDF"
+import { DocumentPanel } from "@/components/DocumentPanel"
 import { DropdownMenuContext } from "./Dropdown_Menu_Context"
 
 // Hooks
 import { use_retrieved_context, use_retrieved_context_unique_files } from "@/hooks/hooks_retrieval"
+import { Button } from "./ui/button"
 
 export function Tab_1_Content() {
     return (
@@ -20,7 +21,15 @@ export function Tab_1_Content() {
                     className='flex-1 mt-1'>
                 </DropdownMenuContext>
             </div>
-            <Panel_PDF></Panel_PDF>
+            <DocumentPanel></DocumentPanel>
+            <Button
+                onClick={()=>alert("Implement This.")}
+                className={`
+                    bg-text text-text2
+                    hover:bg-highlight
+                `}>
+                Download Original File
+            </Button>
         </div>
     )
 }

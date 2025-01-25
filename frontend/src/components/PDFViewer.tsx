@@ -24,6 +24,7 @@ interface TextItem {
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
+  console.log("Rendering PDFViewer component...")
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const highlightLayerRef = useRef<HTMLDivElement>(null);
 
@@ -33,15 +34,11 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
   const [error, setError] = useState<string>('');
   const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
   const [textItems, setTextItems] = useState<TextItem[]>([]);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState(1);
 
   const currentContext = use_current_context()
 
-  // if(currentContext) {
-  //   setPage(Number(currentContext.page))
-  // }
-
-  // Load PDF document when pdf_stream changes
+  // Load PDF document when the selected PDF changes
   useEffect(() => {
     console.log("Loading PDF...")
     const loadPDF = async () => {
@@ -73,9 +70,17 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
     loadPDF();
   }, [pdf_stream]); // Only reload when pdf_stream changes
 
-  // Render page and extract text content
+  // Updates the current page if the user selects a different context to view.
   useEffect(() => {
-    console.log("Rendering page...")
+    if (currentContext) {
+      setPage(Number(currentContext.page) + 1);
+    }
+  }, [currentContext])
+
+  // Renders the current page and extracts the text content
+  // The text and positional data are stored in textItems.
+  useEffect(() => {
+    console.log("Rendering page #" + page)
     const renderPage = async () => {
       if (!pdfDoc || !canvasRef.current || !highlightLayerRef.current) return;
 
@@ -94,7 +99,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
         const viewport = pdf_page.getViewport({ scale });
         const height = viewport.height;
         const width = viewport.width;
-        
+
         // PDF and Highlight layer should be the same dimensions.
         canvas.height = height;
         canvas.width = width;
@@ -117,7 +122,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
           width: item.width || 20, // arbitrary default width
           height: item.height || 0
         }));
-        setTextItems(items);        
+        setTextItems(items);
 
         await pdf_page.render(renderContext).promise;
         setLoading(false);
@@ -128,17 +133,28 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
       }
     };
     renderPage();
-  }, [page, scale, pdfDoc]); // Rerenders when user zooms, changes page, or changes doc
+  }, [currentContext, page, scale, pdfDoc]); // Rerenders when user zooms, changes page, or changes documents
 
+  // Hook for rendering highlights.
+  // Needs to re-render whenever the user changes the page or selects a different context.
   useEffect(() => {
+    console.log("Rendering highlights...")
     if (!currentContext || !highlightLayerRef.current || !textItems.length || !pdfDoc) return;
 
     const renderHighlights = async () => {
+
       const pdf_page = await pdfDoc.getPage(page);
       const viewport = pdf_page.getViewport({ scale });
       const highlightLayer = highlightLayerRef.current;
 
       if (!highlightLayer) return;
+
+      console.log("Current page: " + page)
+      console.log("Context current page plus 1: " + (Number(currentContext.page) + 1))
+      if (page != (Number(currentContext.page) + 1)){
+        highlightLayer.innerHTML = ''; // Clear existing highlights
+        return;
+      }      
 
       highlightLayer.innerHTML = ''; // Clear existing highlights
 
@@ -177,7 +193,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
     };
 
     renderHighlights();
-  }, [currentContext, textItems, scale, page, pdfDoc]);
+  }, [textItems, scale, page, pdfDoc]);
 
   const handleZoomIn = () => setScale(prev => Math.min(prev + 0.1, 3));
   const handleZoomOut = () => setScale(prev => Math.max(prev - 0.1, 0.5));
@@ -185,7 +201,12 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
   const handlePrevPage = () => setPage(Math.max(page - 1, 1));
 
   return (
-    <Card className="flex flex-1 min-h-0 min-w-0 justify-center p-4 bg-accent border-none">
+    <Card className={`
+      flex flex-1 min-h-0 min-w-0
+      justify-center p-4
+      bg-accent
+      border border-green-400
+    `}>
       <div className="flex flex-1 flex-col items-center w-full min-w-0 overflow-auto">
         {/* Controls */}
         <div
@@ -256,9 +277,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdf_stream }) => {
             <div className="p-8 text-center text-gray-500">
               Please select a PDF to view
             </div>
-          )}
-          {error && (
-            <div className="text-red-500 p-4 text-center">{error}</div>
           )}
           <div className="relative inline-block">
             <canvas ref={canvasRef} />

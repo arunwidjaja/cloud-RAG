@@ -19,8 +19,10 @@ interface ChatBubbleProps {
 }
 
 const Contexts = ({ ctxs }: ContextProps) => {
-    function click_context(ctx: ContextData){
+    function click_context(ctx: ContextData) {
         set_current_context(ctx)
+        console.log("Selected context on page " + ctx.page + ":")
+        console.log(ctx.text)
     }
     return (
         <div>
@@ -42,7 +44,7 @@ const Contexts = ({ ctxs }: ContextProps) => {
                         `}
                         onClick={() => click_context(ctx)}
                     >
-                        <Search className="m-2 p-0.5 shrink-0"/>
+                        <Search className="m-2 p-0.5 shrink-0" />
                         {ctx_str}
                     </div>
                 );
@@ -52,7 +54,7 @@ const Contexts = ({ ctxs }: ContextProps) => {
 }
 
 
-export const ChatBubble = ({message, onEditMessage}: ChatBubbleProps) => {
+export const ChatBubble = ({ message, onEditMessage }: ChatBubbleProps) => {
     const { toast } = useToast()
     const isLoading = !message.text;
     const isContext = isContextMsg(message)
@@ -96,10 +98,13 @@ export const ChatBubble = ({message, onEditMessage}: ChatBubbleProps) => {
                     </Contexts>
                     <div id="message_functions" className={`${message.type}-icon-container mt-1`}>
                         <div className="flex flex-row items-center">
-                            <ClipboardList
-                                onClick={handle_copy}
-                                className="opacity-50 hover:opacity-100 hover:cursor-pointer">
-                            </ClipboardList>
+                            {message.type != 'context' && (
+                                <ClipboardList
+                                    onClick={handle_copy}
+                                    className="opacity-50 hover:opacity-100 hover:cursor-pointer">
+                                </ClipboardList>
+                            )}
+
                             {/* Conditionally render the edit message button */}
                             {message.type === 'input' && (
                                 <PencilLine
