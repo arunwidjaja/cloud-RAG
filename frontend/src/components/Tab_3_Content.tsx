@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { RefObject } from 'react';
 
 // Components
-import { DropdownMenu } from "./Dropdown_Menu"
+import { CustomDropdownMenu } from "./Dropdown_Menu"
 import { UploadTable } from "./Table_Upload"
 import { Button } from "./ui/button"
 import { FileUploadWindow } from "./FileUpload"
@@ -55,7 +55,7 @@ export function Tab_3_Content() {
             </div>
             <div id="upload_dropdown_menu"
                 className="flex">
-                <DropdownMenu
+                <CustomDropdownMenu
                     useItemsHook={use_collections}
                     placeholder='Select a Collection...'
                     searchPlaceholder='Search Collections...'

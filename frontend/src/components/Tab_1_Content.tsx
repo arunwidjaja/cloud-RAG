@@ -5,6 +5,7 @@ import { DropdownMenuContext } from "./Dropdown_Menu_Context"
 // Hooks
 import { use_retrieved_context } from "@/hooks/hooks_retrieval"
 import { Button } from "./ui/button"
+import { handle_download_retrieved_file } from "@/handlers/handlers_retrieval"
 
 export function Tab_1_Content() {
     return (
@@ -23,7 +24,7 @@ export function Tab_1_Content() {
             </div>
             <DocumentPanel></DocumentPanel>
             <Button
-                onClick={()=>alert("Implement This.")}
+                onClick={handle_download_retrieved_file}
                 className={`
                     bg-text text-text2
                     hover:bg-highlight

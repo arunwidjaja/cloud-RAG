@@ -34,7 +34,7 @@ type ComboboxProps = {
   onChange?: (value: string) => void
 }
 
-export function DropdownMenu({
+export function CustomDropdownMenu({
   useItemsHook: useHook,
   placeholder = "Select an item...",
   searchPlaceholder = "Search items...",
@@ -91,7 +91,7 @@ export function DropdownMenu({
                   key={item.value}
                   value={item.value}
                   onSelect={(value) => handleSelect(value)}
-                  className="text-text"
+                  className="text-text hover:cursor-pointer"
                 >
                   <Check
                     className={cn(

@@ -11,7 +11,7 @@ import { refresh_chats } from '@/handlers/handlers_chats';
 // Components
 import { Tabs_Section } from '@/components/Tabs_Section';
 import { Logs } from '@/components/Logs';
-import { DropdownMenu } from '@/components/Dropdown_Menu';
+import { CustomDropdownMenu } from '@/components/Dropdown_Menu';
 import { ChatHistory } from '@/components/ChatHistory';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ProfileBadge } from '@/components/ProfileBadge';
@@ -66,7 +66,7 @@ function MainApp() {
                     <div id="llmpanel" className='p-2'>
                         {/* Presets section */}
                         <div id="presets" className="flex flex-1 flex-col">
-                            <DropdownMenu
+                            <CustomDropdownMenu
                                 useItemsHook={use_presets}
                                 placeholder='Select Preset'
                                 searchPlaceholder='Search preset analyses'

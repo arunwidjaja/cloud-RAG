@@ -20,8 +20,8 @@ export const handle_select_context = (retrieved_context: ContextData): void => {
 }
 
 export const handle_download_retrieved_file = (): void => {
-    const current_retrieved = useRetrievedStore.getState().current_context;
-    const current_file = current_retrieved?.file
+    const current_context = useRetrievedStore.getState().current_context;
+    const current_file = current_context?.file
 
     if(current_file){
         const collection = current_file.collection;
