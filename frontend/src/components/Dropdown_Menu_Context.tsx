@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import _ from 'lodash';
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -53,8 +54,9 @@ export function DropdownMenuContext({
   const [selectedValue, setSelectedValue] = React.useState(value)
 
   const hook_items = useHook()
+  const hook_items_unique = _.uniqBy(hook_items,'file.hash')
 
-  const items: ComboboxItem[] = hook_items.map(item => ({
+  const items: ComboboxItem[] = hook_items_unique.map(item => ({
     value: item.file.hash,
     label: item.file.name,
     item: item

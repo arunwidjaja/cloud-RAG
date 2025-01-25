@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import _ from 'lodash'
 import { RefObject } from 'react';
 import { start_stream_query } from '../api/api_llm_calls';
 import { ContextData } from '@/types/types';
@@ -84,9 +85,11 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
     }
     const update_message_with_metadata = (metadata: any) => {
         const ctxs: ContextData[] = metadata.contexts;
-        set_retrieved_context(ctxs)
-        add_message(createContextMessage(ctxs))
-        for(const c of ctxs) {
+        const ctxs_sorted = _.sortBy(ctxs,'page')
+
+        set_retrieved_context(ctxs_sorted)
+        add_message(createContextMessage(ctxs_sorted))
+        for(const c of ctxs_sorted) {
             console.log("Context from Page " + c.page + ":")
             console.log(c.text)
         }

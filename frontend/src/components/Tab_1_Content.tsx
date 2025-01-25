@@ -3,7 +3,7 @@ import { DocumentPanel } from "@/components/DocumentPanel"
 import { DropdownMenuContext } from "./Dropdown_Menu_Context"
 
 // Hooks
-import { use_retrieved_context, use_retrieved_context_unique_files } from "@/hooks/hooks_retrieval"
+import { use_retrieved_context } from "@/hooks/hooks_retrieval"
 import { Button } from "./ui/button"
 
 export function Tab_1_Content() {
