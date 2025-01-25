@@ -137,6 +137,7 @@ const PDFViewer = ({pdf_stream, context}: PDFViewerProps): JSX.Element => {
           width: item.width || 20, // arbitrary default width
           height: item.height || 0
         }));
+
         setTextItems(items);
 
         await pdf_page.render(renderContext).promise;
@@ -186,8 +187,8 @@ const PDFViewer = ({pdf_stream, context}: PDFViewerProps): JSX.Element => {
           const x_raw = item.pos_x;
           const y_raw = item.pos_y;
 
-          const x = x_raw * scale
-          const y = (viewport.height - y_raw - item.height) * scale;
+          const x = x_raw * scale;
+          const y = viewport.height - y_raw * scale - item.height * scale;
           const w = item.width * scale;
           const h = item.height * scale;
 
