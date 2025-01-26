@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ContextData } from "@/types/types"
-import { handle_select_context } from "@/handlers/handlers_retrieval"
+import { set_current_context } from "@/handlers/handlers_retrieval"
 // import { createContextData } from "@/stores/retrievalStore"
 // import { get_file_data } from "@/handlers/handlers_retrieval"
 
@@ -65,7 +65,7 @@ export function DropdownMenuContext({
   const defaultOnChange = React.useCallback((value: string) => {
     const selectedItem = items.find(item => item.value === value)
     if (selectedItem) {
-      handle_select_context(selectedItem.item)
+      set_current_context(selectedItem.item)
     } else {
       console.log("Else block in ddmcontext on change")
       // handle_select_context(createContextData(createDefaultFileData(),""))

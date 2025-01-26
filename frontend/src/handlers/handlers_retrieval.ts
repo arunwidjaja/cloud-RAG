@@ -5,21 +5,17 @@ import { ContextData } from "@/types/types";
 // import { FileData } from "@/types/types";
 
 
-export const set_retrieved_context = (retrieved_files: ContextData[]) => {
+export function set_retrieved_context(retrieved_files: ContextData[]): void {
     const setRetrievedContext = useRetrievedStore.getState().setRetrievedContext;
     setRetrievedContext(retrieved_files);
 }
 
-export const set_current_context = (current_retrieved: ContextData) => {
+export function set_current_context(current_retrieved: ContextData): void {
     const setCurrentContext = useRetrievedStore.getState().setCurrentContext;
     setCurrentContext(current_retrieved)
 }
 
-export const handle_select_context = (retrieved_context: ContextData): void => {
-    set_current_context(retrieved_context)
-}
-
-export const handle_download_retrieved_file = (): void => {
+export function handle_download_retrieved_file(): void {
     const current_context = useRetrievedStore.getState().current_context;
     const current_file = current_context?.file
 

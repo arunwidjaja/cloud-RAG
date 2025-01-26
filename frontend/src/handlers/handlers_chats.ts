@@ -5,15 +5,12 @@ import useChatsStore from "@/stores/chatsStore";
 import { set_messages } from "./handlers_messages";
 
 
-export const update_chats = () => {
+export function update_chats(): void{
     const updateChats = useChatsStore.getState().updateChats;
     updateChats();
 }
 
-/**
- * Saves the current chats to disk.
- */
-export const save_chats = async() => {
+export async function save_chats(): Promise<void> {
     const current_chats = useChatsStore.getState().chats;
     for (const chat of current_chats) {
         const saved_chat = await start_save_chat(chat);
@@ -21,17 +18,17 @@ export const save_chats = async() => {
     }
 }
 
-export const set_chats = (chats: Chat[]) => {
+export function set_chats(chats: Chat[]): void {
     const setChats = useChatsStore.getState().setChats;
     return setChats(chats);
 }
 
-export const get_current_chat = (): Chat => {
+export function get_current_chat(): Chat {
     const current_chat = useChatsStore.getState().getCurrentChat();
     return current_chat;
 }
 
-export const get_saved_chats = async(): Promise<Chat[]> => {
+export async function get_saved_chats(): Promise<Chat[]> {
     const saved_chats_reverse = await fetch_saved_chats();
     // The chats' order needs to be reversed, because:
     // The chat history component should show newest chats at the TOP.
@@ -45,12 +42,12 @@ export const get_saved_chats = async(): Promise<Chat[]> => {
 /**
  * Resets the chat history to whatever is saved
  */
-export const refresh_chats = async(): Promise<void> => {
+export async function refresh_chats(): Promise<void> {
     const chat_history = await get_saved_chats();
     set_chats(chat_history);
 }
 
-export const handle_select_chat = (selected_chat: Chat): void => {
+export function handle_select_chat(selected_chat: Chat): void {
     const messages = selected_chat.messages
     set_messages(messages)
 }
