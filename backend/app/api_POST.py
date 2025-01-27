@@ -9,6 +9,7 @@ import shutil
 
 # Local Modules
 from api_MODELS import *
+from audio import transcribe_audio
 from database_manager import DatabaseManager, get_db_instance
 from document_processor import DocumentHandler, get_document_handler
 from collection_utils import format_name
@@ -202,3 +203,29 @@ async def upload_documents(
 
     print(f"All files processed!")
     return processed_files
+
+
+@router.post("/stt")
+async def parse_audio(
+    audio: UploadFile = File(...),
+    dbm: DatabaseManager = Depends(get_db_instance)
+) -> str | None:
+    try:
+        # Save file to disk
+        if audio.filename:
+            content = await audio.read()
+            transcription = transcribe_audio(content)
+            return transcription
+            # audio_path = audios_path / audio.filename
+
+            # async with aiofiles.open(audio_path, "wb") as out_file:
+            #     content = await audio.read()
+            #     await out_file.write(content)
+            # transcription = transcribe_audio(audio_path)
+            # return transcription
+    except Exception as e:
+        print(f"Parse audio error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to parse chat: {str(e)}"
+        )

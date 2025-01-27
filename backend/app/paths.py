@@ -35,6 +35,7 @@ class PathConfig:
 class PathType(Enum):
     ARCHIVE = auto()
     ATTACHMENTS = auto()
+    AUDIO = auto()
     UPLOADS = auto()
 
 
@@ -51,6 +52,10 @@ class UserPathsWrapper:
         return self._paths[PathType.ATTACHMENTS]
 
     @property
+    def AUDIO(self) -> Path:
+        return self._paths[PathType.AUDIO]
+
+    @property
     def UPLOADS(self) -> Path:
         return self._paths[PathType.UPLOADS]
 
@@ -65,6 +70,10 @@ class PathRegistry:
             PathType.ATTACHMENTS: PathConfig(
                 config.PATH_ATTACHMENTS_LOCAL,
                 config.PATH_ATTACHMENTS_EFS
+            ),
+            PathType.AUDIO: PathConfig(
+                config.PATH_AUDIO_LOCAL,
+                config.PATH_AUDIO_EFS
             ),
             PathType.UPLOADS: PathConfig(
                 config.PATH_UPLOADS_LOCAL,

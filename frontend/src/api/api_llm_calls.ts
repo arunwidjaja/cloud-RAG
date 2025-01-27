@@ -91,6 +91,26 @@ export const start_stream_query = async (
   }
 }
 
+export const start_stt = async (audio: FormData): Promise<string> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/stt`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'uuid': current_user_id
+      },
+      body: audio
+    });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error parsing audio: ', error);
+    return ""
+  }
+}
+
 
 
 export const start_summarization = async (files: FileData[]): Promise<string> => {

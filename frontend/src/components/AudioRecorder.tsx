@@ -1,16 +1,24 @@
 import { useState, useRef } from 'react';
 import { Mic, Square } from 'lucide-react';
 
-const AudioRecorder = () => {
+interface AudioRecorderProps {
+  onRecord: (recording: FormData) => void;
+}
+
+export const AudioRecorder = ({ onRecord }: AudioRecorderProps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState('');
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
-  const startRecording = async () => {
+
+
+  async function startRecording(): Promise<void> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
+      const formData = new FormData();
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -20,16 +28,13 @@ const AudioRecorder = () => {
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        // Here you can handle the recorded audio
-        // For example, you could:
-        // 1. Send it to a server
-        // 2. Play it back
-        // 3. Download it
-        console.log('Recording finished, audio URL:', audioUrl);
+        formData.append('audio', audioBlob, 'recording.wav');
+        onRecord(formData)
+        // const audioUrl = URL.createObjectURL(audioBlob);
+        // const audio = new Audio(audioUrl);
+        // audio.play();
       };
 
       mediaRecorder.start();
@@ -40,7 +45,7 @@ const AudioRecorder = () => {
     }
   };
 
-  const stopRecording = () => {
+  function stopRecording(): void {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
@@ -48,7 +53,7 @@ const AudioRecorder = () => {
     }
   };
 
-  const toggleRecording = () => {
+  function toggleRecording(): void {
     if (isRecording) {
       stopRecording();
     } else {
@@ -57,19 +62,29 @@ const AudioRecorder = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
+    <div
+      className={`
+        shrink-0
+        m-1 rounded-full
+        text-text opacity-50
+        transition-colors
+        hover:cursor-pointer
+        hover:opacity-100
+        focus:outline-none focus-visible:outline-none focus:ring-0
+      `}>
       <button
         onClick={toggleRecording}
-        className={`rounded-full transition-colors focus:outline-none${
-          isRecording 
-            ? 'bg-highlight text-text hover:bg-warning hover:text-text2' 
-            : 'bg-none text-text hover:bg-highlight hover:text-text2'
-        }`}
-      >
+        className={`
+          focus:outline-none focus-visible:outline-none focus:ring-0
+          ${isRecording
+            ? 'text-text hover:text-warning'
+            : 'text-text'
+          }
+        `}>
         {isRecording ? (
-          <Square className="w-10 h-10 p-2" />
+          <Square />
         ) : (
-          <Mic className="w-10 h-10 p-1" />
+          <Mic />
         )}
       </button>
       {error && (

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash'
 import { RefObject } from 'react';
-import { start_stream_query } from '../api/api_llm_calls';
+import { start_stream_query, start_stt } from '../api/api_llm_calls';
 import { ContextData } from '@/types/types';
 
 // Handlers
@@ -13,13 +13,14 @@ import { createAnswerMessage, createContextMessage, createInputMessage } from '.
 import { get_current_chat, save_chats, update_chats } from '@/handlers/handlers_chats';
 
 // Components
-import { Mic, Paperclip } from 'lucide-react';
+import { Paperclip } from 'lucide-react';
 import { FileUploadWindow } from './FileUpload';
 
 // Hooks
 import { use_attachments } from '@/hooks/hooks_files';
 import { refresh_attachments } from '@/handlers/handlers_files';
 import { Attachment } from './Attachment';
+import AudioRecorder from './AudioRecorder';
 
 const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): void => {
     if (attachmentRef && attachmentRef.current) {
@@ -27,12 +28,14 @@ const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): 
     }
 }
 
-interface TextInputProps {
+interface UserInputProps {
     edited_query: string;
     edit_timestamp: number;
 }
 
-export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
+
+
+export const UserInput = ({ edited_query, edit_timestamp }: UserInputProps) => {
 
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const streamingMessageRef = useRef<string>("");
@@ -69,12 +72,24 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
         }
     }, [edited_query, edit_timestamp]);
 
-    // Sends input or adds a new line when hiting Enter vs Shift+Enter
+    // Sends input or adds a new line when hitting Enter vs Shift+Enter
     const handle_key_down = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            handle_streaming_response();
+            // Create an empty message bubble.
+            const empty_input_msg = createInputMessage("");
+            add_message(empty_input_msg)
+            handle_streaming_response(user_input);
         }
+    }
+
+    async function parse_audio(audio: FormData): Promise<void> {
+        // Create an empty message bubble while waiting for transcription.
+        const empty_input_msg = createInputMessage("");
+        add_message(empty_input_msg)
+    
+        const transcription = await start_stt(audio)
+        handle_streaming_response(transcription)
     }
 
     const udpate_message_with_chunk = (chunk: string) => {
@@ -85,25 +100,27 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
     }
     const update_message_with_metadata = (metadata: any) => {
         const ctxs: ContextData[] = metadata.contexts;
-        const ctxs_sorted = _.sortBy(ctxs,'page')
+        const ctxs_sorted = _.sortBy(ctxs, 'page')
 
         set_retrieved_context(ctxs_sorted)
         add_message(createContextMessage(ctxs_sorted))
-        for(const c of ctxs_sorted) {
+        for (const c of ctxs_sorted) {
             console.log("Context from Page " + c.page + ":")
             console.log(c.text)
         }
     }
 
     // Makes an API call and starts streaming the LLM response
-    const handle_streaming_response = async (): Promise<void> => {
-        setIsStreaming(true); // Flag to disable text field while response is streaming
-        const input_message = createInputMessage(user_input);
+    const handle_streaming_response = async (query: string): Promise<void> => {
         const current_chat = get_current_chat();
         streamingMessageRef.current = "";
 
+        setIsStreaming(true);
 
-        add_message(input_message);
+        // Update the input bubble with the text
+        const input_message = createInputMessage(query);
+        update_message(input_message)
+
         set_user_input('')
 
         // Create an initial empty answer message that will be updated
@@ -112,7 +129,7 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
 
         try {
             await start_stream_query(
-                user_input,
+                query,
                 udpate_message_with_chunk,
                 (metadata) => update_message_with_metadata(metadata),
                 current_chat,
@@ -200,16 +217,7 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
                         hover:opacity-100
                     `}>
                 </Paperclip>
-                <Mic
-                    onClick={()=>alert("Implement Audio Parsing!")}
-                    className={`
-                        shrink-0
-                        m-1
-                        text-text opacity-50
-                        hover:cursor-pointer
-                        hover:opacity-100
-                    `}>
-                </Mic>
+                <AudioRecorder onRecord={parse_audio}></AudioRecorder>
             </div>
         </div>
     )

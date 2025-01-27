@@ -9,13 +9,13 @@ import { handle_select_preset, handle_run_preset } from '@/handlers/handlers_pre
 import { refresh_chats } from '@/handlers/handlers_chats';
 
 // Components
-import { Tabs_Section } from '@/components/Tabs_Section';
+import { TabsPanel } from '@/components/TabsPanel';
 import { Logs } from '@/components/Logs';
 import { CustomDropdownMenu } from '@/components/Dropdown_Menu';
 import { ChatHistory } from '@/components/ChatHistory';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ProfileBadge } from '@/components/ProfileBadge';
-import { ChatInterface } from '@/components/ChatInterface';
+import { ConversationPanel } from '@/components/ConversationPanel';
 
 import { Toaster } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
@@ -38,18 +38,20 @@ function MainApp() {
     // Sets the initial state of state variables on start
     useEffect(() => {
         if (isAuthenticated && user) {
-            const initializeApp = async () => {
+            async function initialize(): Promise<void> {
                 try {
                     await start_session();
                     await refresh_collections();
-                    await refresh_files();
-                    await refresh_uploads();
-                    await refresh_chats();
+                    await Promise.all([
+                        refresh_files(),
+                        refresh_uploads(),
+                        refresh_chats()
+                    ]);
                 } catch (error) {
                     console.error('Initialization error: ', error);
                 }
             }
-            initializeApp();
+            initialize();
         }
 
     }, [isAuthenticated, user]);
@@ -92,7 +94,7 @@ function MainApp() {
                             flex flex-row h-20 w-full
                             pl-3 pt-3 mb-0
                             bg-primary
-                    `}>
+                        `}>
                         {/* App Title */}
                         <div className="flex flex-1 flex-row font-bold items-center">
                             <img src={LOGO_PLACEHOLDER} className='w-10 h-10 m-4'></img>
@@ -109,31 +111,9 @@ function MainApp() {
                             container flex flex-row max-w-full
                             p-0
                             bg-gradient-to-t from-secondary to-primary to-50%
-                    `}>
-                        {/* Conversation Pane */}
-                        <div
-                            id="conversationarea"
-                            className={`
-                                flex flex-col flex-1
-                                p-3
                         `}>
-                            {/* Gradient for overflow */}
-                            <div className="relative">
-                                <div className="max-h-24 overflow-hidden">
-                                    <div
-                                        className={`
-                                            absolute top-0 bottom-0 left-0 right-0
-                                            h-24
-                                            bg-gradient-to-t from-transparent to-primary from-0 to-80%
-                                    `}></div>
-                                </div>
-                            </div>
-                            <ChatInterface></ChatInterface>
-                        </div>
-                        {/* Right Pane */}
-                        <div className='p-2 w-1/2'>
-                            <Tabs_Section></Tabs_Section>
-                        </div>
+                        <ConversationPanel></ConversationPanel>
+                        <TabsPanel></TabsPanel>
                         <Toaster></Toaster>
                     </div>
                     <script src="../static/UI.js"></script>
