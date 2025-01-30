@@ -38,7 +38,7 @@ Keep an eye out for RAGbase on Startup Showcase! The page will be launching soon
 
 
 ## Release Notes
-
+<img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/assets/readme/screenshot.PNG" />
 <img src="https://github.com/arunwidjaja/cloud-RAG/blob/main/assets/readme/v0.6.PNG" />
 
 ### 2025.01.03 - v0.6
