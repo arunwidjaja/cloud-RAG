@@ -220,7 +220,6 @@ const PDFViewer = ({pdf_stream, context}: PDFViewerProps): JSX.Element => {
       flex flex-1 min-h-0 min-w-0
       justify-center p-4
       bg-accent
-      border border-green-400
     `}>
       <div className="flex flex-1 flex-col items-center w-full min-w-0 overflow-auto">
         {/* Controls */}

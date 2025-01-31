@@ -49,7 +49,6 @@ export function DocumentPanel() {
             className={`
                 flex flex-col h-full
                 overflow-auto
-                border border-red-400
             `}>
             <PDFViewer
                 pdf_stream={pdfData}
