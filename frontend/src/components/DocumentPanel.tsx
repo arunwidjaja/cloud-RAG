@@ -7,9 +7,8 @@ import PDFViewer from './PDFViewer';
 // Components
 
 // Hooks
-import { use_current_context, use_retrieved_context } from '@/hooks/hooks_retrieval';
+import { use_current_context } from '@/hooks/hooks_retrieval';
 import { stream_pdf } from '@/api/api_files';
-import { Button } from './ui/button';
 
 
 export function DocumentPanel() {
@@ -24,7 +23,7 @@ export function DocumentPanel() {
     //      This is modified either through the DDM or the chat bubble.
 
     const prevFileHash = useRef("");
-    const retrieved_context = use_retrieved_context();
+    // const retrieved_context = use_retrieved_context();
     const current_context = use_current_context();
 
     const [pdfData, setPdfData] = useState<ArrayBuffer | null>(null);

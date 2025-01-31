@@ -45,7 +45,7 @@ const PDFViewer = ({pdf_stream, context}: PDFViewerProps): JSX.Element => {
 
   // Utilities
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const [_, setError] = useState<string>('');
 
   const currentContext = context
 
