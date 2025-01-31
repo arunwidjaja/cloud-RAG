@@ -1,6 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
-import { LOGO_PLACEHOLDER } from "@/constants/constants";
 import { start_delete_account } from "@/api/api_user_data";
 
 // Components
@@ -99,12 +98,15 @@ export const ProfileBadge = () => {
                         <ChevronDown
                             className="m-2"></ChevronDown>
                         <div className='pr-2'>
-                            {user?.email}
+                            {user?.username}
                         </div>
                         <div>
                             <Avatar className="m-1">
-                                <AvatarImage src={LOGO_PLACEHOLDER} />
-                                <AvatarFallback className='bg-accent text-text'>{user?.email.substring(0, 2)}</AvatarFallback>
+                                <AvatarImage
+                                    className={`
+                                        text-sm
+                                    `}/>
+                                <AvatarFallback className='bg-accent text-text'>{user?.username.substring(0, 2)}</AvatarFallback>
                             </Avatar>
                         </div>
                     </div>

@@ -59,6 +59,11 @@ html, body, #root {
   @apply text-text2;
   @apply shadow-md;
 }
+.context {
+  @apply bg-highlight;
+  @apply text-text2;
+  @apply shadow-md;
+}
 .input-icon-container {
   justify-items: end;
 }

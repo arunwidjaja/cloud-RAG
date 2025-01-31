@@ -6,6 +6,7 @@ export type MetadataCallback = (metadata: any) => void;
 interface RawContext {
   collection: string;
   context: string;
+  page: string;
   source: string;
   source_hash: string;
 }
@@ -63,6 +64,7 @@ export const start_stream_query = async (
 
             const context_parsed: ContextData[] = metadata_raw.contexts.map((ctx: RawContext) => ({
               text: ctx.context,
+              page: ctx.page,
               file: {
                 hash: ctx.source_hash,
                 name: ctx.source,
@@ -86,6 +88,26 @@ export const start_stream_query = async (
   } catch (error) {
     console.error('There was an error streaming your query:', error);
     throw error;
+  }
+}
+
+export const start_stt = async (audio: FormData): Promise<string> => {
+  try {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/stt`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'uuid': current_user_id
+      },
+      body: audio
+    });
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    else {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error parsing audio: ', error);
+    return ""
   }
 }
 

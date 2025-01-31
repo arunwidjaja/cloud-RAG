@@ -56,6 +56,9 @@ PATH_UPLOADS_EFS = PATH_EFS / Path('data_uploads')
 PATH_ATTACHMENTS_LOCAL = PATH_CURRENT / Path('data_attachments')
 PATH_ATTACHMENTS_EFS = PATH_EFS / Path('data_attachments')
 
+PATH_AUDIO_LOCAL = PATH_CURRENT / Path('data_audio')
+PATH_AUDIO_EFS = PATH_EFS / Path('data_audio')
+
 # Archived documents folder
 # Uploads are moved here after they are pushed
 # Downloads fetch documents from here

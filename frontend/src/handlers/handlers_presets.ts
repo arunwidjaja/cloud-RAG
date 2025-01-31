@@ -7,7 +7,7 @@ import useFilesStore from '@/stores/filesStore';
 
 
 
-export const handle_select_preset = (selected_preset: string): void => {
+export function handle_select_preset(selected_preset: string): void {
     select_preset(selected_preset);
     add_log("Selected preset: " + selected_preset);
 };
@@ -28,12 +28,12 @@ export const handle_run_preset = (): void => {
     }
 }
 
-export const select_preset = (selected_preset: string) => {
+export function select_preset(selected_preset: string) {
     const selectPreset = usePresetsStore.getState().setSelectedPreset;
     selectPreset(selected_preset)
 }
 
-export const preset_summarize_selection = async (): Promise<void> => {
+export async function preset_summarize_selection(): Promise<void> {
     const selected_files = useFilesStore.getState().selected_files;
     if (selected_files.length === 0) {
         add_log("Please select files to summarize first.")
@@ -50,7 +50,7 @@ export const preset_summarize_selection = async (): Promise<void> => {
         });
     }
 };
-export const preset_analyze_themes = async (): Promise<void> => {
+export async function preset_analyze_themes(): Promise<void> {
     const selected_files = useFilesStore.getState().selected_files;
     if (selected_files.length === 0) {
         add_log("Please select files to analyze first.")
@@ -74,7 +74,7 @@ export const preset_analyze_themes = async (): Promise<void> => {
         });
     }
 };
-export const preset_analyze_sentiment = async (): Promise<void> => {
+export async function preset_analyze_sentiment(): Promise<void> {
     const selected_files = useFilesStore.getState().selected_files;
     if (selected_files.length === 0) {
         add_log("Please select files to analyze first.")

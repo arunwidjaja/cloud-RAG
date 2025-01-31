@@ -13,3 +13,11 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+
+data_archive/
+data_attachments/
+data_chats/
+data_uploads/
+db_auth/
+db_main/
+db_secondary/

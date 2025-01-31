@@ -1,9 +1,11 @@
 // Components
-import { PDFPanel } from "@/components/Panel_PDF"
+import { DocumentPanel } from "@/components/DocumentPanel"
 import { DropdownMenuContext } from "./Dropdown_Menu_Context"
 
 // Hooks
-import { use_retrieved_files } from "@/hooks/hooks_retrieved"
+import { use_retrieved_context } from "@/hooks/hooks_retrieval"
+import { Button } from "./ui/button"
+import { handle_download_retrieved_file } from "@/handlers/handlers_retrieval"
 
 export function Tab_1_Content() {
     return (
@@ -14,13 +16,21 @@ export function Tab_1_Content() {
             </div>
             <div className='flex'>
                 <DropdownMenuContext
-                    useItemsHook={use_retrieved_files}
+                    useItemsHook={use_retrieved_context}
                     placeholder='Select document'
                     searchPlaceholder='Search retrieved documents...'
                     className='flex-1 mt-1'>
                 </DropdownMenuContext>
             </div>
-            <PDFPanel></PDFPanel>
+            <DocumentPanel></DocumentPanel>
+            <Button
+                onClick={handle_download_retrieved_file}
+                className={`
+                    bg-text text-text2
+                    hover:bg-highlight
+                `}>
+                Download Original File
+            </Button>
         </div>
     )
 }

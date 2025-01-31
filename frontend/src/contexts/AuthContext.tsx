@@ -8,11 +8,10 @@ import { initializeApi } from '@/api/api_init';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const createUser = (id: string, email: string): User => {
+export const createUser = (username: string, id: string): User => {
     const user: User = {
+        username: username,
         id: id,
-        email: email,
-
     };
     return user
 }
@@ -20,11 +19,11 @@ export const createUser = (id: string, email: string): User => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
 
-    const login = async (username: string, email: string, password: string) => {
+    const login = async (username: string, password: string) => {
         try {
-            const user_id = await start_login(username, email, password);
+            const user_id = await start_login(username, password);
             if (user_id) {
-                const user = createUser(user_id, email)
+                const user = createUser(username, user_id)
                 setUser(user);
                 initializeApi(user_id)
             } else {

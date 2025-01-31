@@ -11,7 +11,7 @@ import smtplib
 import config
 
 # Local Modules
-from schema import User, Verification
+from schema import User
 from authentication_utils import generate_otp, generate_uuid
 
 

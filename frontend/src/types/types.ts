@@ -7,30 +7,30 @@ export interface FileData {
 
 export interface ContextData {
     file: FileData;
-    text: string;
-}
-
-
-// Base Message interface with common properties
-export interface BaseMessage {
-    id: string;
+    page: string;
     text: string;
 }
 
 // InputMessage is for user inputs
-export interface InputMessage extends BaseMessage {
+export interface InputMessage{
+    id: string;
     type: string;
+    text: string;
 }
 
 // AnswerMessage is for any responses not containing context information
-export interface AnswerMessage extends BaseMessage {
+export interface AnswerMessage {
+    id: string;
     type: string;
+    text: string;
 }
 
 // ContextMessage is for RAG responses with associated context information
-export interface ContextMessage extends BaseMessage {
+export interface ContextMessage{
+    id: string;
     type: string;
-    context_list: ContextData[];
+    text: string;
+    content: ContextData[];
 }
 
 // Union type for all message types
@@ -48,13 +48,13 @@ export interface ChatsState {
 }
 
 export interface User {
+    username: string;
     id: string;
-    email: string;
 }
 
 export interface AuthContextType {
     user: User | null;
-    login: (username: string, email: string, password: string) => Promise<void>;
+    login: (username: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string) => Promise<boolean>;
     delete_account: (email: string, password: string) => Promise<void>;
     logout: () => void;

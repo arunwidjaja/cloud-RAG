@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
+import _ from 'lodash'
 import { RefObject } from 'react';
-import { start_stream_query } from '../api/api_llm_calls';
+import { start_stream_query, start_stt } from '../api/api_llm_calls';
 import { ContextData } from '@/types/types';
 
 // Handlers
 import { add_message, update_message } from '../handlers/handlers_messages';
-import { set_current_retrieved, set_retrieved_files } from '@/handlers/handlers_retrieved';
+import { set_retrieved_context } from '@/handlers/handlers_retrieval';
 
 // Stores
-import { createAnswerMessage, createInputMessage } from '../stores/messageStore';
+import { createAnswerMessage, createContextMessage, createInputMessage } from '../stores/messageStore';
 import { get_current_chat, save_chats, update_chats } from '@/handlers/handlers_chats';
 
 // Components
@@ -19,6 +20,7 @@ import { FileUploadWindow } from './FileUpload';
 import { use_attachments } from '@/hooks/hooks_files';
 import { refresh_attachments } from '@/handlers/handlers_files';
 import { Attachment } from './Attachment';
+import AudioRecorder from './AudioRecorder';
 
 const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): void => {
     if (attachmentRef && attachmentRef.current) {
@@ -26,12 +28,14 @@ const handle_accept_attachments = (attachmentRef: RefObject<HTMLInputElement>): 
     }
 }
 
-interface TextInputProps {
+interface UserInputProps {
     edited_query: string;
     edit_timestamp: number;
 }
 
-export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
+
+
+export const UserInput = ({ edited_query, edit_timestamp }: UserInputProps) => {
 
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const streamingMessageRef = useRef<string>("");
@@ -68,23 +72,55 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
         }
     }, [edited_query, edit_timestamp]);
 
-    // Sends input or adds a new line when hiting Enter vs Shift+Enter
+    // Sends input or adds a new line when hitting Enter vs Shift+Enter
     const handle_key_down = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            handle_streaming_response();
+            // Create an empty message bubble.
+            const empty_input_msg = createInputMessage("");
+            add_message(empty_input_msg)
+            handle_streaming_response(user_input);
+        }
+    }
+
+    async function parse_audio(audio: FormData): Promise<void> {
+        // Create an empty message bubble while waiting for transcription.
+        const empty_input_msg = createInputMessage("");
+        add_message(empty_input_msg)
+    
+        const transcription = await start_stt(audio)
+        handle_streaming_response(transcription)
+    }
+
+    const udpate_message_with_chunk = (chunk: string) => {
+        streamingMessageRef.current += chunk;
+        // Update message state after streaming finished
+        const updated_message = createAnswerMessage(streamingMessageRef.current);
+        update_message(updated_message);
+    }
+    const update_message_with_metadata = (metadata: any) => {
+        const ctxs: ContextData[] = metadata.contexts;
+        const ctxs_sorted = _.sortBy(ctxs, 'page')
+
+        set_retrieved_context(ctxs_sorted)
+        add_message(createContextMessage(ctxs_sorted))
+        for (const c of ctxs_sorted) {
+            console.log("Context from Page " + c.page + ":")
+            console.log(c.text)
         }
     }
 
     // Makes an API call and starts streaming the LLM response
-    const handle_streaming_response = async (): Promise<void> => {
-        setIsStreaming(true); // Flag to disable text field while response is streaming
-        const input_message = createInputMessage(user_input);
+    const handle_streaming_response = async (query: string): Promise<void> => {
         const current_chat = get_current_chat();
         streamingMessageRef.current = "";
 
+        setIsStreaming(true);
 
-        add_message(input_message);
+        // Update the input bubble with the text
+        const input_message = createInputMessage(query);
+        update_message(input_message)
+
         set_user_input('')
 
         // Create an initial empty answer message that will be updated
@@ -93,20 +129,9 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
 
         try {
             await start_stream_query(
-                user_input,
-                (chunk: string) => {
-                    streamingMessageRef.current += chunk;
-                    // Update the last message with the new content
-                    const updated_message = createAnswerMessage(streamingMessageRef.current);
-                    update_message(updated_message);
-                },
-                (metadata) => {
-                    console.log('Received metadata: ', metadata);
-                    const ai_reply_context: ContextData[] = metadata.contexts;
-
-                    set_retrieved_files(ai_reply_context)
-                    set_current_retrieved(ai_reply_context[0])
-                },
+                query,
+                udpate_message_with_chunk,
+                (metadata) => update_message_with_metadata(metadata),
                 current_chat,
                 'question'
             );
@@ -129,11 +154,14 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
             className={`
                 flex flex-row justify-center
                 mt-2
+                
             `}>
             <div
                 className={`
-                    relative flex flex-col items-center
+                    flex flex-col relative
+                    items-center
                     w-3/4
+                    
                 `}>
                 <div
                     id="attachments_section"
@@ -145,12 +173,12 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
                         text-text2
                         ${attachments.length > 0 ? "visible" : "hidden"}
                     `}>
-                        {attachments.map((attachment, index)=>(
-                            <Attachment
-                                key={index}
-                                file={attachment}
-                            />
-                        ))}
+                    {attachments.map((attachment, index) => (
+                        <Attachment
+                            key={index}
+                            file={attachment}
+                        />
+                    ))}
                 </div>
                 <textarea
                     id='userinput'
@@ -166,26 +194,30 @@ export const TextInput = ({ edited_query, edit_timestamp }: TextInputProps) => {
                         [&::-webkit-scrollbar]:hidden
                         [-ms-overflow-style:'none']
                         [scrollbar-width:'none']
-                `} />
-                <div
+                    `} />
+            </div>
+            <div
+                id='textinputcontrols'
+                className={`
+                    flex flex-col
+                    justify-end
+                    
+                `}>
+                <FileUploadWindow
+                    is_attachment={true}
+                    ref={attachmentRef}>
+                </FileUploadWindow>
+                <Paperclip
+                    onClick={() => handle_accept_attachments(attachmentRef)}
                     className={`
-                        flex-col
-                        absolute right-0 bottom-0 justify-center
+                        shrink-0
+                        m-1
+                        text-text opacity-50
+                        hover:cursor-pointer
+                        hover:opacity-100
                     `}>
-                    <FileUploadWindow
-                        is_attachment={true}
-                        ref={attachmentRef}>
-                    </FileUploadWindow>
-                    <Paperclip
-                        onClick={() => handle_accept_attachments(attachmentRef)}
-                        className={`
-                            m-1
-                            text-text opacity-50
-                            hover:cursor-pointer
-                            hover:opacity-100
-                        `}>
-                    </Paperclip>
-                </div>
+                </Paperclip>
+                <AudioRecorder onRecord={parse_audio}></AudioRecorder>
             </div>
         </div>
     )
