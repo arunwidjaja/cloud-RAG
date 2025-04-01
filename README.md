@@ -1,7 +1,7 @@
 # RAGBase
 
 RAGbase is a Retrieval-Augmented Generation dashboard that allows users to query a database of assorted file types via a chat-style web interface. It can also generate document summaries, as well as sentiment and theme analyses.
-Text transformation, embedding, and generation is currently powered primarily by DistilBERT, ADA, and GPT-4.
+Text transformation, embedding, and generation is currently powered primarily by OpenAI's CLIP, ADA, and GPT-4.
 
 ## Getting Started
 
